@@ -4,28 +4,47 @@ import json
 import cv2
 import os
 import jq
+import velocity_calculation as vc
+import math
 
+# Init DataFrames
+# ------------------------------------------
+
+# Counter
 columns = ["frameId", "timestamp", "counter_area", "ObjectClass", 
-        "UniqueID", "bearing_og", "CountingDirection", "Angle"]
+        "UniqueID", "bearing_og", "countingDirection", "angle"]
 
 counter = pd.read_csv("../data/short_testing/counter_data.csv", names=columns)
+counter = counter[counter.duplicated(subset=["UniqueID"], keep=False)].sort_values("UniqueID")
+counter['timestamp'] = pd.to_datetime(counter['timestamp'], format='%Y-%m-%dT%H:%M:%S.%fZ')
 
+# Calculates speeds (and append to df)
+# speeds: {UniqueID: speed}
+speeds = vc.calculate_speed(2.6, counter)
+for key, value in speeds.items():
+    counter.loc[counter["UniqueID"]==key, "velocity"]=value
+
+# Tracker
 with open('../data/short_testing/tracker.json') as f:
     tracker = json.load(f)
 
-full_tracker = pd.json_normalize(tracker, record_path='objects', meta=['frameId']).rename(columns={'id': 'UniqueID'})
+tracker_flattend = pd.json_normalize(tracker, record_path='objects', meta=['frameId']).rename(columns={'id': 'UniqueID'})
+tracker_flattend = tracker_flattend.drop_duplicates(subset=['UniqueID', 'frameId'], keep='first')
 
-new = pd.merge(counter, full_tracker, on=["UniqueID", "frameId"], how="left")
-new.drop_duplicates(keep='first')
+# Merge counter and tracker
+# ------------------------------------------
 
-new[['w', 'h']]
+df = pd.merge(counter, tracker_flattend, on=["UniqueID", "frameId"], how="left")
 
-new['x_c'] = new['x'] + new['w']/2
-new['y_c'] = new['y'] + new['h']/2
+# Adding center coordinates for bounding box
+# df['x_c'] = df['x'] - df['w']/2
+# df['y_c'] = df['y'] - df['h']/2
 
-new[['frameId', 'UniqueID', 'ObjectClass', 'bearing_og', 'bearing', 'x_c', 'y_c']]
+# Print
+df[['frameId', 'UniqueID', 'ObjectClass', 'bearing_og', 'angle', 'x', 'y', 'velocity']]
 
-# IMG STUFF
+# Image Generation
+# ------------------------------------------
 
 def save_frame(frame_number, source, arrows=None):
     vc = cv2.VideoCapture(source)
@@ -33,12 +52,30 @@ def save_frame(frame_number, source, arrows=None):
     rval, frame = vc.read()
     if arrows != None:
         for a in arrows:
-            frame = cv2.arrowedLine(frame, a['start'], a['end'], (0,0,255), 5)
+            frame = cv2.arrowedLine(frame, a['start'], a['end'], (0,0,255), thickness=8, tipLength=0.6)
     cv2.imwrite(str(frame_number) + '.jpg', frame)
 
-arrows = [{'start': (1430, 441), 'end': (1500, 500)}]
+arrows = [
+        {'start': (1430, 441), 'end': (1500, 500)},
+        {'start': (1030, 941), 'end': (1500, 500)}
+        ]
 
-video_location = "../data/short_copy.mp4"
-save_frame(181, video_location, arrows=arrows)
+video_location = "../data/short_copy.mov"
+# save_frame(181, video_location, arrows=arrows)
 
 cv2.destroyAllWindows()
+
+def get_arrow(obj):
+    x, y = obj['x'], obj['y']
+    angle = obj['bearing_og']
+    speed = obj['velocity']
+    a = 30 * speed * math.sin(math.radians(angle))
+    b = 30 * speed * math.cos(math.radians(angle))
+    return {'start': (int(x), int(y)), 'end': (int(x+a), int(y+b))}
+
+for _, row in df.iterrows():
+    save_frame(row['frameId'], video_location, arrows=[get_arrow(row)])
+    print(get_arrow(row))
+
+save_frame(672, video_location)
+
