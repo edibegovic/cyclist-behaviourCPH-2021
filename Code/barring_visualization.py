@@ -31,6 +31,8 @@ with open('../data/short_testing/tracker.json') as f:
 tracker_flattend = pd.json_normalize(tracker, record_path='objects', meta=['frameId']).rename(columns={'id': 'UniqueID'})
 tracker_flattend = tracker_flattend.drop_duplicates(subset=['UniqueID', 'frameId'], keep='first')
 
+tracker_flattend[:50]
+
 # Merge counter and tracker
 # ------------------------------------------
 
@@ -41,7 +43,7 @@ df = pd.merge(counter, tracker_flattend, on=["UniqueID", "frameId"], how="left")
 # df['y_c'] = df['y'] - df['h']/2
 
 # Print
-df[['frameId', 'UniqueID', 'ObjectClass', 'bearing_og', 'angle', 'x', 'y', 'velocity']]
+df[['frameId', 'UniqueID', 'timestamp', 'bearing_og', 'angle', 'x', 'y', 'velocity']]
 
 # Image Generation
 # ------------------------------------------
@@ -55,15 +57,7 @@ def save_frame(frame_number, source, arrows=None):
             frame = cv2.arrowedLine(frame, a['start'], a['end'], (0,0,255), thickness=8, tipLength=0.6)
     cv2.imwrite(str(frame_number) + '.jpg', frame)
 
-arrows = [
-        {'start': (1430, 441), 'end': (1500, 500)},
-        {'start': (1030, 941), 'end': (1500, 500)}
-        ]
-
 video_location = "../data/short_copy.mov"
-# save_frame(181, video_location, arrows=arrows)
-
-cv2.destroyAllWindows()
 
 def get_arrow(obj):
     x, y = obj['x'], obj['y']
