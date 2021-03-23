@@ -16,7 +16,6 @@ parent_path = f"/Users/{who_is_running_this_code}/{library}/Mobile Documents/com
 tracker_path = f"{parent_path}Data/{file_name}/tracker_{file_name}.json"
 video_path = f"{parent_path}Processed/{file_name}.mp4"
 photo_path = f"{parent_path}Photos/{file_name}"
-db_path = f"{parent_path}Data/{file_name}/db_{file_name}.csv"
 
 # Make tracker df.
 # ------------------------------------------
