@@ -1,5 +1,6 @@
 import trackerdf as tdf
 import morph
+import trajectory
 
 # Variables.
 # ------------------------------------------
@@ -23,6 +24,7 @@ photo_path = f"{parent_path}Photos/{file_name}"
 tracker_df = tdf.create_tracker_df(tracker_path)
 tracker_df = morph.cyclist_contact_coordiantes(tracker_df)
 tracker_df = morph.smooth_tracks(tracker_df, 20)
+
 
 # Get points on src and dst images
 # ------------------------------------------
