@@ -15,7 +15,7 @@ def trajectory_df(df):
         A pandas df
     """
 
-    trajectory_df = df[["UniqueID", "mean_x", "mean_y"]].copy()
+    trajectory_df = df[["frameId", "mean_x", "mean_y"]].copy()
     trajectory_df["z"] = 0
     trajectory_df["state"] = 0
     trajectory_df["label"] = 0
