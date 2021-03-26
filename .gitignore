@@ -278,3 +278,5 @@ TSWLatexianTemp*
 # macOS
 .DS_Store
 *.swp
+
+*.pyc
