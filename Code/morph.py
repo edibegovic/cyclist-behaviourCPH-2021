@@ -208,6 +208,7 @@ def click_coordinates(img_path):
     cv2.destroyAllWindows()
     return temp
 
+
 def capture_image_from_video(video_path, base_image, file_name, frame_number):
     """Save frame from video
 
