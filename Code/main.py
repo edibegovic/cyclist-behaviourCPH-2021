@@ -11,9 +11,9 @@ temp = []
 who_is_running_this_code = "hogni"
 library = "Library"
 video_folder = "24032021"
+file_name = "2403_edi_sync"
 birds_eye_view_image = "FullHD_bridge.png"
 
-file_name = "2403_edi_sync"
 parent_path = f"/Users/{who_is_running_this_code}/{library}/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
 parent_path_video = f"{parent_path}Videos/{video_folder}/"
 
