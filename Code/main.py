@@ -1,28 +1,26 @@
+
 import trackerdf as tdf
 import morph
 import trajectory
 import cv2
 
-# Variables.
+# Variables
 # ------------------------------------------
 
 temp = []
 
 who_is_running_this_code = "hogni"
-library = "Library"
+
 video_folder = "24032021"
 file_name = "2403_edi_sync"
-birds_eye_view_image = "FullHD_bridge.png"
 
-parent_path = f"/Users/{who_is_running_this_code}/{library}/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
-parent_path_video = f"{parent_path}Videos/{video_folder}/"
+parent_path = f"/Users/{user}/library/Mobile Documents/com~apple~CloudDocs/Bachelor Project/Videos/{video_folder}/"
 
-tracker_path = f"{parent_path_video}Data/{file_name}/tracker_{file_name}.json"
-video_path = f"{parent_path_video}Processed/{file_name}.mp4"
-photo_path = f"{parent_path_video}Photos/{file_name}"
+tracker_path = f"{parent_path}Data/{file_name}/tracker_{file_name}.json"
+video_path = f"{parent_path}Processed/{file_name}.mp4"
+photo_path = f"{parent_path}Photos/{file_name}"
 base_image = f"{parent_path}Base Image"
 
-# Make tracker df.
 # ------------------------------------------
 
 tracker_df = tdf.create_tracker_df(tracker_path)
