@@ -119,7 +119,12 @@ def warped_perspective(src, dst, matrix):
     CV2 warped object
     """
     source_image = cv2.imread(src)
-    destination_image = cv2.imread(dst)
+
+    if isinstance(dst, str):
+        destination_image = cv2.imread(dst)
+    else:
+        destination_image = dst
+
     return cv2.warpPerspective(
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
     )
@@ -189,7 +194,7 @@ def click_event(event, x, y, flags, params):
         cv2.imshow("image", img)
 
 
-def click_coordinates(img_path):
+def click_coordinates(image):
     """Display image with plotted tracker data
 
     Parameters
@@ -206,7 +211,12 @@ def click_coordinates(img_path):
     if temp:
         temp = []
         img = 0
-    img = cv2.imread(img_path, 1)
+
+    if isinstance(image, str):
+        img = cv2.imread(image, 1)
+    else:
+        img = image
+
     cv2.imshow("image", img)
     cv2.setMouseCallback("image", click_event)
     cv2.waitKey(0)
@@ -243,3 +253,9 @@ def capture_image_from_video(video_path, base_image, file_name, frame_number):
 
     if __name__ == "__main__":
         pass
+
+def get_frame(video_path, frame_number):
+    vc = cv2.VideoCapture(video_path)
+    vc.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    rval, frame = vc.read()
+    return frame
