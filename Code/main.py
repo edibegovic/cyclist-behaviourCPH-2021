@@ -43,7 +43,7 @@ src_image = morph.capture_image_from_video(video_path, base_image, file_name, 10
 # ------------------------------------------
 
 src_image_points = morph.click_coordinates(f"{base_image}/{file_name}.jpg")
-dst_image_points = morph.click_coordinates(f"{base_image}/{birds_eye_view_image}")
+dst_image = morph.click_coordinates("../data/dbro_map.png")
 
 # Get homography matrix
 # ------------------------------------------
