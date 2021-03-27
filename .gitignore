@@ -280,3 +280,10 @@ TSWLatexianTemp*
 *.swp
 
 *.pyc
+
+# Ignore temporary project files
+/code/*.jpg
+*pynb_checkpoints/
+
+/misc/
+
