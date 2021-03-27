@@ -125,7 +125,7 @@ def warped_perspective(src, dst, matrix):
     )
 
 
-def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image):
+def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image, ids=None):
     """Transforms tracker data and plots on CV2 object from view_transformed_picture function
 
     Parameters
@@ -145,6 +145,9 @@ def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image):
     """
     img = cv2.imread(dst_image)
 
+    if not ids:
+        ids = len(x_list)*[0]
+
     for index, i in enumerate(x_list):
         points = (i, y_list[index])
         point_x = (
@@ -155,7 +158,8 @@ def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image):
         ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
         transformed_points = (int(point_x), int(point_y))
 
-        cv2.circle(img, transformed_points, 5, (0, 0, 255), -1)
+        colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
+        cv2.circle(img, transformed_points, 5, colors[ids[index]%8], -1)
     return img
 
 
