@@ -184,7 +184,8 @@ def click_event(event, x, y, flags, params):
         temp.append([x, y])
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(img, str(x) + "," + str(y), (x, y), font, 1, (255, 0, 0), 2)
+        cv2.circle(img, (x, y), 10, (200, 90, 255), -1)
+        cv2.putText(img, str(len(temp)), (x+5, y-5), font, 2, (255, 255, 255), 5)
         cv2.imshow("image", img)
 
 
