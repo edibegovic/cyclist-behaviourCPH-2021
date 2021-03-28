@@ -103,34 +103,27 @@ class Cameras:
         morph.show_data(plotted_tracks)
 
 
-g6 = Cameras("hogni", 24032021, "2403_G6_sync")
+if __name__ == "__main__":
 
-g6.make_tracker_df()
-g6.cut_df()
-g6.get_frame()
-g6.get_coordinates()
-g6.homo_matrix()
-g6.warp_image()
-g6.plot_tracks()
+    def run(class_object):
+        class_object.make_tracker_df()
+        class_object.cut_df()
+        class_object.get_frame()
+        class_object.get_coordinates()
+        class_object.homo_matrix()
+        class_object.warp_image()
+        class_object.plot_tracks()
 
+    g6 = Cameras("hogni", 24032021, "2403_G6_sync")
+    run(g6)
 
-s7 = Cameras("hogni", 24032021, "2403_S7_sync")
+    s7 = Cameras("hogni", 24032021, "2403_S7_sync")
+    run(s7)
 
-s7.make_tracker_df()
-s7.cut_df()
-s7.get_frame()
-s7.get_coordinates()
-s7.homo_matrix()
-s7.warp_image()
-s7.plot_tracks()
+    iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
+    run(iph12)
 
-
-iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
-
-iph12.make_tracker_df()
-iph12.cut_df()
-iph12.get_frame()
-iph12.get_coordinates()
-iph12.homo_matrix()
-iph12.warp_image()
-iph12.plot_tracks()
+    # scatter = plt.scatter(x_list, y_list)
+    # ax = scatter.axes
+    # ax.invert_yaxis()
+    # plt.show()
