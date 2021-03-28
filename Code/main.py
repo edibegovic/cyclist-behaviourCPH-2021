@@ -60,12 +60,14 @@ morph.show_data(warped_img)
 # ------------------------------------------
 
 x_list = []
-y_list = []
-for index, row in tracker_df.iterrows():
+tracks = tracker_df[:1400]
+transformed_tracks = morph.transform_points(tracks, homo)
     x_list.append(row["mean_x"])
-    y_list.append(row["mean_y"])
+# Plot on MAP
+plot = morph.get_cv2_point_plot(transformed_tracks, map_path)
+morph.show_data(plot)
 
-plotted_tracks = morph.transform_and_plot_tracker_data(
-    x_list, y_list, homo, (f"{base_image}/{birds_eye_view_image}")
-)
-morph.show_data(plotted_tracks)
+# Plot on VIDEO (FRAME)
+plot = morph.get_cv2_point_plot(tracks, video_frame)
+morph.show_data(plot)
+

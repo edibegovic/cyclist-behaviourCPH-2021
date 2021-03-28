@@ -21,7 +21,7 @@ def cyclist_contact_coordiantes(df):
         a pandas df with the adjusted x and y
     """
     df["y"] = df["y"] + df["h"] / 2
-    df["x"] = df["x"] + df["w"] / 2
+    # df["x"] = df["x"] + df["w"] / 2
     return df
 
 
@@ -128,6 +128,59 @@ def warped_perspective(src, dst, matrix):
     return cv2.warpPerspective(
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
     )
+
+def transform_points(points, matrix):
+    """Transforms tracker data and plots on CV2 object from view_transformed_picture function
+
+    Parameters
+    ----------
+    points : pd.DataFrame
+    Contains rastor 2D coordinates (x, y)
+        
+    matrix : (3, 3) numpy array
+    Homography matrix for projection
+
+    Returns
+    -------
+    pd.DataFrame
+    Transformed coordinates
+    """
+    trans_points = points.copy()
+    transformed_x = []
+    transformed_y = []
+
+    # Apply transformation for each point
+    for _, row in points.iterrows():
+        point = (row["x"], row["y"])
+
+        transformed_x.append((
+            matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2]
+        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+
+        transformed_y.append((
+            matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2]
+        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+
+
+    trans_points.drop(columns=['x', 'y'])
+    trans_points['x'] = transformed_x
+    trans_points['y'] = transformed_y
+    return trans_points
+
+
+def get_cv2_point_plot(points, dst_image):
+
+    if isinstance(dst_image, str):
+        image = cv2.imread(dst_image)
+    else:
+        image = dst_image.copy()
+
+    colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
+    for _, row in points.iterrows():
+        x, y = int(row['x']), int(row['y'])
+        cv2.circle(image, (x, y), 5, colors[int(row['UniqueID'])%8], -1)
+
+    return image
 
 
 def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image, ids=None):
