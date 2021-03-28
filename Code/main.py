@@ -3,71 +3,134 @@ import morph
 import trajectory
 import cv2
 
-# Variables.
-# ------------------------------------------
 
-temp = []
+class Cameras:
+    def __init__(
+        self,
+        who_is_running_this_code,
+        video_folder,
+        file_name,
+        library=0,
+        parent_path=0,
+        parent_path_video=0,
+        tracker_path=0,
+        video_path=0,
+        photo_path=0,
+        base_image=0,
+        birds_eye_view_image=0,
+    ):
+        self.who_is_running_this_code = who_is_running_this_code
+        self.video_folder = video_folder
+        self.file_name = file_name
 
-who_is_running_this_code = "hogni"
-library = "Library"
-video_folder = "24032021"
-file_name = "2403_edi_sync"
-birds_eye_view_image = "FullHD_bridge.png"
+        self.library = "Library"
+        self.parent_path = f"/Users/{self.who_is_running_this_code}/{self.library}/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
+        self.parent_path_video = f"{self.parent_path}Videos/{self.video_folder}/"
+        self.tracker_path = f"{self.parent_path_video}Data/{self.file_name}/tracker_{self.file_name}.json"
+        self.video_path = f"{self.parent_path_video}Processed/{self.file_name}.mp4"
+        self.photo_path = f"{self.parent_path_video}Photos/{self.file_name}"
+        self.base_image = f"{self.parent_path}Base Image"
+        self.birds_eye_view_image = "FullHD_bridge.png"
 
-parent_path = f"/Users/{who_is_running_this_code}/{library}/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
-parent_path_video = f"{parent_path}Videos/{video_folder}/"
+    # Make tracker df.
+    # ------------------------------------------
 
-tracker_path = f"{parent_path_video}Data/{file_name}/tracker_{file_name}.json"
-video_path = f"{parent_path_video}Processed/{file_name}.mp4"
-photo_path = f"{parent_path_video}Photos/{file_name}"
-base_image = f"{parent_path}Base Image"
+    def make_tracker_df(self, smooth_factor=20):
+        self.tracker_df = tdf.create_tracker_df(self.tracker_path)
+        self.tracker_df = morph.cyclist_contact_coordiantes(self.tracker_df)
+        self.tracker_df = morph.smooth_tracks(self.tracker_df, smooth_factor)
 
-# Make tracker df.
-# ------------------------------------------
+    # Cut df
+    # ------------------------------------------
 
-tracker_df = tdf.create_tracker_df(tracker_path)
-tracker_df = morph.cyclist_contact_coordiantes(tracker_df)
-tracker_df = morph.smooth_tracks(tracker_df, 20)
+    def cut_df(self, number_to_cut=100):
+        self.tracker_df = morph.cut_tracks_with_few_points(self.tracker_df, 100)
 
-# Cut df
-# ------------------------------------------
-tracker_df = morph.cut_tracks_with_few_points(tracker_df, 100)
+    # Capture frame from video
+    # ------------------------------------------
 
-# Capture frame from video
-# ------------------------------------------
+    def get_frame(self, frame_number=1000):
+        self.src_image = morph.capture_image_from_video(
+            self.video_path, self.base_image, self.file_name, frame_number
+        )
 
-src_image = morph.capture_image_from_video(video_path, base_image, file_name, 1000)
+    # Get points on src and dst images
+    # ------------------------------------------
+
+    def get_coordinates(self):
+        self.src_image_points = morph.click_coordinates(
+            f"{self.base_image}/{self.file_name}.jpg"
+        )
+        self.dst_image_points = morph.click_coordinates(
+            f"{self.base_image}/{self.birds_eye_view_image}"
+        )
+
+    # Get homography matrix
+    # ------------------------------------------
+
+    def homo_matrix(self):
+        self.homo, status = morph.find_homography_matrix(
+            self.src_image_points, self.dst_image_points
+        )
+
+    # Display warped image
+    # ------------------------------------------
+
+    def warp_image(self):
+        warped_img = morph.warped_perspective(
+            (f"{self.base_image}/{self.file_name}.jpg"),
+            (f"{self.base_image}/{self.birds_eye_view_image}"),
+            self.homo,
+        )
+        morph.show_data(warped_img)
+
+    # Plot tracks
+    # ------------------------------------------
+
+    def plot_tracks(self):
+        self.x_list = []
+        self.y_list = []
+        for index, row in self.tracker_df.iterrows():
+            self.x_list.append(row["mean_x"])
+            self.y_list.append(row["mean_y"])
+
+        plotted_tracks = morph.transform_and_plot_tracker_data(
+            self.x_list,
+            self.y_list,
+            self.homo,
+            (f"{self.base_image}/{self.birds_eye_view_image}"),
+        )
+        morph.show_data(plotted_tracks)
 
 
-# Get points on src and dst images
-# ------------------------------------------
+g6 = Cameras("hogni", 24032021, "2403_G6_sync")
 
-src_image_points = morph.click_coordinates(f"{base_image}/{file_name}.jpg")
-dst_image_points = morph.click_coordinates(f"{base_image}/{birds_eye_view_image}")
+g6.make_tracker_df()
+g6.cut_df()
+g6.get_frame()
+g6.get_coordinates()
+g6.homo_matrix()
+g6.warp_image()
+g6.plot_tracks()
 
-# Get homography matrix
-# ------------------------------------------
 
-homo, status = morph.find_homography_matrix(src_image_points, dst_image_points)
+s7 = Cameras("hogni", 24032021, "2403_S7_sync")
 
-# Display warped image
-# ------------------------------------------
+s7.make_tracker_df()
+s7.cut_df()
+s7.get_frame()
+s7.get_coordinates()
+s7.homo_matrix()
+s7.warp_image()
+s7.plot_tracks()
 
-warped_img = morph.warped_perspective(
-    (f"{base_image}/{file_name}.jpg"), (f"{base_image}/{birds_eye_view_image}"), homo
-)
-morph.show_data(warped_img)
 
-# Plot tracks
-# ------------------------------------------
+iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
 
-x_list = []
-y_list = []
-for index, row in tracker_df.iterrows():
-    x_list.append(row["mean_x"])
-    y_list.append(row["mean_y"])
-
-plotted_tracks = morph.transform_and_plot_tracker_data(
-    x_list, y_list, homo, (f"{base_image}/{birds_eye_view_image}")
-)
-morph.show_data(plotted_tracks)
+iph12.make_tracker_df()
+iph12.cut_df()
+iph12.get_frame()
+iph12.get_coordinates()
+iph12.homo_matrix()
+iph12.warp_image()
+iph12.plot_tracks()
