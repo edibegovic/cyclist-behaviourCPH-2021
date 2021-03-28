@@ -125,9 +125,44 @@ def warped_perspective(src, dst, matrix):
     )
 
 
-def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image):
-    """Transforms tracker data and plots on CV2 object from view_transformed_picture function
+def transform_tracker_data(x_list, y_list, matrix):
+    """Transforms tracker data.
 
+    Parameters
+    ----------
+    x_list : list
+        List of x-coordinates
+
+    y_list : list
+        List of y-coordinates
+
+    Returns
+    -------
+    x_transformed : list
+        List of x-coordinates
+    y_transformed : list
+        List of y-coordinates
+    """
+
+    x_transformed = []
+    y_transformed = []
+
+    for index, i in enumerate(x_list):
+        points = (i, y_list[index])
+        point_x = (
+            matrix[0][0] * points[0] + matrix[0][1] * points[1] + matrix[0][2]
+        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
+        point_y = (
+            matrix[1][0] * points[0] + matrix[1][1] * points[1] + matrix[1][2]
+        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
+
+        x_transformed.append(int(round(point_x)))
+        y_transformed.append(int(round(point_y)))
+
+    return x_transformed, y_transformed
+
+def show_transformed_tracker_data(x_list, y_list, base_image, dst_image):
+    """Plots on CV2 object.
     Parameters
     ----------
     x_list : list
@@ -143,24 +178,17 @@ def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image):
     -------
     CV2 object
     """
-    img = cv2.imread(dst_image)
+    img = cv2.imread(f"{base_image}/{dst_image}")
 
     for index, i in enumerate(x_list):
-        points = (i, y_list[index])
-        point_x = (
-            matrix[0][0] * points[0] + matrix[0][1] * points[1] + matrix[0][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-        point_y = (
-            matrix[1][0] * points[0] + matrix[1][1] * points[1] + matrix[1][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-        transformed_points = (int(point_x), int(point_y))
-
-        cv2.circle(img, transformed_points, 5, (0, 0, 255), -1)
+        points = (int(round(i)), int(round(y_list[index])))
+        cv2.circle(img, points, 5, (0, 0, 255), -1)
+        
     return img
 
 
 def show_data(cv2_object):
-    """Display image with plotted tracker data
+    """Display image.
 
     Parameters
     ----------

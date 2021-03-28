@@ -84,24 +84,24 @@ class Cameras:
         )
         morph.show_data(warped_img)
 
+    # Transformed tracks
+    # ------------------------------------------
+
+    def get_transformmed_tracks(self):
+        x_list = []
+        y_list = []
+        for index, row in self.tracker_df.iterrows():
+            x_list.append(row["mean_x"])
+            y_list.append(row["mean_y"])
+
+        self.transformed_x, self.transformed_y = morph.transform_tracker_data(x_list, y_list, self.homo)
+
     # Plot tracks
     # ------------------------------------------
 
     def plot_tracks(self):
-        self.x_list = []
-        self.y_list = []
-        for index, row in self.tracker_df.iterrows():
-            self.x_list.append(row["mean_x"])
-            self.y_list.append(row["mean_y"])
-
-        plotted_tracks = morph.transform_and_plot_tracker_data(
-            self.x_list,
-            self.y_list,
-            self.homo,
-            (f"{self.base_image}/{self.birds_eye_view_image}"),
-        )
-        morph.show_data(plotted_tracks)
-
+        img = morph.show_transformed_tracker_data(self.transformed_x, self.transformed_y, self.base_image, self.birds_eye_view_image)
+        morph.show_data(img)
 
 if __name__ == "__main__":
 
@@ -112,10 +112,13 @@ if __name__ == "__main__":
         class_object.get_coordinates()
         class_object.homo_matrix()
         class_object.warp_image()
+        class_object.get_transformmed_tracks()
         class_object.plot_tracks()
 
     g6 = Cameras("hogni", 24032021, "2403_G6_sync")
     run(g6)
+
+    g6.plot_tracks
 
     s7 = Cameras("hogni", 24032021, "2403_S7_sync")
     run(s7)
