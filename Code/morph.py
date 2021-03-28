@@ -176,7 +176,7 @@ def show_data(cv2_object):
     cv2_object : cv2 object
         CV2 image object
     """
-    plt.figure(figsize=(24, 24))
+    plt.figure(figsize=(15, 10))
     plt.imshow(cv2_object)
     plt.show()
 
