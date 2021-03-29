@@ -2,6 +2,7 @@ import trackerdf as tdf
 import morph
 import trajectory
 import cv2
+import matplotlib.pyplot as plt
 
 
 class Cameras:
@@ -118,15 +119,27 @@ if __name__ == "__main__":
     g6 = Cameras("hogni", 24032021, "2403_G6_sync")
     run(g6)
 
-    g6.plot_tracks
-
     s7 = Cameras("hogni", 24032021, "2403_S7_sync")
     run(s7)
 
     iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
     run(iph12)
 
-    # scatter = plt.scatter(x_list, y_list)
-    # ax = scatter.axes
-    # ax.invert_yaxis()
-    # plt.show()
+
+    x_list = []
+    y_list = []
+
+    for idx, i in enumerate(g6.transformed_x):
+        x_list.append(i)
+        y_list.append(g6.transformed_y[idx])
+
+    for idx, i in enumerate(s7.transformed_x):
+        x_list.append(i)
+        y_list.append(s7.transformed_y[idx])
+
+    for idx, i in enumerate(iph12.transformed_x):
+        x_list.append(i)
+        y_list.append(iph12.transformed_y[idx])
+
+    combined = morph.show_transformed_tracker_data(x_list, y_list, g6.base_image, g6.birds_eye_view_image)
+    morph.show_data(combined)
