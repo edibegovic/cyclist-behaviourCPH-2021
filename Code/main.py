@@ -1,4 +1,3 @@
-
 import trackerdf as tdf
 import morph
 import trajectory
@@ -90,20 +89,14 @@ class Cameras:
     # ------------------------------------------
 
     def get_transformmed_tracks(self):
-        x_list = []
-        y_list = []
-        for index, row in self.tracker_df.iterrows():
-            x_list.append(row["mean_x"])
-            y_list.append(row["mean_y"])
-
-        self.transformed_x, self.transformed_y = morph.transform_tracker_data(x_list, y_list, self.homo)
+        self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
 
     # Plot tracks
     # ------------------------------------------
 
     def plot_tracks(self):
-        img = morph.show_transformed_tracker_data(self.transformed_x, self.transformed_y, self.base_image, self.birds_eye_view_image)
-        morph.show_data(img)
+        morph.get_cv2_point_plot(self.tracker_df, self.birds_eye_view_image)
+
 
 if __name__ == "__main__":
 
@@ -126,7 +119,6 @@ if __name__ == "__main__":
     iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
     run(iph12)
 
-
     x_list = []
     y_list = []
 
@@ -142,5 +134,9 @@ if __name__ == "__main__":
         x_list.append(i)
         y_list.append(iph12.transformed_y[idx])
 
-    combined = morph.show_transformed_tracker_data(x_list, y_list, g6.base_image, g6.birds_eye_view_image)
+    combined = morph.show_transformed_tracker_data(
+        x_list, y_list, g6.base_image, g6.birds_eye_view_image
+    )
     morph.show_data(combined)
+
+    g6.tracker_df

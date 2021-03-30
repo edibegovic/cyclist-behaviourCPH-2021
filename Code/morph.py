@@ -129,6 +129,7 @@ def warped_perspective(src, dst, matrix):
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
     )
 
+
 def transform_points(points, matrix):
     """Transforms tracker data and plots on CV2 object from view_transformed_picture function
 
@@ -136,7 +137,7 @@ def transform_points(points, matrix):
     ----------
     points : pd.DataFrame
     Contains rastor 2D coordinates (x, y)
-        
+
     matrix : (3, 3) numpy array
     Homography matrix for projection
 
@@ -153,18 +154,19 @@ def transform_points(points, matrix):
     for _, row in points.iterrows():
         point = (row["x"], row["y"])
 
-        transformed_x.append((
-            matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2]
-        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+        transformed_x.append(
+            (matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2])
+            / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2]))
+        )
 
-        transformed_y.append((
-            matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2]
-        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+        transformed_y.append(
+            (matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2])
+            / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2]))
+        )
 
-
-    trans_points.drop(columns=['x', 'y'])
-    trans_points['x'] = transformed_x
-    trans_points['y'] = transformed_y
+    trans_points.drop(columns=["x", "y"])
+    trans_points["x"] = transformed_x
+    trans_points["y"] = transformed_y
     return trans_points
 
 
@@ -175,49 +177,37 @@ def get_cv2_point_plot(points, dst_image):
     else:
         image = dst_image.copy()
 
-    colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
+    colors = [
+        (0, 0, 0),
+        (225, 0, 0),
+        (0, 225, 0),
+        (0, 0, 225),
+        (225, 225, 0),
+        (0, 225, 225),
+        (225, 0, 225),
+        (255, 255, 255),
+    ]
     for _, row in points.iterrows():
         font = cv2.FONT_HERSHEY_SIMPLEX
-        color = colors[int(row['UniqueID'])%8]
+        color = colors[int(row["UniqueID"]) % 8]
 
-        x, y = int(row['x']), int(row['y'])
+        x, y = int(row["x"]), int(row["y"])
 
         cv2.circle(image, (x, y), 5, color, -1)
 
         # Add timestamp at first and last apperance
-        if not np.isnan(row['start_time']):
-            cv2.putText(image, "{:.0f}".format(row['start_time']), (x+9, y-35), font, 1, color, 2)
+        # if not np.isnan(row["start_time"]):
+        #     cv2.putText(
+        #         image,
+        #         "{:.0f}".format(row["start_time"]),
+        #         (x + 9, y - 35),
+        #         font,
+        #         1,
+        #         color,
+        #         2,
+        #     )
 
     return image
-
-
-    Parameters
-    ----------
-    x_list : list
-        List of x-coordinates
-
-    y_list : list
-        List of y-coordinates
-
-    Returns
-    -------
-    x_transformed : list
-        List of x-coordinates
-    y_transformed : list
-        List of y-coordinates
-    """
-
-    for index, i in enumerate(x_list):
-        points = (i, y_list[index])
-        point_x = (
-            matrix[0][0] * points[0] + matrix[0][1] * points[1] + matrix[0][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-        point_y = (
-            matrix[1][0] * points[0] + matrix[1][1] * points[1] + matrix[1][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-
-        cv2.circle(img, transformed_points, 5, (0, 0, 255), -1)
-    return img
 
 
 def show_data(cv2_object):
@@ -242,7 +232,7 @@ def click_event(event, x, y, flags, params):
 
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.circle(img, (x, y), 10, (200, 90, 255), -1)
-        cv2.putText(img, str(len(temp)), (x+5, y-5), font, 2, (255, 255, 255), 5)
+        cv2.putText(img, str(len(temp)), (x + 5, y - 5), font, 2, (255, 255, 255), 5)
         cv2.imshow("image", img)
 
 
@@ -303,11 +293,13 @@ def capture_image_from_video(video_path, base_image, file_name, frame_number):
     cv2.imwrite(f"{base_image}/{file_name}.jpg", frame_number)
     return f"Frame {frame_number} Saved"
 
-    if __name__ == "__main__":
-        pass
 
 def get_frame(video_path, frame_number):
     vc = cv2.VideoCapture(video_path)
     vc.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     rval, frame = vc.read()
     return frame
+
+
+if __name__ == "__main__":
+    pass
