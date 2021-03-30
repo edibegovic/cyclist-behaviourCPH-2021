@@ -177,8 +177,16 @@ def get_cv2_point_plot(points, dst_image):
 
     colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
     for _, row in points.iterrows():
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        color = colors[int(row['UniqueID'])%8]
+
         x, y = int(row['x']), int(row['y'])
-        cv2.circle(image, (x, y), 5, colors[int(row['UniqueID'])%8], -1)
+
+        cv2.circle(image, (x, y), 5, color, -1)
+
+        # Add timestamp at first and last apperance
+        if not np.isnan(row['start_time']):
+            cv2.putText(image, "{:.0f}".format(row['start_time']), (x+9, y-35), font, 1, color, 2)
 
     return image
 
