@@ -21,7 +21,7 @@ def cyclist_contact_coordiantes(df):
         a pandas df with the adjusted x and y
     """
     df["y"] = df["y"] + df["h"] / 2
-    df["x"] = df["x"] + df["w"] / 2
+    # df["x"] = df["x"] + df["w"] / 2
     return df
 
 
@@ -119,14 +119,77 @@ def warped_perspective(src, dst, matrix):
     CV2 warped object
     """
     source_image = cv2.imread(src)
-    destination_image = cv2.imread(dst)
+
+    if isinstance(dst, str):
+        destination_image = cv2.imread(dst)
+    else:
+        destination_image = dst
+
     return cv2.warpPerspective(
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
     )
 
+def transform_points(points, matrix):
+    """Transforms tracker data and plots on CV2 object from view_transformed_picture function
 
-def transform_tracker_data(x_list, y_list, matrix):
-    """Transforms tracker data.
+    Parameters
+    ----------
+    points : pd.DataFrame
+    Contains rastor 2D coordinates (x, y)
+        
+    matrix : (3, 3) numpy array
+    Homography matrix for projection
+
+    Returns
+    -------
+    pd.DataFrame
+    Transformed coordinates
+    """
+    trans_points = points.copy()
+    transformed_x = []
+    transformed_y = []
+
+    # Apply transformation for each point
+    for _, row in points.iterrows():
+        point = (row["x"], row["y"])
+
+        transformed_x.append((
+            matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2]
+        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+
+        transformed_y.append((
+            matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2]
+        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+
+
+    trans_points.drop(columns=['x', 'y'])
+    trans_points['x'] = transformed_x
+    trans_points['y'] = transformed_y
+    return trans_points
+
+
+def get_cv2_point_plot(points, dst_image):
+
+    if isinstance(dst_image, str):
+        image = cv2.imread(dst_image)
+    else:
+        image = dst_image.copy()
+
+    colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
+    for _, row in points.iterrows():
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        color = colors[int(row['UniqueID'])%8]
+
+        x, y = int(row['x']), int(row['y'])
+
+        cv2.circle(image, (x, y), 5, color, -1)
+
+        # Add timestamp at first and last apperance
+        if not np.isnan(row['start_time']):
+            cv2.putText(image, "{:.0f}".format(row['start_time']), (x+9, y-35), font, 1, color, 2)
+
+    return image
+
 
     Parameters
     ----------
@@ -144,9 +207,6 @@ def transform_tracker_data(x_list, y_list, matrix):
         List of y-coordinates
     """
 
-    x_transformed = []
-    y_transformed = []
-
     for index, i in enumerate(x_list):
         points = (i, y_list[index])
         point_x = (
@@ -156,34 +216,7 @@ def transform_tracker_data(x_list, y_list, matrix):
             matrix[1][0] * points[0] + matrix[1][1] * points[1] + matrix[1][2]
         ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
 
-        x_transformed.append(int(round(point_x)))
-        y_transformed.append(int(round(point_y)))
-
-    return x_transformed, y_transformed
-
-def show_transformed_tracker_data(x_list, y_list, base_image, dst_image):
-    """Plots on CV2 object.
-    Parameters
-    ----------
-    x_list : list
-        List of x-coordinates
-
-    y_list : list
-        List of y-coordinates
-
-    dst_warped_image : CV2 object
-        Object to plot tracker point on
-
-    Returns
-    -------
-    CV2 object
-    """
-    img = cv2.imread(f"{base_image}/{dst_image}")
-
-    for index, i in enumerate(x_list):
-        points = (int(round(i)), int(round(y_list[index])))
-        cv2.circle(img, points, 5, (0, 0, 255), -1)
-        
+        cv2.circle(img, transformed_points, 5, (0, 0, 255), -1)
     return img
 
 
@@ -195,7 +228,7 @@ def show_data(cv2_object):
     cv2_object : cv2 object
         CV2 image object
     """
-    plt.figure(figsize=(24, 24))
+    plt.figure(figsize=(15, 10))
     plt.imshow(cv2_object)
     plt.show()
 
@@ -208,11 +241,12 @@ def click_event(event, x, y, flags, params):
         temp.append([x, y])
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(img, str(x) + "," + str(y), (x, y), font, 1, (255, 0, 0), 2)
+        cv2.circle(img, (x, y), 10, (200, 90, 255), -1)
+        cv2.putText(img, str(len(temp)), (x+5, y-5), font, 2, (255, 255, 255), 5)
         cv2.imshow("image", img)
 
 
-def click_coordinates(img_path):
+def click_coordinates(image):
     """Display image with plotted tracker data
 
     Parameters
@@ -229,7 +263,12 @@ def click_coordinates(img_path):
     if temp:
         temp = []
         img = 0
-    img = cv2.imread(img_path, 1)
+
+    if isinstance(image, str):
+        img = cv2.imread(image, 1)
+    else:
+        img = image
+
     cv2.imshow("image", img)
     cv2.setMouseCallback("image", click_event)
     cv2.waitKey(0)
@@ -266,3 +305,9 @@ def capture_image_from_video(video_path, base_image, file_name, frame_number):
 
     if __name__ == "__main__":
         pass
+
+def get_frame(video_path, frame_number):
+    vc = cv2.VideoCapture(video_path)
+    vc.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    rval, frame = vc.read()
+    return frame
