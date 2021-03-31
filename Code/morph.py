@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 temp = []
 img = 0
 
-
 def cyclist_contact_coordiantes(df):
     """Calculates cyclist plane contact point
 
@@ -21,7 +20,6 @@ def cyclist_contact_coordiantes(df):
         a pandas df with the adjusted x and y
     """
     df["y"] = df["y"] + df["h"] / 2
-    # df["x"] = df["x"] + df["w"] / 2
     return df
 
 
@@ -194,18 +192,6 @@ def get_cv2_point_plot(points, dst_image):
         x, y = int(row["x"]), int(row["y"])
 
         cv2.circle(image, (x, y), 5, color, -1)
-
-        # Add timestamp at first and last apperance
-        # if not np.isnan(row["start_time"]):
-        #     cv2.putText(
-        #         image,
-        #         "{:.0f}".format(row["start_time"]),
-        #         (x + 9, y - 35),
-        #         font,
-        #         1,
-        #         color,
-        #         2,
-        #     )
 
     return image
 
