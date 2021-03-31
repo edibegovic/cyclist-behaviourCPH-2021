@@ -41,15 +41,15 @@ class Cameras:
         self.tracker_df = morph.cyclist_contact_coordiantes(self.tracker_df)
         self.tracker_df = morph.smooth_tracks(self.tracker_df, self.smooth_factor)
         self.tracker_df = morph.cut_tracks_with_few_points(self.tracker_df, self.cut_df)
-        self.src_image = morph.capture_image_from_video(self.video_path, self.base_image, self.file_name, self.frame_number)
-        self.src_image_points = morph.click_coordinates(f"{self.base_image}/{self.file_name}.jpg")
-        self.dst_image_points = morph.click_coordinates(f"{self.base_image}/{self.birds_eye_view_image}")
-        self.homo, status = morph.find_homography_matrix(self.src_image_points, self.dst_image_points)
+        morph.capture_image_from_video(self.video_path, self.base_image, self.file_name, self.frame_number)
+        src_image_points = morph.click_coordinates(f"{self.base_image}/{self.file_name}.jpg")
+        dst_image_points = morph.click_coordinates(f"{self.base_image}/{self.birds_eye_view_image}")
+        self.homo, status = morph.find_homography_matrix(src_image_points, dst_image_points)
         self.warped_img = morph.warped_perspective((f"{self.base_image}/{self.file_name}.jpg"),(f"{self.base_image}/{self.birds_eye_view_image}"),self.homo)
         morph.show_data(self.warped_img)
         self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
-        self.img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
-        morph.show_data(self.img)
+        self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
+        morph.show_data(self.tracker_img)
 
 if __name__ == "__main__":
 
