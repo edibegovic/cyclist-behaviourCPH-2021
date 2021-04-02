@@ -141,11 +141,12 @@ What are you trying to show or prove (your hypothesis)? Test cite \citep{Referen
 % State how you did your research/enquiry and the methods you used. 
 % How did you collect your data? For example, if you conducted a survey, say how many people were included and how you selected them. 
 % Say whether you used interviews or questionnaires and how you analysed the data. 
-The Dybbølsbro intersection in Copenhagen was chosen as it faces several traffic flow challanges as a result development in the immediate vacinity, it is a large intersection and has alot of signage.
-These challanges make the Dybbølsbro intersection one of the more extreme in Copenhagen for this research. 
+The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
+The Dybbølsbro intersection faces several traffic flow challanges as a result development in the immediate vacinity and it is a large intersection.
+These challanges make the Dybbølsbro intersection one of the more extreme in Copenhagen and would serve as a good base to this quantatative analyzis method. 
 
-To determine the desire paths that cyclist take throught the Dybbelsbro intersection we recorded digital video footage 
-of the Dybbølsbro interstction from three different camera angles.
+To determine the desire paths that cyclist take throught the Dybbelsbro intersection we recorded digital 2 hours of video footage 
+at the Dybbølsbro intersection from three different camera angles.
 The considerations taken in choosing a camera angle were:
 
 \begin{itemize}
@@ -154,9 +155,20 @@ The considerations taken in choosing a camera angle were:
 	\item Special attention was also given to making sure that cameras were not mounted on traffic signage.
 \end{itemize}
 
+\subsection{Point projection}
 The video footage was analized using OpenDataCam which is an abstraction layer ontop of Yolo. Yolo being an object detection library for object detection in images.
 Once the video is analysed by OpenDataCam,we recive a .json file containing a Unique ID for each unique cyclist that is detected in a frame of the video file. 
-The unique ID is accompanied by an x and y coordinate of the detected cyclist on the frame. The (x, y) coordinates over multiple frames represents the track a cyclist takes over the intersection.
+The unique ID is accompanied by an x and y coordinate of the detected bicycle on the frame. The (x, y) coordinates over multiple frames represents the track of an identified bicycle over the intersection.
+
+To (x, y) coordinates are on the verticle plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
+To do this we used the equation: 
+\begin{equation}
+	y = y + h ⁄ 2
+\end{equation}
+
+\subsection{Warped perspective}
+With the tracks projected onto the roads surface we now warp (x, y) points inorder to get a top down view of the cyclist tracks.
+This is achieved by calculating the 
 
 % \begin{figure}
 % 	\includegraphics[width=\linewidth]{bear.jpg} % Figure image
