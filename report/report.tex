@@ -62,7 +62,7 @@
 \section{Introduction}
 
 State what your research/project/enquiry is about. What are you writing about, why and for whom? What are your objectives? 
-What are you trying to show or prove (your hypothesis)?
+What are you trying to show or prove (your hypothesis)? Test cite \citep{Reference1}
 
 % This sentence test requires citation \citep{Reference1}. This sentence requires multiple citations to imply that it is better supported \citep{Reference2,Reference3}. Finally, when conducting an appeal to authority, it can be useful to cite a reference in-text, much like \cite{Reference1} do quite a bit. Oh, and make sure to check out the bear in Figure \ref{bear}.
 
@@ -138,9 +138,25 @@ What are you trying to show or prove (your hypothesis)?
 
 \section{Methodology}
 
-State how you did your research/enquiry and the methods you used. 
-How did you collect your data? For example, if you conducted a survey, say how many people were included and how you selected them. 
-Say whether you used interviews or questionnaires and how you analysed the data.
+% State how you did your research/enquiry and the methods you used. 
+% How did you collect your data? For example, if you conducted a survey, say how many people were included and how you selected them. 
+% Say whether you used interviews or questionnaires and how you analysed the data. 
+The Dybbølsbro intersection in Copenhagen was chosen as it faces several traffic flow challanges as a result development in the immediate vacinity, it is a large intersection and has alot of signage.
+These challanges make the Dybbølsbro intersection one of the more extreme in Copenhagen for this research. 
+
+To determine the desire paths that cyclist take throught the Dybbelsbro intersection we recorded digital video footage 
+of the Dybbølsbro interstction from three different camera angles.
+The considerations taken in choosing a camera angle were:
+
+\begin{itemize}
+	\item Camera visability to cyclists.
+	\item Adequite mounting points, in terms of heigh and surface.
+	\item Special attention was also given to making sure that cameras were not mounted on traffic signage.
+\end{itemize}
+
+The video footage was analized using OpenDataCam which is an abstraction layer ontop of Yolo. Yolo being an object detection library for object detection in images.
+Once the video is analysed by OpenDataCam,we recive a .json file containing a Unique ID for each unique cyclist that is detected in a frame of the video file. 
+The unique ID is accompanied by an x and y coordinate of the detected cyclist on the frame. The (x, y) coordinates over multiple frames represents the track a cyclist takes over the intersection.
 
 % \begin{figure}
 % 	\includegraphics[width=\linewidth]{bear.jpg} % Figure image
