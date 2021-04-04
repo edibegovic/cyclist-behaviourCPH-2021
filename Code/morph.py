@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 temp = []
 img = 0
 
+
 def cyclist_contact_coordiantes(df):
     """Calculates cyclist plane contact point
 
@@ -153,13 +154,33 @@ def transform_points(points, matrix):
         point = (row["x"], row["y"])
 
         transformed_x.append(
-            (matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2])
-            / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2]))
+            int(
+                round(
+                    (matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2])
+                    / (
+                        (
+                            matrix[2][0] * point[0]
+                            + matrix[2][1] * point[1]
+                            + matrix[2][2]
+                        )
+                    )
+                )
+            )
         )
 
         transformed_y.append(
-            (matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2])
-            / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2]))
+            int(
+                round(
+                    (matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2])
+                    / (
+                        (
+                            matrix[2][0] * point[0]
+                            + matrix[2][1] * point[1]
+                            + matrix[2][2]
+                        )
+                    )
+                )
+            )
         )
 
     trans_points.drop(columns=["x", "y"])
@@ -189,7 +210,7 @@ def get_cv2_point_plot(points, dst_image):
         font = cv2.FONT_HERSHEY_SIMPLEX
         color = colors[int(row["UniqueID"]) % 8]
 
-        x, y = int(row["x"]), int(row["y"])
+        x, y = row["x"], row["y"]
 
         cv2.circle(image, (x, y), 5, color, -1)
 
