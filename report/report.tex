@@ -93,6 +93,9 @@ We calculate the \textit{homography matrix}, describing the transformation from 
 	\includegraphics[width=1.0\columnwidth]{projection_figure} 
 \end{tabular}
 \captionof{figure}{Reference points on map projection}
+\subsection{Warped perspective}
+With the tracks projected onto the roads surface we now warp (x, y) points in order to get a top-down view of the cyclist tracks.
+This is achieved by calculating the homography matrix (H) between the source image and the destination image. The homography matrix being a 
 
 % To (x, y) coordinates are on the vertical plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
 % To do this we used the equation: 
