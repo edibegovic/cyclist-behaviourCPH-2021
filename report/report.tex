@@ -83,15 +83,16 @@ The video footage was analyzed using OpenDataCam which is an abstraction layer o
 Once the video is analyzed by OpenDataCam, we receive a .json file containing a Unique ID for each unique cyclist that is detected in a frame of the video file. 
 The unique ID is accompanied by an x and y coordinate of the detected bicycle on the frame. The (x, y) coordinates over multiple frames represents the track of an identified bicycle over the intersection.
 
-To (x, y) coordinates are on the verticle plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
-To do this we used the equation: 
-\begin{equation}
-	y = y + h ⁄ 2
-\end{equation}
+\ \\
+By assuming the road as a 2D plane, hereby ignoring any non-linear deformations (e.g. from lens distortion or curvature of the pavement), 
+we can transform the pixel positions from the video to real-world 2D coordinates. 
+We calculate the \textit{homography matrix}, describing the transformation from one plane to another, by mapping four reference points from each frame.
 
-\subsection{Warped perspective}
-With the tracks projected onto the roads surface we now warp (x, y) points inorder to get a top down view of the cyclist tracks.
-This is achieved by calculating the homography matrix (H) between the source image and the detination image. The homography matrix being a 
+\begin{tabular}{cc}
+\noindent
+	\includegraphics[width=1.0\columnwidth]{projection_figure} 
+\end{tabular}
+\captionof{figure}{Reference points on map projection}
 
 % To (x, y) coordinates are on the vertical plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
 % To do this we used the equation: 
