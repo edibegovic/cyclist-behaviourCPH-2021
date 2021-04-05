@@ -1,6 +1,6 @@
 import trackerdf as tdf
 import morph
-import cv2
+import ml
 
 class Cameras:
     def __init__(
@@ -50,6 +50,7 @@ class Cameras:
         self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
         self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
         morph.show_data(self.tracker_img)
+        self.n_clusters, self.labels, self.uniqueid, self.model = ml.run_all(g6.tracker_df, [6])
 
 if __name__ == "__main__":
 
