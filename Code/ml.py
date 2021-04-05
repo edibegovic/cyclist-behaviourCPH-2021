@@ -50,7 +50,7 @@ def reduce_dimensions(matrix, n_components=200):
     X_sparse_tsvd = tsvd.fit(matrix).transform(matrix)
     return X_sparse_tsvd
 
-def calculate_best_n_clusters(vectors, range_n_clusters = [4, 5, 6, 7, 8]):
+def calculate_best_n_clusters(vectors, range_n_clusters):
     score, n, labels = [], [], []
     for n_clusters in range_n_clusters:
         k_model = k_mean_model(vectors, n_clusters)
@@ -75,7 +75,7 @@ def k_predict(k_model, vectors):
     cluster_labels = k_model.predict(vectors)
     return cluster_labels
 
-def run_all(tracker_df, range_n_clusters = [4, 5, 6, 7, 8]):
+def run_all(tracker_df, range_n_clusters = [4]):
     matrix = matrix_track(tracker_df)
     vector = matrix_to_vector(matrix)
     uniqueid, vectors = train_vectors(vector)

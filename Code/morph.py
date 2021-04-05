@@ -207,17 +207,19 @@ def get_cv2_point_plot(tracker_df, dst_image, label, uniqueid):
         (255, 255, 255)
     ]
 
-    for _, row in tracker_df.iterrows():
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        index = uniqueid.index(row["UniqueID"])
+    grouped = tracker_df.groupby("UniqueID")
+
+    for name, group in grouped:
+        contours_list = []
+        index = uniqueid.index(name)
         color = colors[label[index]]
-
-        x, y = row["x"], row["y"]
-
-        cv2.circle(image, (x, y), 5, color, -1)
-
+        for _, row in group.iterrows():
+            contours_list.append((row["x"], row["y"]))
+        for count, i in enumerate(contours_list):
+            if count+1 == len(contours_list):
+                break
+            cv2.line(image, contours_list[count], contours_list[count+1], color, 3)
     return image
-
 
 def show_data(cv2_object):
     """Display image.
