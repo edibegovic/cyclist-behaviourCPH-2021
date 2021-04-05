@@ -214,7 +214,7 @@ def get_cv2_point_plot(tracker_df, dst_image, label, uniqueid):
 
         x, y = row["x"], row["y"]
 
-        cv2.circle(image, (x, y), 2, color, -1)
+        cv2.circle(image, (x, y), 5, color, -1)
 
     return image
 
