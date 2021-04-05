@@ -189,7 +189,7 @@ def transform_points(points, matrix):
     return trans_points
 
 
-def get_cv2_point_plot(points, dst_image):
+def get_cv2_point_plot(tracker_df, dst_image, label, uniqueid):
 
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
@@ -204,15 +204,17 @@ def get_cv2_point_plot(points, dst_image):
         (225, 225, 0),
         (0, 225, 225),
         (225, 0, 225),
-        (255, 255, 255),
+        (255, 255, 255)
     ]
-    for _, row in points.iterrows():
+
+    for _, row in tracker_df.iterrows():
         font = cv2.FONT_HERSHEY_SIMPLEX
-        color = colors[int(row["UniqueID"]) % 8]
+        index = uniqueid.index(row["UniqueID"])
+        color = colors[label[index]]
 
         x, y = row["x"], row["y"]
 
-        cv2.circle(image, (x, y), 5, color, -1)
+        cv2.circle(image, (x, y), 2, color, -1)
 
     return image
 
@@ -270,6 +272,7 @@ def click_coordinates(image):
     cv2.setMouseCallback("image", click_event)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.waitKey(1)
     return temp
 
 

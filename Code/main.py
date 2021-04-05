@@ -1,6 +1,6 @@
 import trackerdf as tdf
 import morph
-import cv2
+import ml
 
 class Cameras:
     def __init__(
@@ -48,7 +48,8 @@ class Cameras:
         self.warped_img = morph.warped_perspective((f"{self.base_image}/{self.file_name}.jpg"),(f"{self.base_image}/{self.birds_eye_view_image}"),self.homo)
         morph.show_data(self.warped_img)
         self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
-        self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
+        self.n_clusters, self.labels, self.uniqueid, self.model = ml.run_all(g6.tracker_df)
+        self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"), self.labels, self.uniqueid)
         morph.show_data(self.tracker_img)
 
 if __name__ == "__main__":
