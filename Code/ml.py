@@ -75,7 +75,7 @@ def k_predict(k_model, vectors):
     cluster_labels = k_model.predict(vectors)
     return cluster_labels
 
-def run_all(tracker_df, range_n_clusters = [8]):
+def run_all(tracker_df, range_n_clusters = [2,3,4,5,6,7,8,9,10,11,12,13,14,15]):
     matrix = matrix_track(tracker_df)
     vector = matrix_to_vector(matrix)
     uniqueid, vectors = train_vectors(vector)
