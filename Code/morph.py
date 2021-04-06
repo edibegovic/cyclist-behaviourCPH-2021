@@ -44,7 +44,7 @@ def smooth_tracks(df, smoothing_factor):
         df.groupby("UniqueID")["x"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
-        .to_frame(name="mean_x")
+        .to_frame(name="altered_x")
         .droplevel("UniqueID")
     )
     df = df.join(df_)
@@ -52,7 +52,7 @@ def smooth_tracks(df, smoothing_factor):
         df.groupby("UniqueID")["y"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
-        .to_frame(name="mean_y")
+        .to_frame(name="altered_y")
         .droplevel("UniqueID")
     )
     df = df.join(df_)
@@ -60,7 +60,7 @@ def smooth_tracks(df, smoothing_factor):
 
 
 def cut_tracks_with_few_points(df, n):
-    """Smooth tracked paths
+    """Cut tracked paths
 
     Parameters
     ----------
@@ -151,7 +151,7 @@ def transform_points(points, matrix):
 
     # Apply transformation for each point
     for _, row in points.iterrows():
-        point = (row["x"], row["y"])
+        point = (row["altered_x"], row["altered_y"])
 
         transformed_x.append(
             int(
@@ -184,12 +184,12 @@ def transform_points(points, matrix):
         )
 
     trans_points.drop(columns=["x", "y"])
-    trans_points["x"] = transformed_x
-    trans_points["y"] = transformed_y
+    trans_points["altered_x"] = transformed_x
+    trans_points["altered_y"] = transformed_y
     return trans_points
 
 
-def get_cv2_point_plot(tracker_df, dst_image, label, uniqueid):
+def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
 
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
@@ -210,15 +210,23 @@ def get_cv2_point_plot(tracker_df, dst_image, label, uniqueid):
     grouped = tracker_df.groupby("UniqueID")
 
     for name, group in grouped:
-        contours_list = []
-        index = uniqueid.index(name)
-        color = colors[label[index]]
-        for _, row in group.iterrows():
-            contours_list.append((row["x"], row["y"]))
-        for count, i in enumerate(contours_list):
-            if count+1 == len(contours_list):
-                break
-            cv2.line(image, contours_list[count], contours_list[count+1], color, 3)
+        xy = []
+        try:
+            if label and uniqueid:
+                index = uniqueid.index(name)
+                color = colors[label[index]]
+            else:
+                color = False
+            for _, row in group.iterrows():
+                xy.append((row["altered_x"], row["altered_y"]))
+                if not color:
+                    color = colors[int(row["UniqueID"]) % 8]
+            for count, i in enumerate(xy):
+                if count+1 == len(xy):
+                    break
+                cv2.line(image, xy[count], xy[count+1], color, 3)
+        except ValueError:
+            print(f"{name} not in list.")
     return image
 
 def show_data(cv2_object):
@@ -312,6 +320,23 @@ def get_frame(video_path, frame_number):
     rval, frame = vc.read()
     return frame
 
+def join_df(df1, df2, df3):
+    data = {"UniqueID": [], "altered_x": [], "altered_y": []}
+    for _, row in df1.iterrows():
+        data["UniqueID"].append(row["UniqueID"])
+        data["altered_x"].append(row["altered_x"])
+        data["altered_y"].append(row["altered_y"])
+    for _, row in df2.iterrows():
+        data["UniqueID"].append(row["UniqueID"])
+        data["altered_x"].append(row["altered_x"])
+        data["altered_y"].append(row["altered_y"])
+    for _, row in df3.iterrows():
+        data["UniqueID"].append(row["UniqueID"])
+        data["altered_x"].append(row["altered_x"])
+        data["altered_y"].append(row["altered_y"])
+
+    new_df = pd.DataFrame(data=data)
+    return new_df
 
 if __name__ == "__main__":
     pass

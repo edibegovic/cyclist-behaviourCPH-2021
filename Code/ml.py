@@ -6,10 +6,10 @@ from sklearn.decomposition import TruncatedSVD
 def matrix_track(tracker_df):
     matrix_dict = dict()
 
-    min_x = min(tracker_df["x"])
-    max_x = max(tracker_df["x"])
-    min_y = min(tracker_df["y"])
-    max_y = max(tracker_df["y"])
+    min_x = min(tracker_df["altered_x"])
+    max_x = max(tracker_df["altered_x"])
+    min_y = min(tracker_df["altered_y"])
+    max_y = max(tracker_df["altered_y"])
 
     grouped = tracker_df.groupby("UniqueID")
 
@@ -19,10 +19,10 @@ def matrix_track(tracker_df):
     for name, group in grouped:
         image_array = np.zeros((x_dim, y_dim), dtype=int)
         for _, row in group.iterrows():
-            if row["x"] > 1920 or row["y"] > 1080:
+            if row["altered_x"] > 1920 or row["altered_y"] > 1080:
                 continue
             else:
-                image_array[(row["x"]-1) - min_x, (row["y"]-1) - min_y] = 1
+                image_array[(row["altered_x"]-1) - min_x, (row["altered_y"]-1) - min_y] = 1
         matrix_dict[name] = image_array
     return matrix_dict
 
@@ -75,7 +75,7 @@ def k_predict(k_model, vectors):
     cluster_labels = k_model.predict(vectors)
     return cluster_labels
 
-def run_all(tracker_df, range_n_clusters = [4]):
+def run_all(tracker_df, range_n_clusters = [8]):
     matrix = matrix_track(tracker_df)
     vector = matrix_to_vector(matrix)
     uniqueid, vectors = train_vectors(vector)
