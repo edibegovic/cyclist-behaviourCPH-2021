@@ -214,7 +214,7 @@ def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
 
     for name, group in grouped:
         xy = []
-        if type(label) == "numpy.ndarray":
+        if type(label) is np.ndarray:
             index = uniqueid.index(name)
             color = colors[label[index]]
         else:
