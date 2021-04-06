@@ -211,22 +211,19 @@ def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
 
     for name, group in grouped:
         xy = []
-        try:
-            if label and uniqueid:
-                index = uniqueid.index(name)
-                color = colors[label[index]]
-            else:
-                color = False
-            for _, row in group.iterrows():
-                xy.append((row["altered_x"], row["altered_y"]))
-                if not color:
-                    color = colors[int(row["UniqueID"]) % 8]
-            for count, i in enumerate(xy):
-                if count+1 == len(xy):
-                    break
-                cv2.line(image, xy[count], xy[count+1], color, 3)
-        except ValueError:
-            print(f"{name} not in list.")
+        if type(label) != "numpy.ndarray":
+            index = uniqueid.index(name)
+            color = colors[label[index]]
+        else:
+            color = False
+        for _, row in group.iterrows():
+            xy.append((row["altered_x"], row["altered_y"]))
+            if not color:
+                color = colors[int(row["UniqueID"]) % 8]
+        for count, i in enumerate(xy):
+            if count+1 == len(xy):
+                break
+            cv2.line(image, xy[count], xy[count+1], color, 3)
     return image
 
 def show_data(cv2_object):
