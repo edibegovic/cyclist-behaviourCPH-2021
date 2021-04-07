@@ -2,9 +2,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import TruncatedSVD
-#from scipy.spatial import distance
-from sklearn_extra.cluster import KMedoids
-from scipy.spatial.distance import directed_hausdorff
+from scipy.spatial import distance
 import sys
 
 def matrix_track(tracker_df):
@@ -71,8 +69,7 @@ def calculate_best_n_clusters(vectors, range_n_clusters):
     return n[max_index], labels[max_index], k_model
 
 def k_mean_model(vectors_or_matrix, n_clusters):
-    # clusterer = KMeans(n_clusters=n_clusters, random_state=10)
-    clusterer = KMedoids(n_clusters=n_clusters, random_state=10)
+    clusterer = KMeans(n_clusters=n_clusters, random_state=10)
     k_mean_model = clusterer.fit(vectors_or_matrix)
     return k_mean_model
 
@@ -81,20 +78,19 @@ def k_predict(k_model, vectors):
     return cluster_labels
 
 def distance_matrix(vectors):
-    hausdorff_d = lambda vector_u, vector_v: max(directed_hausdorff(vector_u.reshape(1,-1), vector_v.reshape(1,-1))[0], directed_hausdorff(vector_v.reshape(1,-1), vector_u.reshape(1,-1))[0])
+    euclidean_d = lambda vector_u, vector_v: distance.euclidean(vector_u.reshape(1,-1), vector_v.reshape(1,-1))
     count_unique_id = len(vectors)
     dist_matrix = np.zeros((count_unique_id, count_unique_id))
     
     count = 0
-    count_unique_id_square = count_unique_id**2
     for i in range(count_unique_id):
-        sys.stdout.write('\r'+f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 2)}%")
+        sys.stdout.write('\r'+f"Distance Matrix progress {round(((count)/(count_unique_id))*100, 2)}%")
         sys.stdout.flush()
         for j in range(i + 1, count_unique_id):
-            count += 1
-            distance_ = hausdorff_d(vectors[i], vectors[j])
+            distance_ = euclidean_d(vectors[i], vectors[j])
             dist_matrix[i, j] = distance_
             dist_matrix[j, i] = distance_
+        count += 1
     return dist_matrix
 
 def run_all(tracker_df, range_n_clusters = [2,3,4,5,6,7,8,9,10,11,12,13,14,15]):
@@ -113,9 +109,11 @@ if __name__ == "__main__":
     d = distance_matrix(vectors)
     model = k_mean_model(d, 6)
     k_predict(model, d)
-    type(max(directed_hausdorff(vectors[0].reshape(1,-1), vectors[1].reshape(1,-1))[0], directed_hausdorff(vectors[1].reshape(1,-1), vectors[0].reshape(1,-1))[0]))
+    type(max(distance.euclidean(vectors[0].reshape(1,-1), vectors[1].reshape(1,-1)), distance.euclidean(vectors[1].reshape(1,-1), vectors[0].reshape(1,-1))))
+    distance.euclidean(vectors[1].reshape(1,-1), vectors[2].reshape(1,-1))
+    distance.euclidean(vectors[2].reshape(1,-1), vectors[1].reshape(1,-1))
 
-    p = directed_hausdorff(vectors[0].reshape(1,-1), vectors[1].reshape(1,-1))
+    p = distance.euclidean(vectors[0].reshape(1,-1), vectors[1].reshape(1,-1))
     p[0]
     vectors[0].reshape(1,-1).shape
 
@@ -130,7 +128,7 @@ if __name__ == "__main__":
     tr = g6.tracker_df[:1000]
     tr
 
-    directed_hausdorff(vector_u, vector_v)[0]
+    distance.euclidean(vector_u, vector_v)[0]
 
     grouped = tr.groupby("UniqueID")
 

@@ -84,6 +84,7 @@ if __name__ == "__main__":
 
     joined = Cameras("hogni", 24032021, "2403_G6_sync")
     joined.tracker_df = joined_df
+    joined_df = 0
     joined.run_clustering() 
     tracker_img = morph.get_cv2_point_plot(joined.tracker_df, (f"{joined.base_image}/{joined.birds_eye_view_image}"), joined.labels, joined.uniqueid)
     morph.show_data(tracker_img)
