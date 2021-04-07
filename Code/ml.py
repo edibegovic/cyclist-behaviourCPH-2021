@@ -3,6 +3,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import TruncatedSVD
 from scipy.spatial import distance
+import sys
 
 def matrix_track(tracker_df):
     matrix_dict = dict()
@@ -84,7 +85,8 @@ def distance_matrix(vectors):
     count = 0
     count_unique_id_square = count_unique_id**2
     for i in range(count_unique_id):
-        print(f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 2)}%", end='\r')
+        sys.stdout.write('\r'+f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 2)}%")
+        sys.stdout.flush()
         for j in range(i + 1, count_unique_id):
             count += 1
             distance_ = euclidean_d(vectors[i], vectors[j])
@@ -140,3 +142,11 @@ if __name__ == "__main__":
         x
         model = k_mean_model(x, 6)
         k_predict(model, x)
+
+        # count_unique_id_square = 10
+        # for x in range(10):
+        #     sys.stdout.write('\r'+f"Distance Matrix progress {round(((x)/(count_unique_id_square))*100, 2)}%")
+        #     sys.stdout.flush()
+        #     # sys.stdout.write('\r'+str(x))
+        #     # sys.stdout.flush()
+        #     time.sleep(0.5)
