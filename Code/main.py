@@ -62,8 +62,8 @@ class Cameras:
 if __name__ == "__main__":
 
     # Reload a module.
-    # import importlib
-    # importlib.reload(ml)
+    import importlib
+    importlib.reload(ml)
 
     g6 = Cameras("hogni", 24032021, "2403_G6_sync")
     g6.run()
