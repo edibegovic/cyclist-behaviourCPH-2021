@@ -9,7 +9,7 @@ class Cameras:
         video_folder,
         file_name,
         frame_number=1000,
-        smooth_factor=20,
+        smooth_factor=100,
         cut_df=100,
         library=0,
         parent_path=0,
@@ -48,17 +48,42 @@ class Cameras:
         self.warped_img = morph.warped_perspective((f"{self.base_image}/{self.file_name}.jpg"),(f"{self.base_image}/{self.birds_eye_view_image}"),self.homo)
         morph.show_data(self.warped_img)
         self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
-        self.n_clusters, self.labels, self.uniqueid, self.model = ml.run_all(g6.tracker_df)
-        self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"), self.labels, self.uniqueid)
+
+    def run_clustering(self):
+        self.n_clusters, self.labels, self.uniqueid, self.model, self.vectors = ml.run_all(self.tracker_df)
+
+    def plot_and_show(self):
+        try:
+            self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"), self.labels, self.uniqueid)
+        except AttributeError:
+            self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
         morph.show_data(self.tracker_img)
 
 if __name__ == "__main__":
 
+    # Reload a module.
+    # import importlib
+    # importlib.reload(ml)
+
     g6 = Cameras("hogni", 24032021, "2403_G6_sync")
     g6.run()
+    g6.run_clustering()
+    g6.plot_and_show()
 
     s7 = Cameras("hogni", 24032021, "2403_S7_sync")
     s7.run()
+    s7.run_clustering()
+    s7.plot_and_show()
 
     iph12 = Cameras("hogni", 24032021, "2403_edi_sync")
     iph12.run()
+    iph12.run_clustering()
+    iph12.plot_and_show()
+
+    joined_df = morph.join_df(g6.tracker_df, s7.tracker_df, iph12.tracker_df)
+
+    joined = Cameras("hogni", 24032021, "2403_G6_sync")
+    joined.tracker_df = joined_df
+    joined.run_clustering() 
+    tracker_img = morph.get_cv2_point_plot(joined.tracker_df, (f"{joined.base_image}/{joined.birds_eye_view_image}"), joined.labels, joined.uniqueid)
+    morph.show_data(tracker_img)
