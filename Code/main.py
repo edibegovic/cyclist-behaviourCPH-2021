@@ -50,7 +50,7 @@ class Cameras:
         self.tracker_df = morph.transform_points(self.tracker_df, self.homo)
 
     def run_clustering(self):
-        self.n_clusters, self.labels, self.uniqueid, self.model = ml.run_all(self.tracker_df)
+        self.n_clusters, self.labels, self.uniqueid, self.model, self.vectors = ml.run_all(self.tracker_df)
 
     def plot_and_show(self):
         try:
@@ -59,12 +59,11 @@ class Cameras:
             self.tracker_img = morph.get_cv2_point_plot(self.tracker_df, (f"{self.base_image}/{self.birds_eye_view_image}"))
         morph.show_data(self.tracker_img)
 
-
 if __name__ == "__main__":
 
     # Reload a module.
     # import importlib
-    # importlib.reload(morph)
+    # importlib.reload(ml)
 
     g6 = Cameras("hogni", 24032021, "2403_G6_sync")
     g6.run()
@@ -81,10 +80,10 @@ if __name__ == "__main__":
     iph12.run_clustering()
     iph12.plot_and_show()
 
-    # joined_df = morph.join_df(g6.tracker_df, s7.tracker_df, iph12.tracker_df)
+    joined_df = morph.join_df(g6.tracker_df, s7.tracker_df, iph12.tracker_df)
 
-    # joined = Cameras("hogni", 24032021, "2403_G6_sync")
-    # joined.tracker_df = joined_df
-    # joined.run_clustering() 
-    # tracker_img = morph.get_cv2_point_plot(joined.tracker_df, (f"{joined.base_image}/{joined.birds_eye_view_image}")) #, joined.labels, joined.uniqueid)
-    # morph.show_data(tracker_img)
+    joined = Cameras("hogni", 24032021, "2403_G6_sync")
+    joined.tracker_df = joined_df
+    joined.run_clustering() 
+    tracker_img = morph.get_cv2_point_plot(joined.tracker_df, (f"{joined.base_image}/{joined.birds_eye_view_image}"), joined.labels, joined.uniqueid)
+    morph.show_data(tracker_img)
