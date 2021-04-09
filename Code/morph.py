@@ -189,7 +189,7 @@ def transform_points(points, matrix):
     return trans_points
 
 
-def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
+def get_cv2_point_plot(tracker_df, dst_image, label=0, uniqueid=0):
 
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
@@ -197,18 +197,29 @@ def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
         image = dst_image.copy()
 
     colors = [
-        (230, 25, 75), (60, 180, 75), 
-        (255, 225, 25), (0, 130, 200), 
-        (245, 130, 48), (145, 30, 180), 
-        (70, 240, 240), (240, 50, 230), 
-        (210, 245, 60), (250, 190, 212), 
-        (0, 128, 128), (220, 190, 255), 
-        (170, 110, 40), (255, 250, 200), 
-        (128, 0, 0), (170, 255, 195), 
-        (128, 128, 0), (255, 215, 180), 
-        (0, 0, 128), (128, 128, 128), 
-        (255, 255, 255), (0, 0, 0)
-        ]
+        (230, 25, 75),
+        (60, 180, 75),
+        (255, 225, 25),
+        (0, 130, 200),
+        (245, 130, 48),
+        (145, 30, 180),
+        (70, 240, 240),
+        (240, 50, 230),
+        (210, 245, 60),
+        (250, 190, 212),
+        (0, 128, 128),
+        (220, 190, 255),
+        (170, 110, 40),
+        (255, 250, 200),
+        (128, 0, 0),
+        (170, 255, 195),
+        (128, 128, 0),
+        (255, 215, 180),
+        (0, 0, 128),
+        (128, 128, 128),
+        (255, 255, 255),
+        (0, 0, 0),
+    ]
 
     grouped = tracker_df.groupby("UniqueID")
 
@@ -224,10 +235,11 @@ def get_cv2_point_plot(tracker_df, dst_image, label = 0, uniqueid = 0):
             if not color:
                 color = colors[int(row["UniqueID"]) % 8]
         for count, i in enumerate(xy):
-            if count+1 == len(xy):
+            if count + 1 == len(xy):
                 break
-            cv2.line(image, xy[count], xy[count+1], color, 3)
+            cv2.line(image, xy[count], xy[count + 1], color, 3)
     return image
+
 
 def show_data(cv2_object):
     """Display image.
@@ -320,6 +332,7 @@ def get_frame(video_path, frame_number):
     rval, frame = vc.read()
     return frame
 
+
 def join_df(df1, df2, df3):
     data = {"UniqueID": [], "altered_x": [], "altered_y": []}
     for _, row in df1.iterrows():
@@ -337,6 +350,7 @@ def join_df(df1, df2, df3):
 
     new_df = pd.DataFrame(data=data)
     return new_df
+
 
 if __name__ == "__main__":
     pass
