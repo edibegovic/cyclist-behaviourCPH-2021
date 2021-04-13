@@ -1,5 +1,8 @@
 
 pandas
 numpy
-cv2
+opencv-python
 matplotlib
+dash
+plotly
+

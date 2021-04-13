@@ -286,4 +286,6 @@ TSWLatexianTemp*
 *pynb_checkpoints/
 
 /misc/
+code/node_modules/
 
+*.pdf
