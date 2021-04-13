@@ -18,6 +18,7 @@
 \documentclass[10pt, a4paper, twocolumn]{article} % 10pt font size (11 and 12 also possible), A4 paper (letterpaper for US letter) and two column layout (remove for one column)
 
 \input{structure.tex} % Specifies the document structure and loads requires packages
+\usepackage{subfiles} % Best loaded last in the preamble
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
@@ -50,17 +51,23 @@
 %----------------------------------------------------------------------------------------
 
 % \lettrineabstract{Abstract}
+\noindent
 \textbf{Abstract}
+\ \\
+
+\noindent
+We will defiantly change this to a standard document, such that we have a single page for \textbf{front page}, 
+\textbf{ToC} and \textbf{abstract}.
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
 \section{Introduction}
+\subfile{sections/introduction}
 
-State what your research/project/inquiry is about. What are you writing about, why and for whom? What are your objectives? 
-What are you trying to show or prove (your hypothesis)? Test cite \citep{Reference1}
-
+\section{Background}
+\subfile{sections/background}
 
 \section{Methodology}
 
@@ -88,20 +95,31 @@ By assuming the road as a 2D plane, hereby ignoring any non-linear deformations 
 we can transform the pixel positions from the video to real-world 2D coordinates. 
 We calculate the \textit{homography matrix}, describing the transformation from one plane to another, by mapping four reference points from each frame.
 
-\begin{tabular}{cc}
+\raggedbottom
+
+\ \\ 
+
 \noindent
-	\includegraphics[width=1.0\columnwidth]{projection_figure} 
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{projection_figure} 
 \end{tabular}
 \captionof{figure}{Reference points on map projection}
+
+\ \\
+The pipeline for our setup is shown on figure x. OpenDataCam uses the Yolo4 weights to localize cyclists and pedestrians.
+Processing was executed on an ARM based NVIDIA Jetson Xavier NX (development board) equipped with a 384-core NVIDIA Volta GPU
+and 8GB of memmory. 
+\\
+The video feed for YOLO is provided through the OpenDataCam, which allows for real-time analysis through an onboard camera
+or MPEG stream from an IP camera.  
+
+\ \\
+Intersection Over Union
+
 \subsection{Warped perspective}
+
 With the tracks projected onto the roads surface we now warp (x, y) points in order to get a top-down view of the cyclist tracks.
 This is achieved by calculating the homography matrix (H) between the source image and the destination image. The homography matrix being a 
-
-% To (x, y) coordinates are on the vertical plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
-% To do this we used the equation: 
-% \begin{equation}
-% 	y = y + h ⁄ 2
-% \end{equation}
 
 \subsection{Warped perspective}
 With the tracks projected onto the roads surface we now warp (x, y) points in order to get a top-down view of the cyclist tracks.
