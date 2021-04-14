@@ -291,3 +291,5 @@ code/node_modules/
 
 *.pdf
 
+report/.vscode/
+
