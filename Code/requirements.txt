@@ -1,5 +1,8 @@
 
 pandas
 numpy
-cv2
 matplotlib
+dash
+plotly
+dash-bootstrap-components
+dash-player
