@@ -289,3 +289,5 @@ TSWLatexianTemp*
 code/node_modules/
 
 *.pdf
+
+*.icloud
