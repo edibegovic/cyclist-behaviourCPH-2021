@@ -99,13 +99,11 @@ def distance_matrix(vectors):
     count = 0
     count_unique_id_square = count_unique_id ** 2
     for i in range(count_unique_id):
-        sys.stdout.write(
-            "\r"
-            + f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 2)}%"
-        )
-        sys.stdout.flush()
+        count += 1
+        # print(f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 3)}%", end="\r")
+        # sys.stdout.write("\r" + f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 3)}%")
+        # sys.stdout.flush()
         for j in range(i + 1, count_unique_id):
-            count += 1
             distance_ = euclidean_d(vectors[i], vectors[j])
             dist_matrix[i, j] = distance_
             dist_matrix[j, i] = distance_
@@ -129,6 +127,9 @@ if __name__ == "__main__":
     d = distance_matrix(vectors)
     model = k_mean_model(d, 6)
     k_predict(model, d)
+    type(max(distance.euclidean(vectors[0].reshape(1,-1), vectors[1].reshape(1,-1)), distance.euclidean(vectors[1].reshape(1,-1), vectors[0].reshape(1,-1))))
+    distance.euclidean(vectors[1].reshape(1,-1), vectors[2].reshape(1,-1))
+    distance.euclidean(vectors[2].reshape(1,-1), vectors[1].reshape(1,-1))
 
     max(
         distance.euclidean(vectors[0], vectors[1]),
@@ -145,6 +146,8 @@ if __name__ == "__main__":
 
     tr = g6.tracker_df[:1000]
     tr
+
+    distance.euclidean(vector_u, vector_v)[0]
 
     grouped = tr.groupby("UniqueID")
 
