@@ -1,8 +1,8 @@
 
 pandas
 numpy
-opencv-python
 matplotlib
 dash
 plotly
-
+dash-bootstrap-components
+dash-player
