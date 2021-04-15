@@ -1,5 +1,6 @@
 
 # start a light-weight webserver
+# Go to iCloud folder and run:
 # http-server -p 8000
 
 import pandas as pd
