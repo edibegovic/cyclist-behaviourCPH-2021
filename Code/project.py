@@ -21,7 +21,6 @@ def cyclist_contact_coordiantes(df):
         a pandas df with the adjusted x and y
     """
     df["y"] = df["y"] + df["h"] / 2
-    # df["x"] = df["x"] + df["w"] / 2
     return df
 
 
@@ -41,27 +40,29 @@ def smooth_tracks(df, smoothing_factor):
     Pandas df
         a pandas df with the adjusted x and y
     """
-    df_ = (
+    df_x = (
         df.groupby("UniqueID")["x"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
-        .to_frame(name="mean_x")
+        .to_frame(name="smooth_x")
         .droplevel("UniqueID")
     )
-    df = df.join(df_)
-    df_ = (
+
+    df_y = (
         df.groupby("UniqueID")["y"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
-        .to_frame(name="mean_y")
+        .to_frame(name="smooth_y")
         .droplevel("UniqueID")
     )
-    df = df.join(df_)
+
+    df["x"] = df_x
+    df["y"] = df_y
     return df
 
 
 def cut_tracks_with_few_points(df, n):
-    """Smooth tracked paths
+    """Cut tracked paths
 
     Parameters
     ----------
@@ -118,7 +119,11 @@ def warped_perspective(src, dst, matrix):
     -------
     CV2 warped object
     """
-    source_image = cv2.imread(src)
+
+    if isinstance(src, str):
+        source_image = cv2.imread(src)
+    else:
+        source_image = src.copy()
 
     if isinstance(dst, str):
         destination_image = cv2.imread(dst)
@@ -129,6 +134,7 @@ def warped_perspective(src, dst, matrix):
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
     )
 
+
 def transform_points(points, matrix):
     """Transforms tracker data and plots on CV2 object from view_transformed_picture function
 
@@ -136,7 +142,7 @@ def transform_points(points, matrix):
     ----------
     points : pd.DataFrame
     Contains rastor 2D coordinates (x, y)
-        
+
     matrix : (3, 3) numpy array
     Homography matrix for projection
 
@@ -153,84 +159,101 @@ def transform_points(points, matrix):
     for _, row in points.iterrows():
         point = (row["x"], row["y"])
 
-        transformed_x.append((
-            matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2]
-        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+        transformed_x.append(
+            int(
+                round(
+                    (matrix[0][0] * point[0] + matrix[0][1] * point[1] + matrix[0][2])
+                    / (
+                        (
+                            matrix[2][0] * point[0]
+                            + matrix[2][1] * point[1]
+                            + matrix[2][2]
+                        )
+                    )
+                )
+            )
+        )
 
-        transformed_y.append((
-            matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2]
-        ) / ((matrix[2][0] * point[0] + matrix[2][1] * point[1] + matrix[2][2])))
+        transformed_y.append(
+            int(
+                round(
+                    (matrix[1][0] * point[0] + matrix[1][1] * point[1] + matrix[1][2])
+                    / (
+                        (
+                            matrix[2][0] * point[0]
+                            + matrix[2][1] * point[1]
+                            + matrix[2][2]
+                        )
+                    )
+                )
+            )
+        )
 
-
-    trans_points.drop(columns=['x', 'y'])
-    trans_points['x'] = transformed_x
-    trans_points['y'] = transformed_y
+    trans_points["projected_raw_x"] = transformed_x
+    trans_points["projected_raw_y"] = transformed_y
     return trans_points
 
 
-def get_cv2_point_plot(points, dst_image):
+def get_cv2_point_plot(tracker_df, dst_image, label=0, uniqueid=0, colours=0):
 
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
     else:
         image = dst_image.copy()
 
-    colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
-    for _, row in points.iterrows():
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        color = colors[int(row['UniqueID'])%8]
+    colour_list = [
+        (230, 25, 75),
+        (60, 180, 75),
+        (255, 225, 25),
+        (0, 130, 200),
+        (245, 130, 48),
+        (145, 30, 180),
+        (70, 240, 240),
+        (240, 50, 230),
+        (210, 245, 60),
+        (250, 190, 212),
+        (0, 128, 128),
+        (220, 190, 255),
+        (170, 110, 40),
+        (255, 250, 200),
+        (128, 0, 0),
+        (170, 255, 195),
+        (128, 128, 0),
+        (255, 215, 180),
+        (0, 0, 128),
+        (128, 128, 128),
+        (255, 255, 255),
+        (0, 0, 0),
+    ]
 
-        x, y = int(row['x']), int(row['y'])
+    grouped = tracker_df.groupby("UniqueID")
 
-        cv2.circle(image, (x, y), 5, color, -1)
-
-        # Add timestamp at first and last apperance
-        if not np.isnan(row['start_time']):
-            cv2.putText(image, "{:.0f}".format(row['start_time']), (x+9, y-35), font, 1, color, 2)
-
+    for name, group in grouped:
+        xy = []
+        colour_list_ = []
+        if type(label) is np.ndarray:
+            index = uniqueid.index(name)
+            colour_label = colour_list[label[index]]
+        else:
+            colour_label = False
+        for _, row in group.iterrows():
+            xy.append(((int(round(row["x"]))), int(round(row["y"]))))
+            if not colour_label and colours == 0:
+                colour_label = colour_list[int(row["UniqueID"]) % 8]
+            else:
+                colour_list_.append([int(row["colour_1"]*255), int(row["colour_2"]*255), int(row["colour_3"]*255)])
+        for count, i in enumerate(xy):
+            if count + 1 == len(xy):
+                break
+            if not colour_label:
+                cv2.line(image, xy[count], xy[count + 1], colour_list_[count], 3)
+            else:
+                cv2.line(image, xy[count], xy[count + 1], colour_label, 3)
     return image
 
 
-def transform_and_plot_tracker_data(x_list, y_list, matrix, dst_image, ids=None):
-    """Transforms tracker data and plots on CV2 object from view_transformed_picture function
-
-    Parameters
-    ----------
-    x_list : list
-        List of x-coordinates
-
-    y_list : list
-        List of y-coordinates
-
-    dst_warped_image : CV2 object
-        Object to plot tracker point on
-
-    Returns
-    -------
-    CV2 object
-    """
-    img = cv2.imread(dst_image)
-
-    if not ids:
-        ids = len(x_list)*[0]
-
-    for index, i in enumerate(x_list):
-        points = (i, y_list[index])
-        point_x = (
-            matrix[0][0] * points[0] + matrix[0][1] * points[1] + matrix[0][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-        point_y = (
-            matrix[1][0] * points[0] + matrix[1][1] * points[1] + matrix[1][2]
-        ) / ((matrix[2][0] * points[0] + matrix[2][1] * points[1] + matrix[2][2]))
-        transformed_points = (int(point_x), int(point_y))
-
-        colors = [(0, 0, 0), (225,0,0), (0, 225, 0), (0, 0, 225), (225, 225, 0), (0, 225, 225), (225, 0, 225), (255, 255, 255)]
-        cv2.circle(img, transformed_points, 5, colors[ids[index]%8], -1)
-    return img
-
-
 def show_data(cv2_object):
-    """Display image with plotted tracker data
+    """Display image.
 
     Parameters
     ----------
@@ -251,7 +274,7 @@ def click_event(event, x, y, flags, params):
 
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.circle(img, (x, y), 10, (200, 90, 255), -1)
-        cv2.putText(img, str(len(temp)), (x+5, y-5), font, 2, (255, 255, 255), 5)
+        cv2.putText(img, str(len(temp)), (x + 5, y - 5), font, 2, (255, 255, 255), 5)
         cv2.imshow("image", img)
 
 
@@ -282,6 +305,7 @@ def click_coordinates(image):
     cv2.setMouseCallback("image", click_event)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    cv2.waitKey(1)
     return temp
 
 
@@ -312,11 +336,54 @@ def capture_image_from_video(video_path, base_image, file_name, frame_number):
     cv2.imwrite(f"{base_image}/{file_name}.jpg", frame_number)
     return f"Frame {frame_number} Saved"
 
-    if __name__ == "__main__":
-        pass
 
 def get_frame(video_path, frame_number):
     vc = cv2.VideoCapture(video_path)
     vc.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     rval, frame = vc.read()
     return frame
+
+
+def join_df(df1, df2, df3):
+    data = {"frameId": [],"UniqueID": [], "x": [], "y": [], "projected_raw_x": [], "projected_raw_y": [], "smooth_x": [], "y": [], "camera": []}
+    for _, row in df1.iterrows():
+        data["frameId"].append(row["frameId"]) 
+        data["UniqueID"].append(row["UniqueID"])
+        data["x"].append(row["x"])
+        data["y"].append(row["y"])
+        data["projected_raw_x"].append(row["projected_raw_x"])
+        data["projected_raw_y"].append(row["projected_raw_y"])
+        data["smooth_x"].append(row["smooth_x"])
+        data["smooth_y"].append(row["smooth_y"])
+        data["camera"].append(row["camera"])
+    for _, row in df2.iterrows():
+        data["frameId"].append(row["frameId"]) 
+        data["UniqueID"].append(row["UniqueID"])
+        data["x"].append(row["x"])
+        data["y"].append(row["y"])
+        data["projected_raw_x"].append(row["projected_raw_x"])
+        data["projected_raw_y"].append(row["projected_raw_y"])
+        data["smooth_x"].append(row["smooth_x"])
+        data["smooth_y"].append(row["smooth_y"])
+        data["camera"].append(row["camera"])
+    for _, row in df3.iterrows():
+        data["frameId"].append(row["frameId"]) 
+        data["UniqueID"].append(row["UniqueID"])
+        data["x"].append(row["x"])
+        data["y"].append(row["y"])
+        data["projected_raw_x"].append(row["projected_raw_x"])
+        data["projected_raw_y"].append(row["projected_raw_y"])
+        data["smooth_x"].append(row["smooth_x"])
+        data["smooth_y"].append(row["smooth_y"])
+        data["camera"].append(row["camera"])
+
+    new_df = pd.DataFrame(data=data)
+    return new_df
+
+def add_camera(df, camera):
+    df["camera"] = camera
+    return df
+
+
+if __name__ == "__main__":
+    pass

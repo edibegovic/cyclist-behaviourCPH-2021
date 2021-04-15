@@ -1,74 +1,69 @@
+# import importlib
+# importlib.reload(project)
+import tracker
+import project
 
-import trackerdf as tdf
-import morph
-import trajectory
-import cv2
+class Camera:
+    def __init__(self, user, video_folder, file_name):
+        self.user = user
+        self.video_folder = video_folder
+        self.file_name = file_name
 
-# Variables
+        self.parent_path = f"/Users/{self.user}/Library/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
+        self.parent_path_video = f"{self.parent_path}Videos/{self.video_folder}/"
+        self.tracker_path = f"{self.parent_path_video}Data/{self.file_name}/tracker_{self.file_name}.json"
+        self.video_path = f"{self.parent_path_video}Processed/{self.file_name}.mp4"
+        self.photo_path = f"{self.parent_path_video}Photos/{self.file_name}"
+        self.base_image = f"{self.parent_path}Base Image"
+        self.map_path = f"{self.base_image}/FullHD_bridge.png"
+
+
+g6 = Camera("hogni", 24032021, "2403_G6_sync")
+
 # ------------------------------------------
 
-temp = []
-
-who_is_running_this_code = "hogni"
-
-video_folder = "24032021"
-file_name = "2403_edi_sync"
-
-parent_path = f"/Users/{user}/library/Mobile Documents/com~apple~CloudDocs/Bachelor Project/Videos/{video_folder}/"
-
-tracker_path = f"{parent_path}Data/{file_name}/tracker_{file_name}.json"
-video_path = f"{parent_path}Processed/{file_name}.mp4"
-photo_path = f"{parent_path}Photos/{file_name}"
-map_path = f"../data/dbro_map.png"
-
-# ------------------------------------------
-
-tracker_df = tdf.create_tracker_df(tracker_path)
-tracker_df = morph.cyclist_contact_coordiantes(tracker_df)
-tracker_df = morph.smooth_tracks(tracker_df, 20)
+g6.tracker_df = tracker.create_tracker_df(g6.tracker_path)
+g6.tracker_df = project.cyclist_contact_coordiantes(g6.tracker_df)
+g6.tracker_df = project.smooth_tracks(g6.tracker_df, 20)
 
 # Remove all tracks with 100 points or fewers
 # ------------------------------------------
-tracker_df = morph.cut_tracks_with_few_points(tracker_df, 50)
+
+g6.tracker_df = project.cut_tracks_with_few_points(g6.tracker_df, 50)
 
 # Capture frame from video
 # ------------------------------------------
 
-video_frame = morph.get_frame(video_path, 800)
-
+video_frame = project.get_frame(g6.video_path, 800)
 
 # Get points on src and dst images
 # ------------------------------------------
 
-
-src_image = morph.click_coordinates(video_frame)
-dst_image = morph.click_coordinates(map_path)
+src_image = project.click_coordinates(video_frame)
+dst_image = project.click_coordinates(g6.map_path)
 
 # Get homography matrix
 # ------------------------------------------
 
-homo, _ = morph.find_homography_matrix(src_image, dst_image)
+homo, _ = project.find_homography_matrix(src_image, dst_image)
 
 # Display warped image
 # ------------------------------------------
 
-warped_img = morph.warped_perspective(
-    (video_frame, "../data/dbro_map.png", homo
-)
-morph.show_data(warped_img)
+warped_img = project.warped_perspective(video_frame, g6.map_path, homo)
+project.show_data(warped_img)
 
 # Plot tracks
 # ------------------------------------------
 
 x_list = []
-tracks = tracker_df[:1400]
-transformed_tracks = morph.transform_points(tracks, homo)
+tracks = g6.tracker_df[:1400]
+transformed_tracks = project.transform_points(tracks, homo)
 
 # Plot on MAP
-plot = morph.get_cv2_point_plot(transformed_tracks, map_path)
-morph.show_data(plot)
+plot = project.get_cv2_point_plot(transformed_tracks, g6.map_path)
+project.show_data(plot)
 
 # Plot on VIDEO (FRAME)
-plot = morph.get_cv2_point_plot(tracks, video_frame)
-morph.show_data(plot)
-
+plot = project.get_cv2_point_plot(tracks, video_frame)
+project.show_data(plot)

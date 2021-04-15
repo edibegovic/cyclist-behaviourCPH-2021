@@ -41,6 +41,9 @@
 \usepackage{sectsty} % Enables custom section titles
 \allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands (Helvetica)
 
+\usepackage{graphicx}
+\graphicspath{ {./img/} }
+
 %----------------------------------------------------------------------------------------
 %	MARGINS AND SPACING
 %----------------------------------------------------------------------------------------
@@ -58,6 +61,10 @@
 }
 
 \setlength{\columnsep}{7mm} % Column separation width
+
+\setlength\parindent{0pt} % No intent on new paragraphs
+
+\renewcommand{\baselinestretch}{1.2} % Line spacing
 
 %----------------------------------------------------------------------------------------
 %	FONTS
@@ -112,7 +119,7 @@
 \pretitle{
 	\vspace{-30pt} % Move the entire title section up
 	\HorRule\vspace{10pt} % Horizontal rule before the title
-	\fontsize{32}{36}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
+	\fontsize{27}{36}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
 	\color{DarkRed} % Text colour for the title and author(s)
 }
 
@@ -156,3 +163,5 @@
 \addbibresource{example.bib} % The filename of the bibliography
 
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+
+\setlength\bibitemsep{4.0\itemsep}
