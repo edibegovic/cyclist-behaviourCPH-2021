@@ -99,16 +99,14 @@ def distance_matrix(vectors):
     count = 0
     count_unique_id_square = count_unique_id ** 2
     for i in range(count_unique_id):
-        sys.stdout.write(
-            "\r"
-            + f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 2)}%"
-        )
-        sys.stdout.flush()
+        count += 1
+        # print(f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 3)}%", end="\r")
+        # sys.stdout.write("\r" + f"Distance Matrix progress {round(((count)/(count_unique_id_square))*100, 3)}%")
+        # sys.stdout.flush()
         for j in range(i + 1, count_unique_id):
             distance_ = euclidean_d(vectors[i], vectors[j])
             dist_matrix[i, j] = distance_
             dist_matrix[j, i] = distance_
-        count += 1
     return dist_matrix
 
 
