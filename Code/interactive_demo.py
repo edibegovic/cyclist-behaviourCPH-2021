@@ -23,10 +23,10 @@ import trackerdf
 # df = pd.read_csv("suicide_rates.csv")
 # df = pd.DataFrame(data={'x': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450], 'y': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450]})
 
-df = pd.read_csv("iphone3.csv")
+df = pd.read_csv("short_g6_yolov5x6_id.csv")
 
 df.loc[:, 'border_width'] = df.loc[:, 'UniqueID'].astype(int)%2
-df.loc[:, 'simple_id'] = df.loc[:, 'UniqueID'].astype(int)%30
+df.loc[:, 'simple_id'] = df.loc[:, 'UniqueID'].astype(int) #%30
 
 # img = Image.open('../data/dbro_map.png')
 # img.LOAD_TRUNCATED_IMAGES = True
