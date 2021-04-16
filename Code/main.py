@@ -22,14 +22,14 @@ g6 = Camera("hogni", 24032021, "2403_G6_sync")
 
 # ------------------------------------------
 
-g6.tracker_df = tracker.create_tracker_df(g6.tracker_path)
-g6.tracker_df = project.cyclist_contact_coordiantes(g6.tracker_df)
-g6.tracker_df = project.smooth_tracks(g6.tracker_df, 20)
+tracker_df = tracker.create_tracker_df(g6.tracker_path)
+tracker_df = project.cyclist_contact_coordiantes(tracker_df)
+tracker_df = project.smooth_tracks(tracker_df, 20)
 
 # Remove all tracks with 100 points or fewers
 # ------------------------------------------
 
-g6.tracker_df = project.cut_tracks_with_few_points(g6.tracker_df, 50)
+tracker_df = project.cut_tracks_with_few_points(tracker_df, 50)
 
 # Capture frame from video
 # ------------------------------------------
@@ -57,7 +57,7 @@ project.show_data(warped_img)
 # ------------------------------------------
 
 x_list = []
-tracks = g6.tracker_df[:1400]
+tracks = tracker_df[:1400]
 transformed_tracks = project.transform_points(tracks, homo)
 
 # Plot on MAP
