@@ -289,3 +289,5 @@ TSWLatexianTemp*
 
 
 *.pdf
+
+*.pickle
