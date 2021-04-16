@@ -189,8 +189,9 @@ def transform_points(points, matrix):
             )
         )
 
-    trans_points["projected_raw_x"] = transformed_x
-    trans_points["projected_raw_y"] = transformed_y
+    trans_points.drop(columns=["x", "y"])
+    trans_points["x"] = transformed_x
+    trans_points["y"] = transformed_y
     return trans_points
 
 
