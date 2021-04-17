@@ -3,5 +3,8 @@ scikit-image==0.17.2
 lap==0.4.0
 pandas
 numpy
-cv2
 matplotlib
+dash
+plotly
+dash-bootstrap-components
+dash-player

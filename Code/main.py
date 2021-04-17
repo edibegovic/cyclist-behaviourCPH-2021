@@ -1,5 +1,5 @@
-# import importlib
-# importlib.reload(project)
+import importlib
+importlib.reload(connect)
 import tracker
 import project
 import pandas as pd
@@ -17,18 +17,22 @@ g6 = camera_class.Camera("hogni", 24032021, "short_g6")
 # Create df
 # ------------------------------------------
 # ODC
-g6.tracker_df = tracker.create_tracker_df(g6.tracker_path)
+tracker_df = tracker.create_tracker_df(g6.tracker_path)
 # YOLOv5 - load
-g6.tracker_df = pd.read_pickle("short_g6_yolov5x6.pickle")
+tracker_df = pd.read_pickle("short_g6.pickle")
+
+# Connect points with UniqueID
+# ------------------------------------------
+tracker_df = connect.set_unique_id(tracker_df, max_age=30, min_hits=1, iou_threshold=0.15)
 
 # Road contact point and smooth trajectories
 # ------------------------------------------
-g6.tracker_df = project.cyclist_contact_coordiantes(g6.tracker_df)
-g6.tracker_df = project.smooth_tracks(g6.tracker_df, 20)
+tracker_df = project.cyclist_contact_coordiantes(tracker_df)
+tracker_df = project.smooth_tracks(tracker_df, 20)
 
 # Remove all tracks with less that n points
 # ------------------------------------------
-g6.tracker_df = project.cut_tracks_with_few_points(g6.tracker_df, 50)
+tracker_df = project.cut_tracks_with_few_points(tracker_df, 50)
 
 # Capture frame from video
 # ------------------------------------------
@@ -48,24 +52,21 @@ homo, _ = project.find_homography_matrix(src_image, dst_image)
 warped_img = project.warped_perspective(video_frame, g6.map_path, homo)
 project.show_data(warped_img)
 
+tracker_df
 # Plot tracks
 # ------------------------------------------
-g6.tracker_df = project.transform_points(g6.tracker_df, homo)
-
-# Connect points with UniqueID
-# ------------------------------------------
-g6.tracker_df = connect.set_unique_id(g6.tracker_df, max_age=30, min_hits=1, iou_threshold=0.15)
+tracker_df = project.transform_points(tracker_df, homo)
 
 # Plot on MAP
 # ------------------------------------------
-plot = project.get_cv2_point_plot(g6.tracker_df, g6.map_path)
+plot = project.get_cv2_point_plot(tracker_df, g6.map_path)
 project.show_data(plot)
 
 # Plot on VIDEO (FRAME)
 # ------------------------------------------
-plot = project.get_cv2_point_plot(g6.tracker_df, video_frame)
+plot = project.get_cv2_point_plot(tracker_df, video_frame)
 project.show_data(plot)
 
 # df to CSV
 # ------------------------------------------
-g6.tracker_df.to_csv("short_g6_yolov5x6_id.csv")
+tracker_df.to_csv("short_g6_yolov5x6_id.csv")

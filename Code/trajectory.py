@@ -1,5 +1,6 @@
-import pandas as pd
 
+import pandas as pd
+from btrack.dataio import localizations_to_objects
 
 def trajectory_df(df):
     """Creates df for trajectory calculation
@@ -14,15 +15,9 @@ def trajectory_df(df):
     trajectory_df : Pandas df
         A pandas df
     """
-
-    trajectory_df = df[["frameId", "mean_x", "mean_y"]].copy()
-    trajectory_df["z"] = 0
-    trajectory_df["state"] = 0
-    trajectory_df["label"] = 0
-    trajectory_df.columns = ["t", "x", "y", "z", "state", "label"]
-    trajectory_df = trajectory_df.astype(float)
-    return trajectory_df
-
+    named_df = df[["frame_id", "mean_x", "mean_y"]].rename(columns={"frame_id": "t", "mean_x": "x", "mean_y": "y"})
+    named_df['z'] = 0.0
+    return named_df
 
 if __name__ == "__main__":
     pass

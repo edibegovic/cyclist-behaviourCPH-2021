@@ -18,6 +18,7 @@
 \documentclass[10pt, a4paper, twocolumn]{article} % 10pt font size (11 and 12 also possible), A4 paper (letterpaper for US letter) and two column layout (remove for one column)
 
 \input{structure.tex} % Specifies the document structure and loads requires packages
+\usepackage{subfiles} % Best loaded last in the preamble
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
@@ -50,78 +51,35 @@
 %----------------------------------------------------------------------------------------
 
 % \lettrineabstract{Abstract}
+\noindent
 \textbf{Abstract}
+\ \\
+
+\noindent
+We will defiantly change this to a standard document, such that we have a single page for \textbf{front page}, 
+\textbf{table of contents} and \textbf{abstract}.
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
 \section{Introduction}
+\subfile{sections/introduction}
 
-State what your research/project/inquiry is about. What are you writing about, why and for whom? What are your objectives? 
-What are you trying to show or prove (your hypothesis)? Test cite \citep{Reference1}
-
+\section{Background}
+\subfile{sections/background}
 
 \section{Methodology}
-
-The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
-The Dybbølsbro intersection faces several traffic flow challenges as a result development in the immediate vicinity, and it is a large intersection.
-These challenges make the Dybbølsbro intersection one of the more extreme in Copenhagen and would serve as a good base to this quantitative analysis method. 
-
-To determine the desire paths that cyclist take throughout the Dybbelsbro intersection we recorded digital 2 hours of video footage 
-at the Dybbølsbro intersection from three different camera angles.
-The considerations taken in choosing a camera angle were:
-
-\begin{itemize}
-	\item Camera visibility to cyclists.
-	\item Adequate mounting points, in terms of height and surface.
-	\item Special attention was also given to making sure that cameras were not mounted on traffic signage.
-\end{itemize}
-
-\subsection{Point projection}
-The video footage was analyzed using OpenDataCam which is an abstraction layer on top of Yolo. Yolo being an object detection library for object detection in images.
-Once the video is analyzed by OpenDataCam, we receive a .json file containing a Unique ID for each unique cyclist that is detected in a frame of the video file. 
-The unique ID is accompanied by an x and y coordinate of the detected bicycle on the frame. The (x, y) coordinates over multiple frames represents the track of an identified bicycle over the intersection.
-
-\ \\
-By assuming the road as a 2D plane, hereby ignoring any non-linear deformations (e.g. from lens distortion or curvature of the pavement), 
-we can transform the pixel positions from the video to real-world 2D coordinates. 
-We calculate the \textit{homography matrix}, describing the transformation from one plane to another, by mapping four reference points from each frame.
-
-\begin{tabular}{cc}
-\noindent
-	\includegraphics[width=1.0\columnwidth]{projection_figure} 
-\end{tabular}
-\captionof{figure}{Reference points on map projection}
-\subsection{Warped perspective}
-With the tracks projected onto the roads surface we now warp (x, y) points in order to get a top-down view of the cyclist tracks.
-This is achieved by calculating the homography matrix (H) between the source image and the destination image. The homography matrix being a 
-
-% To (x, y) coordinates are on the vertical plane of the video. To gain insight into the desire paths of the cyclists we projected the (x, y) coordinate down to the horizontal plane(the street) of the image.
-% To do this we used the equation: 
-% \begin{equation}
-% 	y = y + h ⁄ 2
-% \end{equation}
-
-\subsection{Warped perspective}
-With the tracks projected onto the roads surface we now warp (x, y) points in order to get a top-down view of the cyclist tracks.
-This is achieved by calculating the homography matrix (H) between the source image and the destination image. The homography matrix being a 
+\subfile{sections/methodology}
 
 \section{Results}
-
-Give the results of your research. Do not, at this stage, try to interpret the results – simply report them. 
-This section may include graphs, charts, diagrams etc. (clearly labelled). Be very careful about copyright if you are using published charts, tables, illustrations etc.
-
+\subfile{sections/results}
 
 \section{Discussion}
-
-Interpret your findings. What do they show? Were they what you expected? 
-Could your research have been done in a better way?
+\subfile{sections/discussion}
 
 \section{Conclusion}
-
-These should follow on logically from the Findings and Discussion sections. Summarize the key points of your findings and show whether they prove or disprove your hypothesis. 
-If you have been asked to, you can make recommendations arising from your research.
+Placeholder...
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY

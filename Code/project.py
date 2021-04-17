@@ -41,19 +41,19 @@ def smooth_tracks(df, smoothing_factor):
         a pandas df with the adjusted x and y
     """
     df_x = (
-        df.groupby("UniqueID")["x"]
+        df.groupby("unique_id")["x"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
         .to_frame(name="smooth_x")
-        .droplevel("UniqueID")
+        .droplevel("unique_id")
     )
 
     df_y = (
-        df.groupby("UniqueID")["y"]
+        df.groupby("unique_id")["y"]
         .rolling(smoothing_factor, min_periods=1)
         .mean()
         .to_frame(name="smooth_y")
-        .droplevel("UniqueID")
+        .droplevel("unique_id")
     )
 
     df["x"] = df_x
@@ -77,7 +77,7 @@ def cut_tracks_with_few_points(df, n):
     Pandas df
         A cut pandas df
     """
-    return df[df.groupby("UniqueID")["UniqueID"].transform("size") > n]
+    return df[df.groupby("unique_id")["unique_id"].transform("size") > n]
 
 
 def find_homography_matrix(source_list, destination_list):
@@ -189,12 +189,13 @@ def transform_points(points, matrix):
             )
         )
 
-    trans_points["projected_raw_x"] = transformed_x
-    trans_points["projected_raw_y"] = transformed_y
+    trans_points.drop(columns=["x", "y"])
+    trans_points["x"] = transformed_x
+    trans_points["y"] = transformed_y
     return trans_points
 
 
-def get_cv2_point_plot(tracker_df, dst_image, label=0, uniqueid=0, colours=0):
+def get_cv2_point_plot(tracker_df, dst_image, label=0, unique_id=0, colours=0):
 
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
@@ -226,20 +227,20 @@ def get_cv2_point_plot(tracker_df, dst_image, label=0, uniqueid=0, colours=0):
         (0, 0, 0),
     ]
 
-    grouped = tracker_df.groupby("UniqueID")
+    grouped = tracker_df.groupby("unique_id")
 
     for name, group in grouped:
         xy = []
         colour_list_ = []
         if type(label) is np.ndarray:
-            index = uniqueid.index(name)
+            index = unique_id.index(name)
             colour_label = colour_list[label[index]]
         else:
             colour_label = False
         for _, row in group.iterrows():
             xy.append(((int(round(row["x"]))), int(round(row["y"]))))
             if not colour_label and colours == 0:
-                colour_label = colour_list[int(row["UniqueID"]) % 8]
+                colour_label = colour_list[int(row["unique_id"]) % 8]
             else:
                 colour_list_.append([int(row["colour_1"]*255), int(row["colour_2"]*255), int(row["colour_3"]*255)])
         for count, i in enumerate(xy):
@@ -345,10 +346,10 @@ def get_frame(video_path, frame_number):
 
 
 def join_df(df1, df2, df3):
-    data = {"frameId": [],"UniqueID": [], "x": [], "y": [], "projected_raw_x": [], "projected_raw_y": [], "smooth_x": [], "y": [], "camera": []}
+    data = {"frame_id": [],"unique_id": [], "x": [], "y": [], "projected_raw_x": [], "projected_raw_y": [], "smooth_x": [], "y": [], "camera": []}
     for _, row in df1.iterrows():
-        data["frameId"].append(row["frameId"]) 
-        data["UniqueID"].append(row["UniqueID"])
+        data["frame_id"].append(row["frame_id"]) 
+        data["unique_id"].append(row["unique_id"])
         data["x"].append(row["x"])
         data["y"].append(row["y"])
         data["projected_raw_x"].append(row["projected_raw_x"])
@@ -357,8 +358,8 @@ def join_df(df1, df2, df3):
         data["smooth_y"].append(row["smooth_y"])
         data["camera"].append(row["camera"])
     for _, row in df2.iterrows():
-        data["frameId"].append(row["frameId"]) 
-        data["UniqueID"].append(row["UniqueID"])
+        data["frame_id"].append(row["frame_id"]) 
+        data["unique_id"].append(row["unique_id"])
         data["x"].append(row["x"])
         data["y"].append(row["y"])
         data["projected_raw_x"].append(row["projected_raw_x"])
@@ -367,8 +368,8 @@ def join_df(df1, df2, df3):
         data["smooth_y"].append(row["smooth_y"])
         data["camera"].append(row["camera"])
     for _, row in df3.iterrows():
-        data["frameId"].append(row["frameId"]) 
-        data["UniqueID"].append(row["UniqueID"])
+        data["frame_id"].append(row["frame_id"]) 
+        data["unique_id"].append(row["unique_id"])
         data["x"].append(row["x"])
         data["y"].append(row["y"])
         data["projected_raw_x"].append(row["projected_raw_x"])

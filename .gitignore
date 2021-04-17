@@ -286,8 +286,8 @@ TSWLatexianTemp*
 *pynb_checkpoints/
 
 /misc/
-
-
+code/node_modules/
 *.pdf
-
-*.pickle
+report/.vscode/
+*.icloud
+Code/node_modules/
