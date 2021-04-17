@@ -6,7 +6,7 @@ from sort import *
 def set_unique_id(df, max_age=30, min_hits=1, iou_threshold=0.15):
     tracker = Sort(max_age, min_hits, iou_threshold)
 
-    df_grouped = df.groupby("frameId")
+    df_grouped = df.groupby("frame_id")
     list_with_id = []
 
     for _, group in df_grouped:
@@ -26,7 +26,7 @@ def set_unique_id(df, max_age=30, min_hits=1, iou_threshold=0.15):
             temp = [x, y, int(row[4]), idx, "blue", h, w]
             df_data.append(temp)
 
-    df_ids = pd.DataFrame(data=df_data, columns=["x", "y", "UniqueID", "frameId", "color", "h", "w"])
+    df_ids = pd.DataFrame(data=df_data, columns=["x", "y", "unique_id", "frame_id", "color", "h", "w"])
     return df_ids
 
 if __name__ == "__main__":

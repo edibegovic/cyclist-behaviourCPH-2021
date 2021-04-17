@@ -36,7 +36,7 @@ with btrack.BayesianTracker() as tracker:
 
 df = pd.DataFrame()
 for track in tracks:
-    temp_df = pd.DataFrame({"UniqueID": track.ID, "mean_x": track.x, "mean_y": track.y})
+    temp_df = pd.DataFrame({"unique_id": track.ID, "mean_x": track.x, "mean_y": track.y})
     df.append(temp_df, ignore_index=True)
 
 print(df)

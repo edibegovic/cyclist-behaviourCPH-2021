@@ -18,10 +18,10 @@ def create_tracker_df(tracker_file_path):
     with open(tracker_file_path) as f:
         tracker = json.load(f)
     tracker_flattend = pd.json_normalize(
-        tracker, record_path="objects", meta=["frameId"]
-    ).rename(columns={"id": "UniqueID"})
+        tracker, record_path="objects", meta=["frame_id"]
+    ).rename(columns={"id": "unique_id"})
     tracker_flattend = tracker_flattend.drop_duplicates(
-        subset=["UniqueID", "frameId"], keep="first"
+        subset=["unique_id", "frame_id"], keep="first"
     )
     return tracker_flattend
 
