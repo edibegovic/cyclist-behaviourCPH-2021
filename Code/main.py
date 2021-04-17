@@ -12,12 +12,14 @@ import camera_class
 
 # Create class object
 # ------------------------------------------
-g6 = camera_class.Camera("hogni", 24032021, "short_g6")
+camera = camera_class.Camera("hogni", 24032021, "short_g6")
 
 # Create df
 # ------------------------------------------
+
 # ODC
-tracker_df = tracker.create_tracker_df(g6.tracker_path)
+tracker_df = tracker.create_tracker_df(camera.tracker_path)
+
 # YOLOv5 - load
 tracker_df = pd.read_pickle("short_g6_yolov5x6.pickle")
 
@@ -32,12 +34,12 @@ tracker_df = project.cut_tracks_with_few_points(tracker_df, 50)
 
 # Capture frame from video
 # ------------------------------------------
-video_frame = project.get_frame(video_path, 1000)
+video_frame = project.get_frame(camera.video_path, 1000)
 
 # Get points on src and dst images
 # ------------------------------------------
 src_image = project.click_coordinates(video_frame)
-dst_image = project.click_coordinates(map_path)
+dst_image = project.click_coordinates(camera.map_path)
 
 # Get homography matrix
 # ------------------------------------------
@@ -45,10 +47,10 @@ homo, _ = project.find_homography_matrix(src_image, dst_image)
 
 # Display warped image
 # ------------------------------------------
-warped_img = project.warped_perspective(video_frame, map_path, homo)
+warped_img = project.warped_perspective(video_frame, camera.map_path, homo)
 project.show_data(warped_img)
 
-# Plot tracks
+# Project points
 # ------------------------------------------
 tracker_df = project.transform_points(tracker_df, homo)
 
@@ -58,7 +60,7 @@ tracker_df = connect.set_unique_id(tracker_df, max_age=30, min_hits=1, iou_thres
 
 # Plot on MAP
 # ------------------------------------------
-plot = project.get_cv2_point_plot(tracker_df, map_path)
+plot = project.get_cv2_point_plot(tracker_df, camera.map_path)
 project.show_data(plot)
 
 # Plot on VIDEO (FRAME)
@@ -69,3 +71,7 @@ project.show_data(plot)
 # df to CSV
 # ------------------------------------------
 tracker_df.to_csv("short_g6_yolov5x6_id.csv")
+
+# df to Pickle
+# ------------------------------------------
+transformed_tracks.to_pickle("current_tracker.pickle")
