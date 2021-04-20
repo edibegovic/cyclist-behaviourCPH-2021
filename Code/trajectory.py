@@ -15,7 +15,7 @@ def trajectory_df(df):
     trajectory_df : Pandas df
         A pandas df
     """
-    named_df = df[["frameId", "mean_x", "mean_y"]].rename(columns={"frameId": "t", "mean_x": "x", "mean_y": "y"})
+    named_df = df[["frame_id", "mean_x", "mean_y"]].rename(columns={"frame_id": "t", "mean_x": "x", "mean_y": "y"})
     named_df['z'] = 0.0
     return named_df
 

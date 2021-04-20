@@ -18,15 +18,14 @@ import plotly.graph_objects as go
 
 import base64
 from PIL import Image
-import trackerdf
 
 # df = pd.read_csv("suicide_rates.csv")
 # df = pd.DataFrame(data={'x': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450], 'y': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450]})
 
-df = pd.read_csv("short_g6_yolov5x6_id.csv")
+df = pd.read_csv("short_g6.csv")
 
-df.loc[:, 'border_width'] = df.loc[:, 'UniqueID'].astype(int)%2
-df.loc[:, 'simple_id'] = df.loc[:, 'UniqueID'].astype(int) #%30
+df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
+df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int) #%30
 
 # img = Image.open('../data/dbro_map.png')
 # img.LOAD_TRUNCATED_IMAGES = True
@@ -166,12 +165,12 @@ def update_img_plot(val):
     frame = val
     window = 150
 
-    points = df[df['frameId'].between(frame-window, frame)]
+    points = df[df['frame_id'].between(frame-window, frame)]
 
-    _max = points['frameId'].max()
-    _min = points['frameId'].min()
+    _max = points['frame_id'].max()
+    _min = points['frame_id'].min()
     diff = _max-_min
-    points.loc[:, 'opacity'] = 1-((_max-points.loc[:, 'frameId'])/diff).round(2)
+    points.loc[:, 'opacity'] = 1-((_max-points.loc[:, 'frame_id'])/diff).round(2)
 
     fig.add_trace(go.Scatter(
     x=points['x'],
