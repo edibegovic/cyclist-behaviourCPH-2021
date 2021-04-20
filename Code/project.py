@@ -1,45 +1,17 @@
 import numpy as np
 import pandas as pd
 import cv2
-from matplotlib import pyplot as plt
 
 temp = []
 img = 0
 
 
 def cyclist_contact_coordiantes(df):
-    """Calculates cyclist plane contact point
-
-    Parameters
-    ----------
-    df : Pandas df
-        The pandas df with x and y columns
-
-    Returns
-    -------
-    Pandas df
-        a pandas df with the adjusted x and y
-    """
     df["y"] = df["y"] + df["h"] / 2
     return df
 
 
 def smooth_tracks(df, smoothing_factor):
-    """Smooth tracked paths
-
-    Parameters
-    ----------
-    df : Pandas df
-        The pandas df with x and y columns
-
-    smoothing_factor : int
-        Factor to smooth tracker lines by
-
-    Returns
-    -------
-    Pandas df
-        a pandas df with the adjusted x and y
-    """
     df_x = (
         df.groupby("unique_id")["x"]
         .rolling(smoothing_factor, min_periods=1)
@@ -62,39 +34,10 @@ def smooth_tracks(df, smoothing_factor):
 
 
 def cut_tracks_with_few_points(df, n):
-    """Cut tracked paths
-
-    Parameters
-    ----------
-    df : Pandas df
-        The pandas tracker df
-
-    n : int
-        Cuts tracks with less than n paths
-
-    Returns
-    -------
-    Pandas df
-        A cut pandas df
-    """
     return df[df.groupby("unique_id")["unique_id"].transform("size") > n]
 
 
 def find_homography_matrix(source_list, destination_list):
-    """Finds Homography matrix
-
-    Parameters
-    ----------
-    source_list : list of lists
-        Points on source images
-
-    destination_list : list of lists
-        Points on source images
-
-    Returns
-    -------
-    Tuple (matrix, status)
-    """
     coordiantes_on_source = np.array(source_list)
     coordiantes_on_destination = np.array(destination_list)
 
@@ -102,24 +45,6 @@ def find_homography_matrix(source_list, destination_list):
 
 
 def warped_perspective(src, dst, matrix):
-    """Warps source image
-
-    Parameters
-    ----------
-    src : str
-        Path to source image
-
-    dst : str
-        Path to destination image
-
-    matrix : np array
-        Homography matrix
-
-    Returns
-    -------
-    CV2 warped object
-    """
-
     if isinstance(src, str):
         source_image = cv2.imread(src)
     else:
@@ -128,7 +53,7 @@ def warped_perspective(src, dst, matrix):
     if isinstance(dst, str):
         destination_image = cv2.imread(dst)
     else:
-        destination_image = dst
+        destination_image = dst.copy()
 
     return cv2.warpPerspective(
         source_image, matrix, (destination_image.shape[1], destination_image.shape[0])
@@ -136,21 +61,6 @@ def warped_perspective(src, dst, matrix):
 
 
 def transform_points(points, matrix):
-    """Transforms tracker data and plots on CV2 object from view_transformed_picture function
-
-    Parameters
-    ----------
-    points : pd.DataFrame
-    Contains rastor 2D coordinates (x, y)
-
-    matrix : (3, 3) numpy array
-    Homography matrix for projection
-
-    Returns
-    -------
-    pd.DataFrame
-    Transformed coordinates
-    """
     trans_points = points.copy()
     transformed_x = []
     transformed_y = []
@@ -195,79 +105,31 @@ def transform_points(points, matrix):
     return trans_points
 
 
-def get_cv2_point_plot(tracker_df, dst_image, label=0, unique_id=0, colours=0):
-
+def plot_object(tracker_df, dst_image):
     if isinstance(dst_image, str):
         image = cv2.imread(dst_image)
     else:
         image = dst_image.copy()
 
-    colour_list = [
-        (230, 25, 75),
-        (60, 180, 75),
-        (255, 225, 25),
-        (0, 130, 200),
-        (245, 130, 48),
-        (145, 30, 180),
-        (70, 240, 240),
-        (240, 50, 230),
-        (210, 245, 60),
-        (250, 190, 212),
-        (0, 128, 128),
-        (220, 190, 255),
-        (170, 110, 40),
-        (255, 250, 200),
-        (128, 0, 0),
-        (170, 255, 195),
-        (128, 128, 0),
-        (255, 215, 180),
-        (0, 0, 128),
-        (128, 128, 128),
-        (255, 255, 255),
-        (0, 0, 0),
-    ]
-
     grouped = tracker_df.groupby("unique_id")
-
-    for name, group in grouped:
+    for _, group in grouped:
         xy = []
-        colour_list_ = []
-        if type(label) is np.ndarray:
-            index = unique_id.index(name)
-            colour_label = colour_list[label[index]]
-        else:
-            colour_label = False
-        for _, row in group.iterrows():
-            xy.append(((int(round(row["x"]))), int(round(row["y"]))))
-            if not colour_label and colours == 0:
-                colour_label = colour_list[int(row["unique_id"]) % 8]
-            else:
-                colour_list_.append([int(row["colour_1"]*255), int(row["colour_2"]*255), int(row["colour_3"]*255)])
-        for count, i in enumerate(xy):
-            if count + 1 == len(xy):
-                break
-            if not colour_label:
-                cv2.line(image, xy[count], xy[count + 1], colour_list_[count], 3)
-            else:
-                cv2.line(image, xy[count], xy[count + 1], colour_label, 3)
+        colour_list = []
+        for count, (_, row) in enumerate(group.iterrows()):
+            xy.append((row["x"], row["y"]))
+            colour_list.append((0, 0, 255))  # row["colour"])
+            if len(xy) > 1:
+                cv2.line(image, xy[count - 1], xy[count], colour_list[count], 3)
     return image
 
 
-def show_data(cv2_object):
-    """Display image.
-
-    Parameters
-    ----------
-    cv2_object : cv2 object
-        CV2 image object
-    """
-    plt.figure(figsize=(15, 10))
-    plt.imshow(cv2_object)
-    plt.show()
+def show_data(name, cv2_object):
+    cv2.imshow(name, cv2_object)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 def click_event(event, x, y, flags, params):
-    """Needed for click coordiantes"""
     global temp
     if event == cv2.EVENT_LBUTTONDOWN:
 
@@ -280,17 +142,6 @@ def click_event(event, x, y, flags, params):
 
 
 def click_coordinates(image):
-    """Display image with plotted tracker data
-
-    Parameters
-    ----------
-    img_path : str
-        Path to image
-
-    Returns
-    -------
-    List of lists of coordinates
-    """
     global temp
     global img
     if temp:
@@ -311,26 +162,6 @@ def click_coordinates(image):
 
 
 def capture_image_from_video(video_path, base_image, file_name, frame_number):
-    """Save frame from video
-
-    Parameters
-    ----------
-    video_path : str
-        Path to video
-
-    base_image : str
-        Path to save image to
-
-    file_name : str
-        File name of video file
-
-    frame_number : int
-        Frame to save
-
-    Returns
-    -------
-    str
-    """
     vc = cv2.VideoCapture(video_path)
     vc.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
     rval, frame_number = vc.read()
@@ -345,41 +176,29 @@ def get_frame(video_path, frame_number):
     return frame
 
 
-def join_df(df1, df2, df3):
-    data = {"frame_id": [],"unique_id": [], "x": [], "y": [], "projected_raw_x": [], "projected_raw_y": [], "smooth_x": [], "y": [], "camera": []}
+def join_df(df1, df2):
+    data = {
+        "frame_id": [],
+        "unique_id": [],
+        "x": [],
+        "y": [],
+        "camera": [],
+    }
     for _, row in df1.iterrows():
-        data["frame_id"].append(row["frame_id"]) 
+        data["frame_id"].append(row["frame_id"])
         data["unique_id"].append(row["unique_id"])
         data["x"].append(row["x"])
         data["y"].append(row["y"])
-        data["projected_raw_x"].append(row["projected_raw_x"])
-        data["projected_raw_y"].append(row["projected_raw_y"])
-        data["smooth_x"].append(row["smooth_x"])
-        data["smooth_y"].append(row["smooth_y"])
         data["camera"].append(row["camera"])
     for _, row in df2.iterrows():
-        data["frame_id"].append(row["frame_id"]) 
+        data["frame_id"].append(row["frame_id"])
         data["unique_id"].append(row["unique_id"])
         data["x"].append(row["x"])
         data["y"].append(row["y"])
-        data["projected_raw_x"].append(row["projected_raw_x"])
-        data["projected_raw_y"].append(row["projected_raw_y"])
-        data["smooth_x"].append(row["smooth_x"])
-        data["smooth_y"].append(row["smooth_y"])
         data["camera"].append(row["camera"])
-    for _, row in df3.iterrows():
-        data["frame_id"].append(row["frame_id"]) 
-        data["unique_id"].append(row["unique_id"])
-        data["x"].append(row["x"])
-        data["y"].append(row["y"])
-        data["projected_raw_x"].append(row["projected_raw_x"])
-        data["projected_raw_y"].append(row["projected_raw_y"])
-        data["smooth_x"].append(row["smooth_x"])
-        data["smooth_y"].append(row["smooth_y"])
-        data["camera"].append(row["camera"])
-
     new_df = pd.DataFrame(data=data)
     return new_df
+
 
 def add_camera(df, camera):
     df["camera"] = camera
