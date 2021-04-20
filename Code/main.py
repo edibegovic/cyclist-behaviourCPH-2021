@@ -12,12 +12,14 @@ import camera_class
 
 # Create class object
 # ------------------------------------------
-g6 = camera_class.Camera("hogni", 24032021, "short_g6")
+camera = camera_class.Camera("hogni", 24032021, "short_g6")
 
 # Create df
 # ------------------------------------------
+
 # ODC
-tracker_df = tracker.create_tracker_df(g6.tracker_path)
+tracker_df = tracker.create_tracker_df(camera.tracker_path)
+
 # YOLOv5 - load
 tracker_df = pd.read_pickle("short_g6.pickle")
 
@@ -70,3 +72,7 @@ project.show_data(plot)
 # df to CSV
 # ------------------------------------------
 tracker_df.to_csv("short_g6_yolov5x6_id.csv")
+
+# df to Pickle
+# ------------------------------------------
+transformed_tracks.to_pickle("current_tracker.pickle")

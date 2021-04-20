@@ -291,3 +291,4 @@ code/node_modules/
 report/.vscode/
 *.icloud
 Code/node_modules/
+*.pickle
