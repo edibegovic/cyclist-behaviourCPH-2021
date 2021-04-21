@@ -2,6 +2,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 import numpy as np
 import cv2
+import sys
 from sort import *
 
 class Camera:
@@ -25,7 +26,8 @@ class Camera:
         self.tracker_df["x"] = (self.tracker_df["xmax"] - self.tracker_df["xmin"])/2 + self.tracker_df["xmin"]
         self.tracker_df["y"] = (self.tracker_df["ymax"] - self.tracker_df["ymin"])/2 + self.tracker_df["ymin"]
         self.tracker_df["camera"] = self.camera 
-        self.tracker_df["unique_id"] = None
+        if "unique_id" not in self.tracker_df.columns:
+            self.tracker_df["unique_id"] = None
         self.tracker_df["color"] = None
 
     def read_pkl(self, path):
@@ -40,9 +42,6 @@ class Camera:
         df_y = (self.tracker_df.groupby("unique_id")["y"].rolling(smoothing_factor, min_periods=1).mean().to_frame(name="smooth_y").droplevel("unique_id"))
         self.tracker_df["x"] = df_x
         self.tracker_df["y"] = df_y
-
-    def cut_tracks_with_few_points(self, n):
-        self.tracker_df = self.tracker_df[self.tracker_df.groupby("unique_id")["unique_id"].transform("size") > n]
 
     def cut_tracks_with_few_points(self, n):
         self.tracker_df = self.tracker_df[self.tracker_df.groupby("unique_id")["unique_id"].transform("size") > n]
@@ -194,51 +193,34 @@ class Camera:
         self.tracker_df["xmax"] = self.tracker_df["x"] + n
         self.tracker_df["ymax"] = self.tracker_df["y"] + n
 
-    # def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15):
-    #     tracker = Sort(max_age, min_hits, iou_threshold)
-    #     self.tracker_df = self.tracker_df.reset_index()
-    #     grouped_df = self.tracker_df.groupby("frame_id")
-    #     results = []
-    #     index = []
-    #     for _, group in grouped_df:
-    #         temp = []
-    #         temp_index = []
-    #         for idx, row in group.iterrows():
-    #             temp_index.append(idx)
-    #             temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
-    #         results.append(tracker.update(np.array(temp)).tolist())
-    #         index.append(temp_index)
-
-    #     for idx, i in enumerate(results):
-    #         for idx_2, a in enumerate(i):
-    #             self.tracker_df.loc[index[idx][idx_2], "unique_id"] = int(a[-1])
-
     def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15):
         tracker = Sort(max_age, min_hits, iou_threshold)
-        self.tracker_df = self.tracker_df.reset_index()
-        grouped_df = self.tracker_df.groupby("frame_id")
-        results = []
-        index = []
-        for _, group in grouped_df:
+        self.tracker_df = self.tracker_df.sort_values(by="frame_id").reset_index(drop = True)
+        new_df = pd.DataFrame(columns = ["xmin", "ymin", "xmax", "ymax", "unique_id", "frame_id"])
+        max_frame = max(self.tracker_df["frame_id"])
+
+        for i in range(max_frame):
             temp = []
-            temp_index = []
-            for idx, row in group.iterrows():
-                temp_index.append(idx)
-                temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
-            results.append(tracker.update(np.array(temp)).tolist())
-            index.append(temp_index)
-
-        for idx, i in enumerate(results):
-            for idx_2, a in enumerate(i):
-                self.tracker_df.loc[index[idx][idx_2], "unique_id"] = int(a[-1])
-
+            group = self.tracker_df[self.tracker_df["frame_id"] == i]
+            if len(group) != 0:
+                if not i % 10:
+                    sys.stdout.write("\r" + f"Calculating Unique ID's - {round((i/max_frame)*100, 2)} %")
+                    sys.stdout.flush()
+                for _, row in group.iterrows():
+                    temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
+                unique_id = tracker.update(np.array(temp))
+                unique_id = [y.tolist()+[i] for y in unique_id]
+                new_df = new_df.append(pd.DataFrame(unique_id, columns=new_df.columns))
+        self.tracker_df = new_df
+        self.df_format()
 
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
     g6.read_pkl("2403_g6_sync_yolov5x6.pickle")
-    g6.unique_id()
+    g6.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
+    g6.cut_tracks_with_few_points(50)
     src = g6.click_coordinates(g6.frame)
     dst = g6.click_coordinates(g6.map_path)
     g6.find_homography_matrix(src, dst)
@@ -251,3 +233,8 @@ if __name__ == "__main__":
     g6.remove_point_line(remove_line, "below")
     plotted_removed = g6.plot_object(g6.tracker_df_removed, g6.map_path)
     g6.show_data("Warped img", plotted_removed)
+
+    g6.tracker_df.to_csv("test.csv")
+    g6.tracker_df.to_pickle("g6_processed_not_cut.pickle")
+
+    g6.tracker_df

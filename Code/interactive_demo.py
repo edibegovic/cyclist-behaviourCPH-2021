@@ -22,7 +22,7 @@ from PIL import Image
 # df = pd.read_csv("suicide_rates.csv")
 # df = pd.read_pickle("current_tracker.pickle")
 
-df = pd.read_csv("short_g6.csv")
+df = pd.read_csv("joined.csv")
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int) #%30
