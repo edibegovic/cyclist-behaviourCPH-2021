@@ -3,6 +3,7 @@ pd.options.mode.chained_assignment = None
 import numpy as np
 import cv2
 import sys
+import pickle
 from sort import *
 
 class Camera:
@@ -38,10 +39,8 @@ class Camera:
         self.tracker_df["y"] = self.tracker_df["ymax"]
 
     def smooth_tracks(self, smoothing_factor):
-        df_x = (self.tracker_df.groupby("unique_id")["x"].rolling(smoothing_factor, min_periods=1).mean().to_frame(name="smooth_x").droplevel("unique_id"))
-        df_y = (self.tracker_df.groupby("unique_id")["y"].rolling(smoothing_factor, min_periods=1).mean().to_frame(name="smooth_y").droplevel("unique_id"))
-        self.tracker_df["x"] = df_x
-        self.tracker_df["y"] = df_y
+        self.tracker_df["x"] = self.tracker_df.groupby("unique_id")["x"].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
+        self.tracker_df["y"] = self.tracker_df.groupby("unique_id")["y"].transform(lambda y: y.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
 
     def cut_tracks_with_few_points(self, n):
         self.tracker_df = self.tracker_df[self.tracker_df.groupby("unique_id")["unique_id"].transform("size") > n]
@@ -59,21 +58,32 @@ class Camera:
             cv2.putText(self.img, str(len(self.temp)), (x + 5, y - 5), font, 2, (255, 255, 255), 5)
             cv2.imshow("image", self.img)
 
-    def click_coordinates(self, image):
-        if self.temp:
-            self.temp = []
-            self.img = 0
+    def click_coordinates(self, image, type = "load"):
+        if type == "load":
+            try:
+                with open(f"Calibrations/{self.camera}.pickle", "rb") as file:
+                    self.temp = pickle.load(file)
+                sys.stdout.write("Coordinates loaded")
+            except FileNotFoundError:
+                sys.stdout.write("File does not exist")
+        elif type == "new" or type == "line":
+            if self.temp:
+                self.temp = []
+                self.img = 0
 
-        if isinstance(image, str):
-            self.img = cv2.imread(image, 1)
-        else:
-            self.img = image.copy()
+            if isinstance(image, str):
+                self.img = cv2.imread(image, 1)
+            else:
+                self.img = image.copy()
 
-        cv2.imshow("image", self.img)
-        cv2.setMouseCallback("image", self.click_event)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-        cv2.waitKey(1)
+            cv2.imshow("image", self.img)
+            cv2.setMouseCallback("image", self.click_event)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            cv2.waitKey(1)
+            if type != "line":
+                with open(f"Calibrations/{self.camera}.pickle", 'wb') as file:
+                    pickle.dump(self.temp, file)
         return self.temp
 
     def find_homography_matrix(self, source_list, destination_list):
@@ -217,24 +227,48 @@ class Camera:
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
     g6.read_pkl("2403_g6_sync_yolov5x6.pickle")
+    g6.tracker_df = g6.tracker_df[:10000]
     g6.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
     g6.cyclist_contact_coordiantes()
+    g6.smooth_tracks(20)
     g6.get_frame(1000)
-    g6.cut_tracks_with_few_points(50)
-    src = g6.click_coordinates(g6.frame)
+    #g6.cut_tracks_with_few_points(50)
+    src = g6.click_coordinates(g6.frame, "new")
+    src
     dst = g6.click_coordinates(g6.map_path)
     g6.find_homography_matrix(src, dst)
-    warped = g6.warped_perspective(g6.frame, g6.map_path)
-    g6.show_data("Warped img", warped)
+    # warped = g6.warped_perspective(g6.frame, g6.map_path)
+    # g6.show_data("Warped img", warped)
     g6.transform_points()
-    plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
-    g6.show_data("Points", plotted_points)
+    # plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
+    # g6.show_data("Points", plotted_points)
     remove_line = g6.click_coordinates(g6.map_path)
     g6.remove_point_line(remove_line, "below")
     plotted_removed = g6.plot_object(g6.tracker_df_removed, g6.map_path)
     g6.show_data("Warped img", plotted_removed)
 
+    s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
+    s7.read_pkl("2403_s7_sync_yolov5x6.pickle")
+    s7.tracker_df = s7.tracker_df[:10000]
+    s7.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
+    s7.cyclist_contact_coordiantes()
+    s7.smooth_tracks(20)
+    s7.get_frame(1000)
+    src = s7.click_coordinates(s7.frame, "new")
+    #s7.cut_tracks_with_few_points(50)
+    src = s7.click_coordinates(s7.frame)
+    dst = s7.click_coordinates(s7.map_path)
+    s7.find_homography_matrix(src, dst)
+    #warped = s7.warped_perspective(s7.frame, s7.map_path)
+    #s7.show_data("Warped img", warped)
+    s7.transform_points()
+    #plotted_points = s7.plot_object(s7.tracker_df, s7.map_path)
+    #s7.show_data("Points", plotted_points)
+    s7.remove_point_line(remove_line, "above")
+    plotted_removed_ = s7.plot_object(s7.tracker_df_removed, s7.map_path)
+    s7.show_data("Warped img", plotted_removed_)
+
     g6.tracker_df.to_csv("test.csv")
     g6.tracker_df.to_pickle("g6_processed_not_cut.pickle")
 
-    g6.tracker_df
+    pd.read_csv("init.csv")
