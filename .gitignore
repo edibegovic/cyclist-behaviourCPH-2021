@@ -292,3 +292,5 @@ report/.vscode/
 *.icloud
 Code/node_modules/
 *.pickle
+
+*.csv
