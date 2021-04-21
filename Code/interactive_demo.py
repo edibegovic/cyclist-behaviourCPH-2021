@@ -18,38 +18,68 @@ import plotly.graph_objects as go
 
 import base64
 from PIL import Image
+import tracker
 
 # df = pd.read_csv("suicide_rates.csv")
 # df = pd.read_pickle("current_tracker.pickle")
 
-df = pd.read_csv("short_g6.csv")
-
+df.loc[:, 'color'] = df['unique_id']%10
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
-df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int) #%30
-
-# img = Image.open('../data/dbro_map.png')
-# img.LOAD_TRUNCATED_IMAGES = True
-
-# app = dash.Dash(__name__)
+df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+# -------------------------------------------------------------------
+# Components
+# -------------------------------------------------------------------
+
+def make_item(i, title="Group X"):
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.H2(
+                    dbc.Button(
+                        title,
+                        color="link",
+                        id=f"group-{i}-toggle",
+                    )
+                )
+            ),
+            dbc.Collapse(
+                dbc.CardBody(f"This is the content of group {i}..."),
+                id=f"collapse-{i}",
+            ),
+        ]
+    )
+
+# -------------------------------------------------------------------
+# Layout
 #---------------------------------------------------------------
 app.layout = html.Div([
-        html.Div([
-            html.Pre(children= "Dybbølsbro",
-            style={"text-align": "center", "font-size":"100%", "color":"black"})
-        ]),
+        html.H1(["Cyclist Analysis", dbc.Badge("Alpha", className="ml-1")], style={'margin-left': '20px', 'margin-top': "25px", 'margin-bottom': "25px"}),
 
-        html.Div([
-            dcc.Graph(id='img_plot')
-            ]),
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.Div(dcc.Graph(id='img_plot')),
+                    width={"size": 8},
+                    style={'background-color': 'black'}
+                ),
+                dbc.Col(
+                    html.Div([make_item(1, "All cyclists"), make_item(2, "Incidents"), make_item(3)], className="accordion"),
+                    # width={"offset": 1},
+                    style={'background-color': 'grey'}
+                ),
+            ],
+            no_gutters=True,
+        ),
+
 
         dbc.Row([
                 dbc.Col([
                     dcc.Slider(id='frame-slider',
-                        min=2000,
-                        max=20000,
-                        value=12933,
+                        min=300,
+                        max=10000,
+                        value=300,
                         step=1,)
                 ], 
                 style={'padding': '0% 30%'}),
@@ -153,15 +183,6 @@ def update_img_plot(val):
     fig.update_xaxes(showgrid=False, range=(0, img_width), visible=False, showticklabels=False)
     fig.update_yaxes(showgrid=False, scaleanchor='x', range=(img_height, 0), visible=False, showticklabels=False)
     
-    # source="https://i.imgur.com/gaFSyAI.png"
-    
-    # Line shape added programatically
-    # fig.add_shape(
-    #     type='line', xref='x', yref='y',
-    #     x0=650, x1=1080, y0=380, y1=180*val, line_color='cyan'
-    # )
-
-    # points = test.iloc[(1500*(val-1)):(1500*val), :]
     frame = val
     window = 150
 
@@ -193,10 +214,10 @@ def update_img_plot(val):
     fig.update_layout(
         dragmode='drawrect',
         newshape=dict(line_color='cyan'),
-        title_text='Bike Detections',
-        height=900,
+        # height=900,
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin={"l": 0, "r": 0, "t": 0, "b": 0},
     )
 
     return fig
