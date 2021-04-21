@@ -8,7 +8,7 @@ import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import dash_player
 import dash_bootstrap_components as dbc
 
@@ -16,12 +16,16 @@ import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
+
 import base64
 from PIL import Image
 import tracker
 
-# df = pd.read_csv("suicide_rates.csv")
 # df = pd.read_pickle("current_tracker.pickle")
+# df = pd.read_csv("iphone4.csv")
+df = pd.read_csv("g6_processed_not_cut.csv")
 
 df.loc[:, 'color'] = df['unique_id']%10
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
@@ -212,7 +216,7 @@ def update_img_plot(val):
 
     # Set dragmode and newshape properties; add modebar buttons
     fig.update_layout(
-        dragmode='drawrect',
+        dragmode='drawclosedpath',
         newshape=dict(line_color='cyan'),
         # height=900,
         paper_bgcolor='rgba(0,0,0,0)',
@@ -239,9 +243,49 @@ def update_output(inc, dec, value):
               Output('video-player2', 'seekTo'),
               Output('video-player3', 'seekTo')],
               [Input('frame-slider', 'value')])
+
 def update_prop_seekTo(val):
     frame = val/30
     return frame, frame, frame
+
+
+@app.callback(
+    [Output(f"collapse-{i}", "is_open") for i in range(1, 4)],
+    [Input(f"group-{i}-toggle", "n_clicks") for i in range(1, 4)],
+    [State(f"collapse-{i}", "is_open") for i in range(1, 4)],
+)
+def toggle_accordion(n1, n2, n3, is_open1, is_open2, is_open3):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        return False, False, False
+    else:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    if button_id == "group-1-toggle" and n1:
+        return not is_open1, False, False
+    elif button_id == "group-2-toggle" and n2:
+        return False, not is_open2, False
+    elif button_id == "group-3-toggle" and n3:
+        return False, False, not is_open3
+    return False, False, False
+
+
+# @app.callback(
+#     Output("annotations-data", "children"),
+#     Input("graph-picture", "relayoutData"),
+#     # prevent_initial_call=True,
+# )
+# def on_new_annotation(relayout_data):
+#     if "shapes" in relayout_data:
+#         return json.dumps(relayout_data["shapes"], indent=2)
+#     else:
+#         return dash.no_update
+
+
+# point = Point(0.5, 0.5)
+# polygon = Polygon([(0, 0), (0, 1), (1, 1), (1, 0)])
+# print(polygon.contains(point))
 
 if __name__ == '__main__':
     app.run_server(port=8050, host='127.0.0.1', debug=True)
