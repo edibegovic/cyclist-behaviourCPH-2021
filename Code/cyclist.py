@@ -31,8 +31,9 @@ class Camera:
             self.tracker_df["unique_id"] = None
         self.tracker_df["color"] = None
 
-    def read_pkl(self, path):
-        self.tracker_df = pd.read_pickle(path)
+    def read_pkl(self, name):
+        self.file_name = name
+        self.tracker_df = pd.read_pickle(f"data/{name}.pickle")
         self.df_format()
 
     def cyclist_contact_coordiantes(self):
@@ -61,11 +62,11 @@ class Camera:
     def click_coordinates(self, image, type = "load"):
         if type == "load":
             try:
-                with open(f"Calibrations/{self.camera}.pickle", "rb") as file:
+                with open(f"states/{self.camera}.pickle", "rb") as file:
                     self.temp = pickle.load(file)
-                sys.stdout.write("Coordinates loaded")
+                print("Coordinates loaded")
             except FileNotFoundError:
-                sys.stdout.write("File does not exist")
+                print("File does not exist")
         elif type == "new" or type == "line":
             if self.temp:
                 self.temp = []
@@ -82,7 +83,7 @@ class Camera:
             cv2.destroyAllWindows()
             cv2.waitKey(1)
             if type != "line":
-                with open(f"Calibrations/{self.camera}.pickle", 'wb') as file:
+                with open(f"states/{self.camera}.pickle", 'wb') as file:
                     pickle.dump(self.temp, file)
         return self.temp
 
@@ -203,35 +204,50 @@ class Camera:
         self.tracker_df["xmax"] = self.tracker_df["x"] + n
         self.tracker_df["ymax"] = self.tracker_df["y"] + n
 
-    def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15):
-        tracker = Sort(max_age, min_hits, iou_threshold)
-        self.tracker_df = self.tracker_df.sort_values(by="frame_id").reset_index(drop = True)
-        new_df = pd.DataFrame(columns = ["xmin", "ymin", "xmax", "ymax", "unique_id", "frame_id"])
-        max_frame = max(self.tracker_df["frame_id"])
+    def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15, save_load = 0):
+        if save_load == "new":
+            tracker = Sort(max_age, min_hits, iou_threshold)
+            self.tracker_df = self.tracker_df.sort_values(by="frame_id").reset_index(drop = True)
+            new_df = pd.DataFrame(columns = ["xmin", "ymin", "xmax", "ymax", "unique_id", "frame_id"])
+            max_frame = max(self.tracker_df["frame_id"])
 
-        for i in range(max_frame):
-            temp = []
-            group = self.tracker_df[self.tracker_df["frame_id"] == i]
-            if len(group) != 0:
-                if not i % 10:
-                    sys.stdout.write("\r" + f"Calculating Unique ID's - {round((i/max_frame)*100, 2)} %")
-                    sys.stdout.flush()
-                for _, row in group.iterrows():
-                    temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
-                unique_id = tracker.update(np.array(temp))
-                unique_id = [y.tolist()+[i] for y in unique_id]
-                new_df = new_df.append(pd.DataFrame(unique_id, columns=new_df.columns))
-        self.tracker_df = new_df
-        self.df_format()
+            for i in range(max_frame):
+                temp = []
+                group = self.tracker_df[self.tracker_df["frame_id"] == i]
+                if len(group) != 0:
+                    if not i % 10:
+                        sys.stdout.write("\r" + f"Calculating Unique ID's - {round((i/max_frame)*100, 2)} %")
+                        sys.stdout.flush()
+                    for _, row in group.iterrows():
+                        temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
+                    unique_id = tracker.update(np.array(temp))
+                    unique_id = [y.tolist()+[i] for y in unique_id]
+                    new_df = new_df.append(pd.DataFrame(unique_id, columns=new_df.columns))
+            self.tracker_df = new_df
+            self.df_format()
+            name = self.file_name + "_unique_id"
+            with open(f"data/{name}.pickle", 'wb') as file:
+                pickle.dump(self.tracker_df, file)
+                print("\n" + "Unique ID's saved")
+        elif save_load == "load":
+            try:
+                name = self.file_name + "_unique_id"
+                with open(f"data/{name}.pickle", "rb") as file:
+                    self.tracker_df = pickle.load(file)
+                print("DF with Unique ID's loaded")
+            except FileNotFoundError:
+                print("File does not exist")
+        else:
+            print("Pass 'new' or 'load'")
 
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
-    g6.read_pkl("2403_g6_sync_yolov5x6.pickle")
+    g6.read_pkl("2403_g6_sync_yolov5x6")
     g6.tracker_df = g6.tracker_df[:10000]
-    g6.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
+    g6.unique_id(max_age=60, min_hits=1, iou_threshold=0.10, save_load = "load")
     g6.cyclist_contact_coordiantes()
-    g6.smooth_tracks(20)
     g6.get_frame(1000)
+    g6.smooth_tracks(20)
     #g6.cut_tracks_with_few_points(50)
     src = g6.click_coordinates(g6.frame, "new")
     src
@@ -248,7 +264,7 @@ if __name__ == "__main__":
     g6.show_data("Warped img", plotted_removed)
 
     s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
-    s7.read_pkl("2403_s7_sync_yolov5x6.pickle")
+    s7.read_pkl("2403_s7_sync_yolov5x6")
     s7.tracker_df = s7.tracker_df[:10000]
     s7.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
     s7.cyclist_contact_coordiantes()
