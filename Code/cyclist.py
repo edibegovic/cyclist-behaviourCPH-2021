@@ -2,6 +2,7 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 import numpy as np
 import cv2
+import sys
 from sort import *
 
 class Camera:
@@ -194,43 +195,34 @@ class Camera:
         self.tracker_df["xmax"] = self.tracker_df["x"] + n
         self.tracker_df["ymax"] = self.tracker_df["y"] + n
 
-    # def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15):
-    #     tracker = Sort(max_age, min_hits, iou_threshold)
-    #     self.tracker_df = self.tracker_df.reset_index()
-    #     grouped_df = self.tracker_df.groupby("frame_id")
-    #     results = []
-    #     index = []
-    #     for _, group in grouped_df:
-    #         temp = []
-    #         temp_index = []
-    #         for idx, row in group.iterrows():
-    #             temp_index.append(idx)
-    #             temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
-    #         results.append(tracker.update(np.array(temp)).tolist())
-    #         index.append(temp_index)
-
-    #     for idx, i in enumerate(results):
-    #         for idx_2, a in enumerate(i):
-    #             self.tracker_df.loc[index[idx][idx_2], "unique_id"] = int(a[-1])
-
-    def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15):
+    def unique_id(self, max_age=30, min_hits=0, iou_threshold=0.10):
         tracker = Sort(max_age, min_hits, iou_threshold)
-        self.tracker_df = self.tracker_df.reset_index()
-        grouped_df = self.tracker_df.groupby("frame_id")
+        self.tracker_df = self.tracker_df.sort_values(by="frame_id").reset_index(drop = True)
+        frames = sorted(list(set(g6.tracker_df["frame_id"])))
+
         results = []
         index = []
-        for _, group in grouped_df:
+        for count, i in enumerate(frames):
             temp = []
             temp_index = []
+            group = self.tracker_df[self.tracker_df["frame_id"] == i]
+            if count % 1000:
+                sys.stdout.write("\r" + f"Calculating Unique ID's - {round((count/len(frames))*100, 2)} %")
+                sys.stdout.flush()
             for idx, row in group.iterrows():
                 temp_index.append(idx)
                 temp.append(row[["xmin", "ymin", "xmax", "ymax", "confidence"]])
             results.append(tracker.update(np.array(temp)).tolist())
             index.append(temp_index)
 
-        for idx, i in enumerate(results):
-            for idx_2, a in enumerate(i):
-                self.tracker_df.loc[index[idx][idx_2], "unique_id"] = int(a[-1])
+        unique_id_list = []
+        for count, i in enumerate(results):
+            if count % 1000:
+                sys.stdout.write("\r" + f"Writting unique ID's - {round((count/len(results))*100, 2)} %")
+                sys.stdout.flush()
+            for a in i:
+                unique_id_list.append(int(a[-1]))
+        self.tracker_df["unique_id"] = unique_id_list
 
 
 if __name__ == "__main__":
@@ -251,3 +243,7 @@ if __name__ == "__main__":
     g6.remove_point_line(remove_line, "below")
     plotted_removed = g6.plot_object(g6.tracker_df_removed, g6.map_path)
     g6.show_data("Warped img", plotted_removed)
+
+    g6.tracker_df.to_csv("joined.csv")
+    g6.tracker_df.to_pickle("joined.pickle")
+  
