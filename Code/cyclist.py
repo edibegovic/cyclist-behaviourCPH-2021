@@ -243,8 +243,8 @@ class Camera:
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
     g6.read_pkl("2403_g6_sync_yolov5x6")
-    g6.tracker_df = g6.tracker_df[:10000]
-    g6.unique_id(max_age=60, min_hits=1, iou_threshold=0.10, save_load = "load")
+    # g6.file_name = ""
+    g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
     g6.smooth_tracks(20)
@@ -265,8 +265,8 @@ if __name__ == "__main__":
 
     s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
     s7.read_pkl("2403_s7_sync_yolov5x6")
-    s7.tracker_df = s7.tracker_df[:10000]
-    s7.unique_id(max_age=60, min_hits=1, iou_threshold=0.10)
+    # s7.file_name = ""
+    s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     s7.cyclist_contact_coordiantes()
     s7.smooth_tracks(20)
     s7.get_frame(1000)
