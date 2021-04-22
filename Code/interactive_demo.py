@@ -22,7 +22,7 @@ from PIL import Image
 # df = pd.read_csv("suicide_rates.csv")
 # df = pd.DataFrame(data={'x': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450], 'y': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450]})
 
-df = pd.read_csv("joined.csv")
+df = pd.read_csv("Data/24032021/Data/CSV/joined_df_df_90_1_0.10.csv") 
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int) #%30
@@ -81,7 +81,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_S7_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_S7_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -90,7 +90,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player2',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_edi_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_edi_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -99,7 +99,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player3',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_G6_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_G6_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -148,7 +148,7 @@ def update_img_plot(val):
             yref="y",
             opacity=1.0,
             layer="below",
-            source="assets/dbro_map.png"
+            source="/Data/24032021/Data/Assets/dbro_map.png"
     )
     fig.update_xaxes(showgrid=False, range=(0, img_width), visible=False, showticklabels=False)
     fig.update_yaxes(showgrid=False, scaleanchor='x', range=(img_height, 0), visible=False, showticklabels=False)

@@ -13,13 +13,9 @@ class Camera:
         self.file_name = file_name
         self.camera = camera
 
-        self.parent_path = f"/Users/{self.user}/Library/Mobile Documents/com~apple~CloudDocs/Bachelor Project/"
-        self.parent_path_video = f"{self.parent_path}Videos/{self.video_folder}/"
-        self.tracker_path = f"{self.parent_path_video}Data/{self.file_name}/tracker_{self.file_name}.json"
-        self.video_path = f"{self.parent_path_video}Processed/{self.file_name}.mp4"
-        self.photo_path = f"{self.parent_path_video}Photos/{self.file_name}"
-        self.base_image = f"{self.parent_path}Base Image"
-        self.map_path = f"{self.base_image}/FullHD_bridge.png"
+        self.parent_path = f"Data/{self.video_folder}"
+        self.video_path = f"{self.parent_path}/Videos/Processed/{self.file_name}.mp4"
+        self.map_path = f"{self.parent_path}/Data/Assets/dbro_map.png"
         self.temp = []
         self.img = 0
 
@@ -29,11 +25,12 @@ class Camera:
         self.tracker_df["camera"] = self.camera 
         if "unique_id" not in self.tracker_df.columns:
             self.tracker_df["unique_id"] = None
-        self.tracker_df["color"] = None
+        if "color" not in self.tracker_df.columns:
+            self.tracker_df["color"] = None
 
     def read_pkl(self, name):
         self.file_name = name
-        self.tracker_df = pd.read_pickle(f"data/{name}.pickle")
+        self.tracker_df = pd.read_pickle(f"{self.parent_path}/Data/TrackerDF/{name}.pickle")
         self.df_format()
 
     def cyclist_contact_coordiantes(self):
@@ -59,10 +56,10 @@ class Camera:
             cv2.putText(self.img, str(len(self.temp)), (x + 5, y - 5), font, 2, (255, 255, 255), 5)
             cv2.imshow("image", self.img)
 
-    def click_coordinates(self, image, type = "load"):
+    def click_coordinates(self, image, dst = 0, type = "load"):
         if type == "load":
             try:
-                with open(f"states/{self.camera}.pickle", "rb") as file:
+                with open(f"{self.parent_path}/Data/States/{self.camera}_{dst}.pickle", "rb") as file:
                     self.temp = pickle.load(file)
                 print("Coordinates loaded")
             except FileNotFoundError:
@@ -83,7 +80,7 @@ class Camera:
             cv2.destroyAllWindows()
             cv2.waitKey(1)
             if type != "line":
-                with open(f"states/{self.camera}.pickle", 'wb') as file:
+                with open(f"{self.parent_path}/Data/States/{self.camera}_{dst}.pickle", 'wb') as file:
                     pickle.dump(self.temp, file)
         return self.temp
 
@@ -180,7 +177,7 @@ class Camera:
         self.tracker_df_removed = self.tracker_df[self.tracker_df.index.isin(remove_list) == False]
 
     def remove_point_line(self, line, remove="above"):
-        self.tracker_df = self.tracker_df.reset_index()
+        self.tracker_df = self.tracker_df.reset_index(drop=True)
         remove_list = []
         len_df = len(self.tracker_df)
         for count, (index, row) in enumerate(self.tracker_df.iterrows()):
@@ -196,13 +193,13 @@ class Camera:
             if (count % 100) == 0:
                 sys.stdout.write("\r" + f"Removal progress - {round((count/len_df)*100, 2)} %")
                 sys.stdout.flush()
-        self.tracker_df_removed = self.tracker_df[self.tracker_df.index.isin(remove_list) == False]
+        self.tracker_df = self.tracker_df[self.tracker_df.index.isin(remove_list) == False]
 
-    def new_min_max(self, n):
-        self.tracker_df["xmin"] = self.tracker_df["x"] - n
-        self.tracker_df["ymin"] = self.tracker_df["y"] - n
-        self.tracker_df["xmax"] = self.tracker_df["x"] + n
-        self.tracker_df["ymax"] = self.tracker_df["y"] + n
+    def new_bbox(self, bbox_size):
+        self.tracker_df["xmin"] = self.tracker_df["x"] - bbox_size
+        self.tracker_df["ymin"] = self.tracker_df["y"] - bbox_size
+        self.tracker_df["xmax"] = self.tracker_df["x"] + bbox_size
+        self.tracker_df["ymax"] = self.tracker_df["y"] + bbox_size
 
     def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15, save_load = 0):
         if save_load == "new":
@@ -226,13 +223,13 @@ class Camera:
             self.tracker_df = new_df
             self.df_format()
             name = self.file_name + "_unique_id"
-            with open(f"data/{name}.pickle", 'wb') as file:
+            with open(f"{self.parent_path}/Data/TrackerDF/{name}.pickle", 'wb') as file:
                 pickle.dump(self.tracker_df, file)
                 print("\n" + "Unique ID's saved")
         elif save_load == "load":
             try:
                 name = self.file_name + "_unique_id"
-                with open(f"data/{name}.pickle", "rb") as file:
+                with open(f"{self.parent_path}/Data/TrackerDF/{name}.pickle", "rb") as file:
                     self.tracker_df = pickle.load(file)
                 print("DF with Unique ID's loaded")
             except FileNotFoundError:
@@ -248,19 +245,18 @@ if __name__ == "__main__":
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
     g6.smooth_tracks(20)
-    #g6.cut_tracks_with_few_points(50)
-    src = g6.click_coordinates(g6.frame, "new")
-    src
-    dst = g6.click_coordinates(g6.map_path)
+    g6.cut_tracks_with_few_points(10)
+    src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
+    dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
     g6.find_homography_matrix(src, dst)
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
     g6.transform_points()
     # plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
     # g6.show_data("Points", plotted_points)
-    remove_line = g6.click_coordinates(g6.map_path)
+    remove_line = g6.click_coordinates(g6.map_path, dst = 0, type = "line")
     g6.remove_point_line(remove_line, "below")
-    plotted_removed = g6.plot_object(g6.tracker_df_removed, g6.map_path)
+    plotted_removed = g6.plot_object(g6.tracker_df, g6.map_path)
     g6.show_data("Warped img", plotted_removed)
 
     s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
@@ -268,23 +264,29 @@ if __name__ == "__main__":
     # s7.file_name = ""
     s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     s7.cyclist_contact_coordiantes()
-    s7.smooth_tracks(20)
     s7.get_frame(1000)
-    src = s7.click_coordinates(s7.frame, "new")
-    #s7.cut_tracks_with_few_points(50)
-    src = s7.click_coordinates(s7.frame)
-    dst = s7.click_coordinates(s7.map_path)
+    s7.smooth_tracks(20)
+    s7.cut_tracks_with_few_points(10)
+    src = s7.click_coordinates(s7.frame, dst = "src", type = "load")
+    dst = s7.click_coordinates(s7.map_path, dst = "dst", type = "load")
     s7.find_homography_matrix(src, dst)
-    #warped = s7.warped_perspective(s7.frame, s7.map_path)
-    #s7.show_data("Warped img", warped)
+    # warped = s7.warped_perspective(s7.frame, s7.map_path)
+    # s7.show_data("Warped img", warped)
     s7.transform_points()
     #plotted_points = s7.plot_object(s7.tracker_df, s7.map_path)
     #s7.show_data("Points", plotted_points)
     s7.remove_point_line(remove_line, "above")
-    plotted_removed_ = s7.plot_object(s7.tracker_df_removed, s7.map_path)
-    s7.show_data("Warped img", plotted_removed_)
+    plotted_removed_s7 = s7.plot_object(s7.tracker_df, s7.map_path)
+    s7.show_data("Warped img", plotted_removed_s7)
 
-    g6.tracker_df.to_csv("test.csv")
-    g6.tracker_df.to_pickle("g6_processed_not_cut.pickle")
+    def join_df(df_list):
+        return pd.concat(df_list, ignore_index=True).sort_values("frame_id").reset_index(drop=True)
 
-    pd.read_csv("init.csv")
+    joined_df = join_df([g6.tracker_df, s7.tracker_df])
+
+    joined_df.to_csv("/Data/24032021/Data/CSV/joined_df_df_90_1_0.10.csv")
+    len(g6.tracker_df)
+
+    joined = Camera("hogni", 24032021, "2403_s7_sync", "s7")
+    new_min_max
+    joined_df
