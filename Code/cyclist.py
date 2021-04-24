@@ -1,10 +1,14 @@
-import pandas as pd
-pd.options.mode.chained_assignment = None
 import numpy as np
+import os
 import cv2
 import sys
 import pickle
 from sort import *
+import pandas as pd
+pd.options.mode.chained_assignment = None
+import ml
+import math
+import matplotlib.pyplot as plt
 
 class Camera:
     def __init__(self, user, video_folder, file_name, camera):
@@ -27,6 +31,8 @@ class Camera:
             self.tracker_df["unique_id"] = None
         if "color" not in self.tracker_df.columns:
             self.tracker_df["color"] = None
+        if "confidence" not in self.tracker_df.columns:
+            self.tracker_df["confidence"] = 1
 
     def read_pkl(self, name):
         self.file_name = name
@@ -237,11 +243,44 @@ class Camera:
         else:
             print("Pass 'new' or 'load'")
 
+# Color paths
+
+    def calculate_bearing(self, row, previous_row):
+        x_1, y_1 = row["x"], row["y"]
+        x_2, y_2 = previous_row["x"], previous_row["y"]
+        angle = math.atan2(y_1-y_2, x_1-x_2)
+        bearing = math.degrees(angle)
+        bearing = (bearing + 360) % 360
+        return bearing
+
+    def add_color(self):
+        grouped_df = self.tracker_df.groupby("unique_id", as_index=False)
+        len_df = len(self.tracker_df)
+        for count, (_, group) in enumerate(grouped_df):
+            previous_row = []
+            len_group = len(group)
+            for count2, (_, row) in enumerate(group.iterrows()):
+                if not len(previous_row):
+                    previous_row = row
+                bearing = self.calculate_bearing(row, previous_row)
+                color = self.get_color(int(round(bearing)))
+                self.tracker_df.at[_, "color"] = pd.Series([[color[0], color[1], color[2]]])
+                if not count2%100:
+                    sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}% - current group: {round(((count2)/(len_group))*100, 3)}%")
+                    sys.stdout.flush()
+                previous_row = row
+
+    def get_color(self, n):
+        return plt.cm.gist_ncar(int(round(n)))
+
+
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
     g6.read_pkl("2403_g6_sync_yolov5x6")
     # g6.file_name = ""
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
+    g6.add_color()
+    g6.tracker_df
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
     g6.smooth_tracks(20)
@@ -283,10 +322,19 @@ if __name__ == "__main__":
         return pd.concat(df_list, ignore_index=True).sort_values("frame_id").reset_index(drop=True)
 
     joined_df = join_df([g6.tracker_df, s7.tracker_df])
+    joined = Camera("hogni", 24032021, "joined", "joined")
+    joined.tracker_df = joined_df
+    joined.new_bbox(10)
+    joined.df_format()
+    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
 
-    joined_df.to_csv("/Data/24032021/Data/CSV/joined_df_df_90_1_0.10.csv")
-    len(g6.tracker_df)
+    joined.tracker_df.to_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv")
+    len(joined.tracker_df)
 
-    joined = Camera("hogni", 24032021, "2403_s7_sync", "s7")
-    new_min_max
-    joined_df
+    joined = Camera("hogni", 24032021, "joined", "joined")
+    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
+    # joined.tracker_df["x"] = joined.tracker_df["x"].round(0).astype(int)
+    # joined.tracker_df["y"] = joined.tracker_df["y"].round(0).astype(int)
+    joined.add_color()
+
+    n_clusters, labels, uniqueid, model = ml.run_all(joined.tracker_df)
