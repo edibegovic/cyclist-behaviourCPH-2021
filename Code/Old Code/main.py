@@ -70,5 +70,6 @@ project.show_data("Tracks projection", plot)
 df.to_csv("df_joined.csv")
 tracker_df_2 = pd.read_csv("short_s7_yolov5x6_id.csv")
 
-df = pd.concat([tracker_df, tracker_df_2], ignore_index=True)
-df[:100]
+# df to Pickle
+# ------------------------------------------
+tracker_df.to_pickle("current_tracker.pickle")

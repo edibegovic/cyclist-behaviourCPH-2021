@@ -20,9 +20,9 @@ import base64
 from PIL import Image
 
 # df = pd.read_csv("suicide_rates.csv")
-# df = pd.DataFrame(data={'x': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450], 'y': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450]})
+# df = pd.read_pickle("current_tracker.pickle")
 
-df = pd.read_csv("Data/24032021/Data/CSV/joined_df_df_90_1_0.10.csv") 
+df = pd.read_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv") 
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int) #%30
@@ -148,7 +148,7 @@ def update_img_plot(val):
             yref="y",
             opacity=1.0,
             layer="below",
-            source="/Data/24032021/Data/Assets/dbro_map.png"
+            source="assets/dbro_map.png"
     )
     fig.update_xaxes(showgrid=False, range=(0, img_width), visible=False, showticklabels=False)
     fig.update_yaxes(showgrid=False, scaleanchor='x', range=(img_height, 0), visible=False, showticklabels=False)
