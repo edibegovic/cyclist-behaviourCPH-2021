@@ -10,6 +10,7 @@ import ml
 import math
 import matplotlib.pyplot as plt
 from rdp import rdp
+import similaritymeasures as sm
 
 class Camera:
     def __init__(self, user, video_folder, file_name, camera):
@@ -295,9 +296,59 @@ class Camera:
         
 # Ramer-Douglas-Peucker algorithm - Dimensinality reduction of line segments
 
-    def ramer_reduction():
-        rdp([[1, 1], [2, 2], [3, 3], [4, 4]])
-        pass
+    def ramer_reduction(self):
+        ramer_df = pd.DataFrame(columns = ["unique_id", "line"])
+        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
+
+        unique_id = 0
+        unique_id_list = []
+        line_list = []
+        len_tracker_df = len(self.tracker_df)
+        temp = []
+
+        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
+            if count == 0:
+                unique_id = row["unique_id"]
+                unique_id_list.append(row["unique_id"])
+            if unique_id != row["unique_id"]:
+                unique_id_list.append(row["unique_id"])
+                line_list.append(temp)
+                temp = []
+            temp.append([row["x"], row["y"]])
+            unique_id = row["unique_id"]
+            if not count%100:
+                sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 1: {round(((count)/(len_tracker_df))*100, 3)}%")
+                sys.stdout.flush()
+
+        ramer_list = []
+
+        for count, i in enumerate(line_list):
+            i = np.rint(np.array(i).reshape((len(i),2)))
+            ramer_list.append(rdp(i))
+            if not count%100:
+                sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 2: {round(((count)/(len_tracker_df))*100, 3)}%")
+                sys.stdout.flush()
+        self.ramer_list = ramer_list
+        self.ramer_id = unique_id_list
+
+    def distance_matrix(self):
+        self.ramer_reduction()
+        similarity = lambda track_1, track_2: sm.frechet_dist(track_1, track_2)
+        
+        len_ramer = len(self.ramer_list)
+        dist_matrix = np.zeros((len_ramer, len_ramer))
+
+        for i, group in enumerate(self.ramer_list):
+            shorter_group = self.ramer_list[i:]
+            len_sg = len(shorter_group)
+            for j, group2 in enumerate(shorter_group):
+                distance_ = similarity(group, group2)
+                dist_matrix[i, j] = distance_
+                dist_matrix[j, i] = distance_
+                if not j%10:
+                    sys.stdout.write("\r" + f"Total: {round(((i)/(len_ramer))*100, 3)}% - current group: {round(((j)/(len_sg))*100, 3)}%")
+                    sys.stdout.flush()
+        self.dist_matrix = dist_matrix
 
 
 if __name__ == "__main__":
@@ -305,6 +356,11 @@ if __name__ == "__main__":
     g6.read_pkl("2403_g6_sync_yolov5x6")
     # g6.file_name = ""
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
+    g6.distance_matrix()
+    line_list = [[[int(round(num)) for num in line] for line in ramer]
+
+    rdp([[1.12, 1.23], [2.532, 2.3234], [3.12, 3.4], [4.23, 4.8979]])
+    np.array(line[1]).reshape((len(line[1]), 2))
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
     g6.smooth_tracks(20)
@@ -357,7 +413,7 @@ if __name__ == "__main__":
     joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
 
     joined.tracker_df.to_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv")
-    len(joined.tracker_df)
+    joined.tracker_df
 
     joined = Camera("hogni", 24032021, "joined", "joined")
     joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
