@@ -9,6 +9,7 @@ pd.options.mode.chained_assignment = None
 import ml
 import math
 import matplotlib.pyplot as plt
+from rdp import rdp
 
 class Camera:
     def __init__(self, user, video_folder, file_name, camera):
@@ -140,7 +141,7 @@ class Camera:
                 color_list = []
                 for count, (_, row) in enumerate(group.iterrows()):
                     xy.append((row["x"], row["y"]))
-                    color_list.append((0, 0, 255))  # row["color"])
+                    color_list.append(row["color"]) #(0, 0, 255))
                     if len(xy) > 1:
                         image = cv2.line(image, xy[count - 1], xy[count], color_list[count], 3)
         else:
@@ -245,6 +246,23 @@ class Camera:
 
 # Color paths
 
+    def add_bearing(self):
+        self.tracker_df["bearing"] = 0
+        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
+        len_df = len(self.tracker_df)
+        previous_row = []
+        unique_id = 0
+        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
+            if unique_id != row["unique_id"]:
+                previous_row = row
+            bearing = self.calculate_bearing(row, previous_row)
+            self.tracker_df["bearing"][_] = bearing
+            if not count % 100:
+                    sys.stdout.write("\r" + f"Adding bearing: {round(((count)/(len_df))*100, 3)}%")
+                    sys.stdout.flush()
+            previous_row = row
+            unique_id = row["unique_id"]
+
     def calculate_bearing(self, row, previous_row):
         x_1, y_1 = row["x"], row["y"]
         x_2, y_2 = previous_row["x"], previous_row["y"]
@@ -254,24 +272,30 @@ class Camera:
         return bearing
 
     def add_color(self):
-        grouped_df = self.tracker_df.groupby("unique_id", as_index=False)
+        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
         len_df = len(self.tracker_df)
-        for count, (_, group) in enumerate(grouped_df):
-            previous_row = []
-            len_group = len(group)
-            for count2, (_, row) in enumerate(group.iterrows()):
-                if not len(previous_row):
-                    previous_row = row
-                bearing = self.calculate_bearing(row, previous_row)
-                color = self.get_color(int(round(bearing)))
-                self.tracker_df.at[_, "color"] = pd.Series([[color[0], color[1], color[2]]])
-                if not count2%100:
-                    sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}% - current group: {round(((count2)/(len_group))*100, 3)}%")
-                    sys.stdout.flush()
+        previous_row = []
+        unique_id = 0
+        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
+            if unique_id != row["unique_id"]:
                 previous_row = row
+            bearing = self.calculate_bearing(row, previous_row)
+            color = self.get_color(int(round(bearing)))
+            self.tracker_df["color"][_] = [int(round(color[0]*255)), int(round(color[1]*255)), int(round(color[2]*255))]
+            if not count % 100:
+                    sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}%")
+                    sys.stdout.flush()
+            previous_row = row
+            unique_id = row["unique_id"]
 
     def get_color(self, n):
         return plt.cm.gist_ncar(int(round(n)))
+        
+# Ramer-Douglas-Peucker algorithm - Dimensinality reduction of line segments
+
+    def ramer_reduction():
+        rdp([[1, 1], [2, 2], [3, 3], [4, 4]])
+        pass
 
 
 if __name__ == "__main__":
@@ -279,11 +303,11 @@ if __name__ == "__main__":
     g6.read_pkl("2403_g6_sync_yolov5x6")
     # g6.file_name = ""
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
-    g6.add_color()
+    g6.add_bearing()
     g6.tracker_df
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
-    g6.smooth_tracks(20)
+    g6.smooth_tracks(100)
     g6.cut_tracks_with_few_points(10)
     src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
     dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
@@ -291,8 +315,10 @@ if __name__ == "__main__":
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
     g6.transform_points()
-    # plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
-    # g6.show_data("Points", plotted_points)
+    g6.add_color()
+    plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
+    g6.show_data("Points", plotted_points)
+
     remove_line = g6.click_coordinates(g6.map_path, dst = 0, type = "line")
     g6.remove_point_line(remove_line, "below")
     plotted_removed = g6.plot_object(g6.tracker_df, g6.map_path)
@@ -335,6 +361,3 @@ if __name__ == "__main__":
     joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
     # joined.tracker_df["x"] = joined.tracker_df["x"].round(0).astype(int)
     # joined.tracker_df["y"] = joined.tracker_df["y"].round(0).astype(int)
-    joined.add_color()
-
-    n_clusters, labels, uniqueid, model = ml.run_all(joined.tracker_df)
