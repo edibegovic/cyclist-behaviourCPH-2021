@@ -11,6 +11,8 @@ import math
 import matplotlib.pyplot as plt
 from rdp import rdp
 import similaritymeasures as sm
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 class Camera:
     def __init__(self, user, video_folder, file_name, camera):
@@ -70,6 +72,23 @@ class Camera:
                     sys.stdout.flush()
             previous_row = row
             unique_id = row["unique_id"]
+
+    def add_label(self):
+        self.tracker_df["label"] = 0
+        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
+        len_df = len(self.tracker_df)
+        unique_id = 0
+        label = -1
+        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
+            if unique_id != row["unique_id"]:
+                unique_id = row["unique_id"]
+                label += 1
+            self.tracker_df["label"][_] = self.labels[label]
+            if not count % 100:
+                    sys.stdout.write("\r" + f"Adding label: {round(((count)/(len_df))*100, 3)}%")
+                    sys.stdout.flush()
+            unique_id = row["unique_id"]
+
 
     def calculate_bearing(self, row, previous_row):
         x_1, y_1 = row["x"], row["y"]
@@ -170,7 +189,7 @@ class Camera:
                 color_list = []
                 for count, (_, row) in enumerate(group.iterrows()):
                     xy.append((row["x"], row["y"]))
-                    color_list.append(row["color"]) #(0, 0, 255))
+                    color_list.append(row["color"])
                     if len(xy) > 1:
                         image = cv2.line(image, xy[count - 1], xy[count], color_list[count], 3)
         else:
@@ -275,21 +294,41 @@ class Camera:
 
 # Color paths
 
-    def add_color(self):
+    def add_color(self, type = "label"):
         self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
         len_df = len(self.tracker_df)
-        previous_row = []
-        unique_id = 0
+        colour_list = [
+        (230, 25, 75),
+        (60, 180, 75),
+        (255, 225, 25),
+        (0, 130, 200),
+        (245, 130, 48),
+        (145, 30, 180),
+        (70, 240, 240),
+        (240, 50, 230),
+        (210, 245, 60),
+        (250, 190, 212),
+        (0, 128, 128),
+        (220, 190, 255),
+        (170, 110, 40),
+        (255, 250, 200),
+        (128, 0, 0),
+        (170, 255, 195),
+        (128, 128, 0),
+        (255, 215, 180),
+        (0, 0, 128),
+        (128, 128, 128),
+        (255, 255, 255),
+        (0, 0, 0)]
         for count, (_, row) in enumerate(self.tracker_df.iterrows()):
-            if unique_id != row["unique_id"]:
-                previous_row = row
-            color = self.get_color(int(round(row["bearing"])))
+            if type == "label":
+                color = colour_list[row["label"]]
+            else:
+                color = self.get_color(int(round(row["bearing"])))
             self.tracker_df["color"][_] = [int(round(color[0]*255)), int(round(color[1]*255)), int(round(color[2]*255))]
             if not count % 100:
                     sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}%")
                     sys.stdout.flush()
-            previous_row = row
-            unique_id = row["unique_id"]
 
     def get_color(self, n):
         return plt.cm.gist_ncar(int(round(n)))
@@ -297,7 +336,6 @@ class Camera:
 # Ramer-Douglas-Peucker algorithm - Dimensinality reduction of line segments
 
     def ramer_reduction(self):
-        ramer_df = pd.DataFrame(columns = ["unique_id", "line"])
         self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
 
         unique_id = 0
@@ -310,12 +348,17 @@ class Camera:
             if count == 0:
                 unique_id = row["unique_id"]
                 unique_id_list.append(row["unique_id"])
-            if unique_id != row["unique_id"]:
+            elif unique_id != row["unique_id"]:
                 unique_id_list.append(row["unique_id"])
+                unique_id = row["unique_id"]
                 line_list.append(temp)
                 temp = []
             temp.append([row["x"], row["y"]])
-            unique_id = row["unique_id"]
+
+            if count == len_tracker_df - 1:
+                line_list.append(temp)
+                temp = []
+
             if not count%100:
                 sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 1: {round(((count)/(len_tracker_df))*100, 3)}%")
                 sys.stdout.flush()
@@ -331,51 +374,84 @@ class Camera:
         self.ramer_list = ramer_list
         self.ramer_id = unique_id_list
 
-    def distance_matrix(self):
-        self.ramer_reduction()
-        similarity = lambda track_1, track_2: sm.frechet_dist(track_1, track_2)
-        
-        len_ramer = len(self.ramer_list)
-        dist_matrix = np.zeros((len_ramer, len_ramer))
+    def distance_matrix(self, type = "load"):
+        if type == "load":
+            self.dist_matrix = np.load(f"{self.parent_path}/Data/States/{self.file_name}_distance_matrix.npy")
+        else:
+            self.ramer_reduction()
+            similarity = lambda track_1, track_2: sm.frechet_dist(track_1, track_2)
+            
+            len_ramer = len(self.ramer_list)
+            dist_matrix = np.zeros((len_ramer, len_ramer))
 
-        for i, group in enumerate(self.ramer_list):
-            shorter_group = self.ramer_list[i:]
-            len_sg = len(shorter_group)
-            for j, group2 in enumerate(shorter_group):
-                distance_ = similarity(group, group2)
-                dist_matrix[i, j] = distance_
-                dist_matrix[j, i] = distance_
-                if not j%10:
-                    sys.stdout.write("\r" + f"Total: {round(((i)/(len_ramer))*100, 3)}% - current group: {round(((j)/(len_sg))*100, 3)}%")
-                    sys.stdout.flush()
-        self.dist_matrix = dist_matrix
+            for i, group in enumerate(self.ramer_list):
+                shorter_group = self.ramer_list[i:]
+                len_sg = len(shorter_group)
+                for j, group2 in enumerate(shorter_group):
+                    distance_ = similarity(group, group2)
+                    dist_matrix[i, j] = distance_
+                    dist_matrix[j, i] = distance_
+                    if not j%10:
+                        sys.stdout.write("\r" + f"Distance matrix total: {round(((i)/(len_ramer))*100, 3)}% - current group: {round(((j)/(len_sg))*100, 3)}%")
+                        sys.stdout.flush()
+            np.save(f"{self.parent_path}/Data/States/{self.file_name}_distance_matrix", dist_matrix)
+            self.dist_matrix = dist_matrix
+
+    def calculate_best_n_clusters(self, range_n_clusters=[4,5,6,7,8,9]):
+        score, n, labels, model = [], [], [], []
+        for n_clusters in range_n_clusters:
+            k_model = self.k_mean_model(self.dist_matrix, n_clusters)
+            cluster_labels = self.k_predict(k_model, self.dist_matrix)
+            labels.append(cluster_labels)
+
+            silhouette_avg = silhouette_score(self.dist_matrix, cluster_labels)
+            score.append(silhouette_avg)
+            n.append(n_clusters)
+            model.append(k_model)
+            print(
+                f"For n_clusters = {n_clusters} The average silhouette_score is : {silhouette_avg}"
+            )
+
+        max_value = max(score)
+        max_index = score.index(max_value)
+        self.k_model = model[max_index]
+        self.best_n = n[max_index]
+        self.labels = labels[max_index]
+
+    def k_mean_model(self, dist_matrix, n_clusters):
+        clusterer = KMeans(n_clusters=n_clusters, random_state=10)
+        k_mean_model = clusterer.fit(dist_matrix)
+        return k_mean_model
+
+
+    def k_predict(self, model, dist_matrix):
+        cluster_labels = model.predict(dist_matrix)
+        return cluster_labels
 
 
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
     g6.read_pkl("2403_g6_sync_yolov5x6")
-    # g6.file_name = ""
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
-    g6.distance_matrix()
-    line_list = [[[int(round(num)) for num in line] for line in ramer]
-
-    rdp([[1.12, 1.23], [2.532, 2.3234], [3.12, 3.4], [4.23, 4.8979]])
-    np.array(line[1]).reshape((len(line[1]), 2))
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
     g6.smooth_tracks(20)
-    g6.cut_tracks_with_few_points(10)
+    g6.cut_tracks_with_few_points(50)
     src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
     dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
     g6.find_homography_matrix(src, dst)
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
     g6.transform_points()
-    g6.add_bearing()
-    g6.smooth_bearings(50)
-    g6.add_color()
+    g6.distance_matrix(type = "new")
+    g6.calculate_best_n_clusters()
+    g6.add_label()
+    # g6.add_bearing()
+    # g6.smooth_bearings(50)
+    g6.add_color(type="label")
     plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
     g6.show_data("Points", plotted_points)
+
 
     remove_line = g6.click_coordinates(g6.map_path, dst = 0, type = "line")
     g6.remove_point_line(remove_line, "below")
