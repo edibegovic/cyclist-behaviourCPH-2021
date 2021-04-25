@@ -47,8 +47,36 @@ class Camera:
         self.tracker_df["x"] = self.tracker_df.groupby("unique_id")["x"].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
         self.tracker_df["y"] = self.tracker_df.groupby("unique_id")["y"].transform(lambda y: y.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
 
+    def smooth_bearings(self, smoothing_factor):
+        self.tracker_df["bearing"] = self.tracker_df.groupby("unique_id")["bearing"].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
+
     def cut_tracks_with_few_points(self, n):
         self.tracker_df = self.tracker_df[self.tracker_df.groupby("unique_id")["unique_id"].transform("size") > n]
+
+    def add_bearing(self):
+        self.tracker_df["bearing"] = 0
+        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
+        len_df = len(self.tracker_df)
+        previous_row = []
+        unique_id = 0
+        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
+            if unique_id != row["unique_id"]:
+                previous_row = row
+            bearing = self.calculate_bearing(row, previous_row)
+            self.tracker_df["bearing"][_] = bearing
+            if not count % 100:
+                    sys.stdout.write("\r" + f"Adding bearing: {round(((count)/(len_df))*100, 3)}%")
+                    sys.stdout.flush()
+            previous_row = row
+            unique_id = row["unique_id"]
+
+    def calculate_bearing(self, row, previous_row):
+        x_1, y_1 = row["x"], row["y"]
+        x_2, y_2 = previous_row["x"], previous_row["y"]
+        angle = math.atan2(y_1-y_2, x_1-x_2)
+        bearing = math.degrees(angle)
+        bearing = (bearing + 360) % 360
+        return bearing
 
     def get_frame(self, frame_number):
         vc = cv2.VideoCapture(self.video_path)
@@ -246,31 +274,6 @@ class Camera:
 
 # Color paths
 
-    def add_bearing(self):
-        self.tracker_df["bearing"] = 0
-        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
-        len_df = len(self.tracker_df)
-        previous_row = []
-        unique_id = 0
-        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
-            if unique_id != row["unique_id"]:
-                previous_row = row
-            bearing = self.calculate_bearing(row, previous_row)
-            self.tracker_df["bearing"][_] = bearing
-            if not count % 100:
-                    sys.stdout.write("\r" + f"Adding bearing: {round(((count)/(len_df))*100, 3)}%")
-                    sys.stdout.flush()
-            previous_row = row
-            unique_id = row["unique_id"]
-
-    def calculate_bearing(self, row, previous_row):
-        x_1, y_1 = row["x"], row["y"]
-        x_2, y_2 = previous_row["x"], previous_row["y"]
-        angle = math.atan2(y_1-y_2, x_1-x_2)
-        bearing = math.degrees(angle)
-        bearing = (bearing + 360) % 360
-        return bearing
-
     def add_color(self):
         self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
         len_df = len(self.tracker_df)
@@ -279,8 +282,7 @@ class Camera:
         for count, (_, row) in enumerate(self.tracker_df.iterrows()):
             if unique_id != row["unique_id"]:
                 previous_row = row
-            bearing = self.calculate_bearing(row, previous_row)
-            color = self.get_color(int(round(bearing)))
+            color = self.get_color(int(round(row["bearing"])))
             self.tracker_df["color"][_] = [int(round(color[0]*255)), int(round(color[1]*255)), int(round(color[2]*255))]
             if not count % 100:
                     sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}%")
@@ -303,11 +305,9 @@ if __name__ == "__main__":
     g6.read_pkl("2403_g6_sync_yolov5x6")
     # g6.file_name = ""
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
-    g6.add_bearing()
-    g6.tracker_df
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
-    g6.smooth_tracks(100)
+    g6.smooth_tracks(20)
     g6.cut_tracks_with_few_points(10)
     src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
     dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
@@ -315,6 +315,8 @@ if __name__ == "__main__":
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
     g6.transform_points()
+    g6.add_bearing()
+    g6.smooth_bearings(50)
     g6.add_color()
     plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
     g6.show_data("Points", plotted_points)
