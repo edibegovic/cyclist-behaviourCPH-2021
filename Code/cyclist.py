@@ -1,12 +1,10 @@
 import numpy as np
-import os
 import cv2
 import sys
 import pickle
 from sort import *
 import pandas as pd
 pd.options.mode.chained_assignment = None
-import ml
 import math
 import matplotlib.pyplot as plt
 from rdp import rdp
@@ -367,7 +365,9 @@ class Camera:
 
         for count, i in enumerate(line_list):
             i = np.rint(np.array(i).reshape((len(i),2)))
-            ramer_list.append(rdp(i))
+            desiredNumberOfPoints = 100
+            epsilon = (len(i) / (3 * desiredNumberOfPoints)) * 2
+            ramer_list.append(rdp(i, epsilon=epsilon))
             if not count%100:
                 sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 2: {round(((count)/(len_tracker_df))*100, 3)}%")
                 sys.stdout.flush()
@@ -397,7 +397,7 @@ class Camera:
             np.save(f"{self.parent_path}/Data/States/{self.file_name}_distance_matrix", dist_matrix)
             self.dist_matrix = dist_matrix
 
-    def calculate_best_n_clusters(self, range_n_clusters=[4,5,6,7,8,9]):
+    def calculate_best_n_clusters(self, range_n_clusters=[5,6,7,8,9,10]):
         score, n, labels, model = [], [], [], []
         for n_clusters in range_n_clusters:
             k_model = self.k_mean_model(self.dist_matrix, n_clusters)
@@ -409,7 +409,7 @@ class Camera:
             n.append(n_clusters)
             model.append(k_model)
             print(
-                f"For n_clusters = {n_clusters} The average silhouette_score is : {silhouette_avg}"
+                f"For n_clusters = {n_clusters} The average silhouette_score is : {round(silhouette_avg, 3)}"
             )
 
         max_value = max(score)
