@@ -1,4 +1,3 @@
-
 # start a light-weight webserver
 # Go to iCloud folder and run:
 # http-server -p 8000
@@ -8,7 +7,7 @@ import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_player
 import dash_bootstrap_components as dbc
 
@@ -18,7 +17,9 @@ import plotly.graph_objects as go
 
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
+from operator import itemgetter
 
+import json
 import base64
 from PIL import Image
 import tracker
@@ -36,7 +37,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Components
 # -------------------------------------------------------------------
 
-def make_item(i, title="Group X"):
+def make_item(i, title="Unknown"):
     return dbc.Card(
         [
             dbc.CardHeader(
@@ -51,6 +52,7 @@ def make_item(i, title="Group X"):
             dbc.Collapse(
                 dbc.CardBody(f"This is the content of group {i}..."),
                 id=f"collapse-{i}",
+                style={"maxHeight": "230px", "overflow": "scroll"}
             ),
         ]
     )
@@ -59,7 +61,7 @@ def make_item(i, title="Group X"):
 # Layout
 #---------------------------------------------------------------
 app.layout = html.Div([
-        html.H1(["Cyclist Analysis", dbc.Badge("Alpha", className="ml-1")], style={'margin-left': '20px', 'margin-top': "25px", 'margin-bottom': "25px"}),
+        html.H1(["Cyclist Analysis", dbc.Badge("Alpha", className="ml-1")], style={'margin-left': '20px', 'margin-top': "25px", 'margin-bottom': "25px"}, id="hej"),
 
         dbc.Row(
             [
@@ -69,7 +71,7 @@ app.layout = html.Div([
                     style={'background-color': 'black'}
                 ),
                 dbc.Col(
-                    html.Div([make_item(1, "All cyclists"), make_item(2, "Incidents"), make_item(3)], className="accordion"),
+                    html.Div([make_item(1, "🚲 All cyclists"), make_item(2, "🚳 Incidents"), make_item(3)], className="accordion"),
                     # width={"offset": 1},
                     style={'background-color': 'grey'}
                 ),
@@ -86,7 +88,7 @@ app.layout = html.Div([
                         value=300,
                         step=1,)
                 ], 
-                style={'padding': '0% 30%'}),
+                style={'padding': '0% 30%', 'margin-top': '10px'}),
             ]),
 
 
@@ -202,11 +204,6 @@ def update_img_plot(val):
     y=points['y'],
     text=points['simple_id'],
     mode = "markers",
-    # title="layout.hovermode='x'",
-    marker_line=dict(
-            width=points['border_width'],
-            color='Black'
-            ),
     marker=dict(
             color=points['color'],
             size=6,
@@ -228,16 +225,22 @@ def update_img_plot(val):
 
 @app.callback(
     Output('frame-slider','value'),
-    [dash.dependencies.Input('inc_button', 'n_clicks'),
-    dash.dependencies.Input('dec_button', 'n_clicks')],
-    [dash.dependencies.State('frame-slider', 'value')])
+    [Input('inc_button', 'n_clicks'),
+    Input('dec_button', 'n_clicks'), 
+    Input({'type': 'incident', 'index': ALL}, 'n_clicks')],
+    [State('frame-slider', 'value')])
 
-def update_output(inc, dec, value):
-    pressed_btn = [p['prop_id'] for p in dash.callback_context.triggered][0]
+def update_output(inc, dec, incident, value):
+    ctx = dash.callback_context
+    pressed_btn = [p['prop_id'] for p in ctx.triggered][0]
+    print("hwat")
     if 'inc_button' in pressed_btn:
         return value+20
-    else:
+    elif 'dec_button' in pressed_btn:
         return value-20
+    else:
+        button_id = json.loads(ctx.triggered[0]['prop_id'].split('.')[0])['index']
+        return int(button_id)
 
 @app.callback([Output('video-player', 'seekTo'),
               Output('video-player2', 'seekTo'),
@@ -270,23 +273,34 @@ def toggle_accordion(n1, n2, n3, is_open1, is_open2, is_open3):
         return False, False, not is_open3
     return False, False, False
 
-
-# @app.callback(
-#     Output("annotations-data", "children"),
-#     Input("graph-picture", "relayoutData"),
-#     # prevent_initial_call=True,
-# )
-# def on_new_annotation(relayout_data):
-#     if "shapes" in relayout_data:
-#         return json.dumps(relayout_data["shapes"], indent=2)
-#     else:
-#         return dash.no_update
+# From SVG path to numpy array of coordinates, each row being a (row, col) point
+def path_to_coords(path):
+    indices_str = [el.replace("M", "").replace("Z", "").split(",") for el in path.split("L")]
+    return np.array(indices_str, dtype=float)
 
 
-# point = Point(0.5, 0.5)
-# polygon = Polygon([(0, 0), (0, 1), (1, 1), (1, 0)])
-# print(polygon.contains(point))
+@app.callback(
+    Output("collapse-2", "children"),
+    Input("img_plot", "relayoutData"),
+    prevent_initial_call=True,
+)
+def update_incident_list(relayout_data):
+    if relayout_data['shapes'] is not None:
+        path_string = relayout_data['shapes'][0]['path']
+        coordinates_raw = [coor.replace("M", "").replace("Z", "").split(",") for coor in path_string.split("L")]
+        coordinates = [(float(a), float(b)) for a, b in coordinates_raw]
+        polygon = Polygon(coordinates)
+
+        is_inside = lambda row: polygon.contains(Point(row['x'], row['y']))
+        points_inside = df[df.apply(is_inside, axis=1)]
+        incidents = points_inside.groupby('unique_id').first()
+        print(incidents)
+
+        btns = [dbc.ListGroupItem(f"{incidents.iloc[i]['frame_id']}", id={'type': 'incident', 'index': f"{incidents.iloc[i]['frame_id']}"}, n_clicks=incidents.iloc[i]['frame_id'], action=True) for i in range(len(incidents))]
+
+    list_group = dbc.ListGroup(btns)
+    return list_group
 
 if __name__ == '__main__':
     app.run_server(port=8050, host='127.0.0.1', debug=True)
-
+# 
