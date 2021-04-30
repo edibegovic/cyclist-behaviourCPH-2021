@@ -226,7 +226,7 @@ on three main components, Data collection, Data processing and Data exploration.
 The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
 The Dybbølsbro intersection faces several traffic flow challenges as a result development in the immediate vicinity as well as being a large intersection.
 These challenges make the Dybbølsbro intersection one of the more extreme in Copenhagen and would serve as a good base to this quantitative analysis method. 
-As Dybbølsbro is a large intersection we use two cameras in order to get a good overview of the intersection regardless of the traffic flow.
+As Dybbølsbro is a large intersection we use two cameras on opposite side of the intersection in order to get a good overview of the intersection regardless of the traffic flow.
 
 \subsection{Recording Location}
 
@@ -349,14 +349,16 @@ After finding the homography matrix we can now project to contact points of the 
 image being an aerial view of Dybbelsbrø. This is achieved by applying $z$ to each point as a constant so as to create $Q(x_i, y_i, 1)$ and then we multipy it by 
 homography matrix. 
 \ \\
-\subsection{Merge Sources}
+\subsection{Merging Sources}
 
-To merge the data from the two video sources
+To merge the data from the two video sources we take a naive approach. As the cameras are setup on
+opposite siders of the intersection for optimal coverage we simply cut the video sources in half along the halfway point between
+the two cameras along the intersection. The data is then merged.
 \ \\
 \subsection{Multiple object tracking}
 
 In order to connect observations into trajectories of individual cyclist we apply 
-simple online and real time tracking algorithm, SORT, as initially described in \cite{Bewley2016_sort}. 
+simple online and real time tracking algorithm, SORT (cite the repo?), as initially described in \cite{Bewley2016_sort}. 
 SORT aims to address the problem of multiple object tracking (MOT) where object across frames needs to be connected. 
 Explain more about SORT predict bbox then iou for actualy bbox.
 
@@ -367,7 +369,7 @@ the same plane as the street so as to have the conact point of a bicycles and th
 
 \section{Data Exploration}
 
-There are three objectives for the data exploration.
+There are two objectives for the data exploration.
 \begin{itemize}
 	\item1. Rainbow Tracks - Desire path discovery
 	\item2. Alert Zones - For behaviour observations and counts
@@ -384,8 +386,9 @@ There are three objectives for the data exploration.
 \label{Rainbow}
 
 To find aggregated desire lines from the data we took an approach of coloring tracks by the bearing between consequtive points in each 
-bearing, after calculating the bearing we then get a color form a gardient color wheel. This approach has the added benefit of encoding direction into 
+trajectory, after calculating the bearing we then get a color from a gardient color wheel. This approach has the added benefit of encoding direction into 
 each track.
+Maybe just an equation demonstaring the bearing calculation.
 \ \\ 
 \begin{equation}
   UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
@@ -393,7 +396,11 @@ each track.
 
 \subsection{Alert Zones and Counts}
 
-"Red zones" defined by a certain area, speed og trajectory can provide context (through video) when activated. 
+We craeted a "Tool name", that allows the defining of certain areas as "Red zones". These zones are provide us with easy reference to activty in the zones throught the videos.
+Using these zones we can count cyclist and observe their behaviour at points on the intersection that might be difficult or
+problematic.
+
+Picture of interface?
 
 % As a baseline we deploy a vanilla OpenDataCam setup using its built-in tools for object counting and path recording.
 % From the OpenDataCam GUI it's possible to visually inspect the detected objects and draw line counters 
