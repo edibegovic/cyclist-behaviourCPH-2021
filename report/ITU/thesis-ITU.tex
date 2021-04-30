@@ -226,7 +226,7 @@ on three main components, Data collection, Data processing and Data exploration.
 The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
 The Dybbølsbro intersection faces several traffic flow challenges as a result development in the immediate vicinity as well as being a large intersection.
 These challenges make the Dybbølsbro intersection one of the more extreme in Copenhagen and would serve as a good base to this quantitative analysis method. 
-As Dybbølsbro is a large intersection we use two cameras on opposite side of the intersection in order to get a good overview of the intersection regardless of the traffic flow.
+As Dybbølsbro is a large intersection we use two cameras on opposite side of the intersection in order to get a good overview of the intersection regardless of the traffic obstructing views.
 
 \subsection{Recording Location}
 
@@ -269,18 +269,18 @@ Battery life should also being considered depending on the amount of intended re
 \label{data}
 
 
-All general idea of the data processing steps are to connect observations as unique bicycle,
-project the observations onto the street plane and then apply some methods of interpreting the data. The processing happens on two 
-video sources that are cut to the same time period.
+Figure \ref{data} offers a general overview of the data processing steps. The processing happens on two 
+video sources that are cut to the same time period. No special hardware is required, but a CUDA enabled GPU
+device would speed up the object detection process.
 \ \\
 \subsection{Distortion Correction}
 
-Certain types of camera lenses such as the wide angle lense on the LG G6 used in this study produce images that have an optical aberration where straight lines appear bent. 
-The specific type being barrel distortion, where lines curve inwards in a shape of a barrel.
+Wide angle camera lenses such as that on the LG G6 used in this study produce images that have an optical aberration where straight lines appear bent. 
+The specific type being barrel distortion such as in figure \ref{distortion}, where lines curve inwards in a shape of a barrel.
 
 \ \\ 
 \begin{figure}[h]
-  \includegraphics[scale=0.10]{Barrel_distortion.svg.png}
+  \includegraphics[scale=0.05]{Barrel_distortion.svg.png}
   \centering 
   \end{figure}
   \captionof{figure}{Barrel Distortion}
@@ -288,7 +288,7 @@ The specific type being barrel distortion, where lines curve inwards in a shape 
 
 \ \\
 This can lead to incorrect projection and therefore joining of video sources later on.
-To correct for this we make use of OpenCVs camera calibration toolbox.
+To correct for this we make use of OpenCVs \cite{noauthor_opencv/opencv_2021} camera calibration toolbox.
 
 Explain this a bit more. Formulas
 \ \\
@@ -308,7 +308,7 @@ Figure \ref{data_pipeline} demonstrates the data pipeline that the output from Y
 \ \\
 \subsection{Homography Matrix}
 
-First explain teh concept of the homography matrix.
+First explain the concept of the homography matrix.
 \ \\ 
 \begin{figure}[h]
   \includegraphics[scale=1.0]{Homography_proj.png}
@@ -358,7 +358,7 @@ the two cameras along the intersection. The data is then merged.
 \subsection{Multiple object tracking}
 
 In order to connect observations into trajectories of individual cyclist we apply 
-simple online and real time tracking algorithm, SORT (cite the repo?), as initially described in \cite{Bewley2016_sort}. 
+simple online and real time tracking algorithm, SORT \cite{abewley_abewley/sort_2021}, as initially described in \cite{Bewley2016_sort}. 
 SORT aims to address the problem of multiple object tracking (MOT) where object across frames needs to be connected. 
 Explain more about SORT predict bbox then iou for actualy bbox.
 
@@ -385,7 +385,7 @@ There are two objectives for the data exploration.
 \captionof{figure}{Rainbow}
 \label{Rainbow}
 
-To find aggregated desire lines from the data we took an approach of coloring tracks by the bearing between consequtive points in each 
+To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". This involves coloring tracks by the bearing between consequtive points in each 
 trajectory, after calculating the bearing we then get a color from a gardient color wheel. This approach has the added benefit of encoding direction into 
 each track.
 Maybe just an equation demonstaring the bearing calculation.
@@ -396,7 +396,7 @@ Maybe just an equation demonstaring the bearing calculation.
 
 \subsection{Alert Zones and Counts}
 
-We craeted a "Tool name", that allows the defining of certain areas as "Red zones". These zones are provide us with easy reference to activty in the zones throught the videos.
+We created a "Tool name", that allows the defining of certain areas as "Red zones". These zones are provide us with easy reference to activty in the zones throught the videos.
 Using these zones we can count cyclist and observe their behaviour at points on the intersection that might be difficult or
 problematic.
 
