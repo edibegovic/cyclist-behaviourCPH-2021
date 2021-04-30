@@ -1,0 +1,386 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arsclassica Article
+% LaTeX Template
+% Version 1.1 (10/6/14)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Lorenzo Pantieri (http://www.lorenzopantieri.net) with extensive modifications by:
+% Vel (vel@latextemplates.com)
+% Johan Bos (johan.bos@rug.nl)
+% Barbara Plank (bapl@itu.dk)
+% 
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+10pt, % Main document font size
+a4paper, % Paper type
+oneside, % One page layout (no page indentation)
+headinclude,footinclude, % Extra spacing for the header and footer
+%BCOR5mm, % Binding correction
+] {book}%
+\usepackage{eurosym}
+\usepackage{booktabs} % for nice tables with \toprule, \midrule
+\usepackage{csvsimple,longtable}
+\setcounter{secnumdepth}{5}
+\input{structure.tex} % Include the structure.tex file which specified the document structure and layout
+
+
+%----------------------------------------------------------------------------------------
+%	HYPHENATION
+%----------------------------------------------------------------------------------------
+
+\hyphenation{Fortran hy-phen-ation} % Specify custom hyphenation points in words with dashes where you would like hyphenation to occur, or alternatively, don't put any dashes in a word to stop hyphenation altogether
+
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE AND AUTHOR(S)
+%----------------------------------------------------------------------------------------
+
+\title{\normalfont\spacedallcaps{title}} % The article title
+
+\author{\spacedlowsmallcaps{author}} % The article author(s) - author affiliations need to be specified in the AUTHOR AFFILIATIONS block
+
+\date{\today} % An optional date to appear under the author(s)
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	HEADERS
+%----------------------------------------------------------------------------------------
+
+%\renewcommand{\chaptermark}[1]{\markright{\spacedlowsmallcaps{#1}}} % The header for all pages (oneside) or for even pages (twoside)
+%\renewcommand{\subsectionmark}[1]{\markright{\thesubsection~#1}} % Uncomment when using the twoside option - this modifies the header on odd pages
+%\lehead{\mbox{\llap{\small\thepage\kern1em\color{halfgray} \vline}\color{halfgray}\hspace{0.5em}\rightmark\hfil}} % The header style
+
+\pagestyle{scrheadings} % Enable the headers specified in this block
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{figure}[h!] %  figure placement: here, top, bottom, or page
+\centering
+\includegraphics[width=4in]{ITUlogo} 
+\end{figure}
+
+\begin{center}
+\vspace{30 mm}
+\begingroup \linespread{1,75} \selectfont 
+\textsc{\LARGE Quantifying cyclist behavior at intersections using video analysis}\\
+% \textsc{\Large And this is an optional subtitle}
+[1,5cm]
+\endgroup
+
+Edi Begovic and Høgni Jacobsen\\[2,5cm]
+
+\end{center}
+\vfill
+\textbf{Bachelor thesis}\\  %\textbf{Master thesis}\\
+Data Science\\  
+Edi Begovic and Høgni Jacobsen\\
+\\
+\today\\
+Supervisor: Michael Szell
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\pagenumbering{roman}
+\chapter*{Abstract}
+\markboth{Abstract}{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+We will defiantly change this to a standard document, such that we have a single page for \textbf{front page}, 
+\textbf{table of contents} and \textbf{abstract}.
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS & LISTS OF FIGURES AND TABLES
+%----------------------------------------------------------------------------------------
+\clearpage
+\setcounter{tocdepth}{3} % Set the depth of the table of contents to show sections and subsections only
+\tableofcontents % Print the table of contents
+
+%\listoffigures % Print the list of figures (optional, only if you have many figures)
+
+%\listoftables % Print the list of tables (optional, only if you have many tables)
+
+%\lstlistoflistings
+
+
+
+%----------------------------------------------------------------------------------------
+%	Preface
+%----------------------------------------------------------------------------------------
+
+\chapter*{Preface}
+\markboth{Preface}{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+I would like to take this opportunity to thank... (write this in the very end) ;)
+
+
+%----------------------------------------------------------------------------------------
+%	INTRODUCTION
+%----------------------------------------------------------------------------------------
+
+\chapter{Introduction}
+\pagenumbering{arabic}
+
+TODO
+
+motivation
+
+research question(s)
+
+Intro+Background: Good start, but you will need more. Have a look at nabaviniaki2019.pdf which I added to the dropbox. 
+They do a review of methods - you could write something like a summary of that (without having to refer to all the references). 
+Whenever you refer to some observed/hypothesized statement that someone did in the past try to give a reference, 
+for example your argument about back-lash against bike culture - if you have read that somewhere then cite that source.
+
+With cities supporting bigger diversity than ever in modes of last-mile transportation,
+having quantifiable data on cyclist movement is a key element in modern city planning. 
+Movement patterns of cyclists and other traffic participants and the intersection in-between 
+is to a large degree determined by the design of the shared infrastructure. 
+Traditionally, analysis of traffic behavior has been dependent on manual human review, either by 
+observing locations on-site or through recorded footage. This approach comes at a large cost 
+and unless rigid methodology is defined beforehand, reports are often ad-hoc and qualitative in 
+their nature. (<-- this is a bit lose). We aim to build a system that enables automatic capturing of behavioral 
+patterns in traffic in a structured way through video analysis. The main benefit comes from the ability to 
+scale the setup as low-cost hardware has become readily available.
+
+\clearpage
+
+\chapter{Background}
+
+Firstly we cover the technical advances in object detection over the past decade and its usage in traffic monitoring.
+
+\subsection{Desire lines}
+We look at how bicycle infrastructure (especially intersections) can be assessed. Here we'll mostly use 
+trajectories and the idea of "desire lines" are metrics to focus on. (\cite{situ}). 
+
+
+
+\subsection{Inclusive infrastructure}
+Why it's important to understand cyclist behavior, and especially in cities with emerging bike infrastructure, \textit{how they adapt}.
+We focus on the psychological aspects of a cyclist,
+
+\begin{itemize}
+	\item Perception of safety
+	\item Intuitiveness (right-of-way should be obvious)
+	\item Congestion (incl. waiting times)
+	\item Rule compliance
+\end{itemize}
+
+If new cyclists feel uncomfortable (stress, embarrassment etc.) they're more likely to give up on the bike. This leaves the infrastructure 
+under-used, which can further result in a back-clash against "bike culture".
+
+\chapter{Data and Material}
+\label{datagathering}
+%\section{Collection} 
+%...
+%\section{Annotation}
+
+%\section{Processing}
+%\label{sec:processing}
+Here is an example of how to use citations.
+
+Language identification was performed by the \texttt{langid} Python library~\citep{langid}. If, however, the citation is part of the sentence then you should use it like here: The language identification toolkit introduced by~\cite{langid}
+\ldots
+
+\chapter{Method}
+
+Figure \ref{system} summarizes the general methodology that will be discussed.
+
+\subsection{Intersection selection}
+There are three consideration to take into account when applying these methods to an intersection.
+\ \\
+1. Intersection size.
+\ \\
+2. Camera mounting points.
+\ \\
+3. Intersection composition
+
+\subsection{Data collection}
+Hardware
+\ \\
+Modern mobile phones offer high quality cameras in a compact design. We used an LG G6 as our recording device.
+This device was chosen as it offers a 125 degree wide-angle camera lense. The field of view (FOV) of the camera is an important consideration
+for large intersections, this is so that we can capture the entire intersection in one frame. To evaluate whether a camera is appropraite we use the following formula:
+\[ tan(\theta ) = \frac{opposite}{adjacent}\]
+
+Wide-angle-lenses do pose a problem as they suffer from lense distortion which is an optical aberration where straight lines appear bent.
+The specific type being barrel distortion, where lines curve inwards in a shape of a barrel. This analysis did not correct for the distortion as ....
+
+Battery life should also being considered depending on the intended amount of recording. 
+
+\subsection{Data processing}
+
+All general idea of the data processing steps are to connect observations as unique bicycle,
+project the observations onto the street plane and then apply some methods of interpreting the data.
+
+\ \\ 
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{temp.png} 
+\end{tabular}
+\captionof{figure}{Data pipeline overview}
+\label{data_pipeline}
+
+The raw video is output as a .mp4 file this video file is if fed to YOLO v5 for object detection. YOLO, You Only Look Once,
+is a real-time object detection algorithm. ....Explain more.... 
+\ \\ 
+Why YOLO v5?
+\ \\ 
+Objects are detected each frame and represented as bounding boxes.
+The output from YOLO is as follows: \[ [frame id][xmin][ymin][xmax][ymax][confidence]  \]
+
+The min and max values for x and y represent a bounding box for the identified bicylce.
+
+Figure \ref{data_pipeline} demonstrates the data pipeline that the output from YOLO is fed through. .
+
+In order to connect observations into trajectories of individual cyclist we apply 
+simple online and real time tracking algorithm, SORT, as initially described in \cite{Bewley2016_sort}. 
+SORT aims to address the problem of multiple object tracking (MOT) where object across frames needs to be connected. 
+
+The algorithm returns the bounding boxes along with a unique ID associated with each observation.
+
+Using the bounding boxes we calculate the (x, y) co-ordinates of the observation and shift the y value down onto 
+the same plane as the street so as to have the conact point of a bicycles and teh street.
+
+
+
+
+\subsection{Data Interpretation}
+As a baseline we deploy a vanilla OpenDataCam setup using its built-in tools for object counting and path recording.
+From the OpenDataCam GUI it's possible to visually inspect the detected objects and draw line counters 
+which keep track of the total number of objects passing the line given a certain areal threshold and approach angle. 
+The line counters are bi-directional and segment totals based on the mode of transportation.
+
+\ \\
+The baseline will focus on the capabilities of only applying OpenDataCam and its tools. This will mostly be "trafic shares" for 
+different paths and directions. 
+\\ 
+We then go on with further data processing as an extension. The main goal is to have a tool catered to analyzing cyclists, capturing
+discrete desire lines (with magnitude) and the ability to "hook into" video material for certain scenarios.
+
+\subsection{Hardware}
+The pipeline for our setup is shown below on figure \ref{system}. OpenDataCam uses the Yolo4 weights to localize cyclists and pedestrians.
+Processing was executed on an ARM based NVIDIA Jetson Xavier NX (development board) equipped with a 384-core NVIDIA Volta GPU
+and 8GB of memmory. 
+
+\raggedbottom
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{system} 
+\end{tabular}
+\captionof{figure}{System overview}
+\label{system}
+
+\ \\
+The video feed for YOLO is provided through the OpenDataCam interface, which allows for real-time analysis through an onboard camera
+or a video stream from an IP camera. 
+
+\ \\
+For further analysis the raw data from the recordings was exported in the form of CSV and JSON files. This includes both the low-level
+object detection (bounding-boxes, frame reference, confidence levels etc.) and the totals from the line counters.
+
+\subsection{Case study}
+The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
+The Dybbølsbro intersection faces several traffic flow challenges as a result development in the immediate vicinity as well as being a large intersection.
+These challenges make the Dybbølsbro intersection one of the more extreme in Copenhagen and would serve as a good base to this quantitative analysis method. 
+
+To determine the desire paths that cyclist take throughout the Dybbelsbro intersection we recorded XX hours of footage 
+at the Dybbølsbro intersection from X different camera angles.
+The considerations taken in choosing a camera angle were:
+
+\begin{itemize}
+	\item Camera visibility to cyclists.
+	\item Adequate mounting points, in terms of height and surface.
+	\item Special attention was also given to making sure that cameras were not mounted on traffic signage.
+\end{itemize}
+
+\subsection{Trajectory projection}
+The video footage was analyzed using OpenDataCam which is an abstraction layer on top of Yolo. Yolo being an object detection library for object detection in images.
+Once the video is analyzed by OpenDataCam, we receive a .json file containing a Unique ID for each identified cyclist that is detected for each frame of the video file. 
+The unique ID is accompanied by bounding box coordinates of the detected bicycle on the frame. 
+The center-bottom coordinates of the bounding box over multiple frames represents the track of an identified bicycle.
+
+\ \\
+By assuming the road as a 2D plane, hereby ignoring any non-linear deformations (e.g. from lens distortion or curvature of the pavement), 
+we can transform the pixel positions from the video to real-world 2D coordinates. 
+We calculate the \textit{homography matrix}, describing the transformation from one plane to another, by mapping four reference points from each frame (figure \ref{projection_figure}).
+
+\raggedbottom
+\ \\ 
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{projection_figure} 
+\end{tabular}
+\captionof{figure}{Reference points on map projection}
+\label{projection_figure}
+
+\subsection{Trajectory clustering}
+Desire Lines
+
+\subsection{Catching unexpected behavior}
+"Red zomes" defined by a certain area, speed og trajectory can provide context (through video) when activated. 
+% features, model, evaluation
+
+\chapter{Results and Discussion}
+
+% Results and Discussion could also be two separate chapters
+
+\chapter{Conclusion}
+\label{conclusion}
+
+conclude and restate main finding, answer research question
+
+point to limitations and future work
+%\section{Limitations}
+%As our study was limited in the time and resources available, it is far from conclusive. We will describe a few of its limitations below.
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+\bibliographystyle{chicago} 
+\bibliography{thesisbiblio}
+
+
+%----------------------------------------------------------------------------------------
+%	APPENDICES
+%----------------------------------------------------------------------------------------
+\newpage
+\appendix
+\chapter{Appendix}
+
+
+
+\end{document}
+
+
+
