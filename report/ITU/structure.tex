@@ -1,0 +1,146 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arsclassica Article
+% Structure Specification File
+%
+% This file has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Lorenzo Pantieri (http://www.lorenzopantieri.net) with extensive modifications by:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	REQUIRED PACKAGES
+%----------------------------------------------------------------------------------------
+
+\usepackage[
+%nochapters, % Turn off chapters since this is an article        
+beramono, % Use the Bera Mono font for monospaced text (\texttt)
+eulermath,% Use the Euler font for mathematics
+pdfspacing, % Makes use of pdftex letter spacing capabilities via the microtype package
+dottedtoc % Dotted lines leading to the page numbers in the table of contents
+]{classicthesis} % The layout is based on the Classic Thesis style
+
+
+\usepackage{arsclassica} % Modifies the Classic Thesis package
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+
+\usepackage[utf8]{inputenc} % Required for including letters with accents
+
+\usepackage{graphicx} % Required for including images
+
+\usepackage{enumitem} % Required for manipulating the whitespace between and within lists
+
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+
+\usepackage{subfig} % Required for creating figures with multiple parts (subfigures)
+
+\usepackage{amsmath,amssymb,amsthm} % For including math equations, theorems, symbols, etc
+
+\usepackage{varioref} % More descriptive referencing
+\usepackage{color}
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{lscape}
+\usepackage[authoryear]{natbib}
+
+%----------------------------------------------------------------------------------------
+%	DUTCH SUPPORT
+%----------------------------------------------------------------------------------------
+
+%\usepackage[dutch]{babel}    % comment out if you write your thesis in Dutch
+
+
+%----------------------------------------------------------------------------------------
+%	THEOREM STYLES
+%---------------------------------------------------------------------------------------
+
+\theoremstyle{definition} % Define theorem styles here based on the definition style (used for definitions and examples)
+\newtheorem{definition}{Definition}
+
+\theoremstyle{plain} % Define theorem styles here based on the plain style (used for theorems, lemmas, propositions)
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{remark} % Define theorem styles here based on the remark style (used for remarks and notes)
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS
+%---------------------------------------------------------------------------------------
+
+\hypersetup{
+%draft, % Uncomment to remove all links (useful for printing in black and white)
+colorlinks=true, breaklinks=true, % bookmarks=true,
+bookmarksnumbered,
+urlcolor=webbrown, linkcolor=RoyalBlue, citecolor=webgreen, % Link colors
+pdftitle={}, % PDF title
+pdfauthor={\textcopyright}, % PDF Author
+pdfsubject={}, % PDF Subject
+pdfkeywords={}, % PDF Keywords
+pdfcreator={pdfLaTeX}, % PDF Creator
+plainpages=false,
+pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
+}
+
+
+\renewcommand{\lstlistingname}{Python code}% Listing -> Python
+\renewcommand{\lstlistlistingname}{List of \lstlistingname}% List of Listings -> List of Python
+\definecolor{Code}{rgb}{0,0,0}
+\definecolor{Decorators}{rgb}{0.5,0.5,0.5}
+\definecolor{Numbers}{rgb}{0.5,0,0}
+\definecolor{MatchingBrackets}{rgb}{0.25,0.5,0.5}
+\definecolor{Keywords}{rgb}{0,0,1}
+\definecolor{self}{rgb}{0,0,0}
+\definecolor{Strings}{rgb}{0,0.63,0}
+\definecolor{Comments}{rgb}{0,0.63,1}
+\definecolor{Backquotes}{rgb}{0,0,0}
+\definecolor{Classname}{rgb}{0,0,0}
+\definecolor{FunctionName}{rgb}{0,0,0}
+\definecolor{Operators}{rgb}{0,0,0}
+\definecolor{Background}{rgb}{0.98,0.98,0.98}
+
+
+
+
+ 
+\lstdefinestyle{mystyle}{
+numbers=left,
+numberstyle=\footnotesize,
+numbersep=1em,
+xleftmargin=1em,
+framextopmargin=10em,
+framexbottommargin=2em,
+showspaces=false,
+showtabs=false,
+showstringspaces=false,
+frame=l,
+tabsize=4,
+% Basic
+basicstyle=\ttfamily\small\setstretch{1},
+backgroundcolor=\color{Background},
+language=Python,
+% Comments
+commentstyle=\color{Comments}\slshape,
+% Strings
+stringstyle=\color{Strings},
+morecomment=[s][\color{Strings}]{"""}{"""},
+morecomment=[s][\color{Strings}]{'''}{'''},
+% keywords
+morekeywords={import,from,class,def,for,while,if,is,in,elif,else,not,and,or,print,break,continue,return,True,False,None,access,as,,del,except,exec,finally,global,import,lambda,pass,print,raise,try,assert},
+keywordstyle={\color{Keywords}\bfseries},
+% additional keywords
+morekeywords={[2]@invariant},
+keywordstyle={[2]\color{Decorators}\slshape},
+emph={self},
+emphstyle={\color{self}\slshape},
+captionpos=b, 
+}
+ 
+\lstset{style=mystyle}
+
+\def\vl{\\[9pt]}

@@ -1,4 +1,3 @@
-
 # start a light-weight webserver
 # Go to iCloud folder and run:
 # http-server -p 8000
@@ -8,7 +7,7 @@ import pandas as pd
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_player
 import dash_bootstrap_components as dbc
 
@@ -16,44 +15,82 @@ import plotly
 import plotly.express as px
 import plotly.graph_objects as go
 
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
+from operator import itemgetter
+
+import json
 import base64
 from PIL import Image
-import trackerdf
+import tracker
 
-# df = pd.read_csv("suicide_rates.csv")
-# df = pd.DataFrame(data={'x': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450], 'y': [1, 50, 100, 150, 200, 300, 350, 400, 420, 450]})
+# df = pd.read_pickle("current_tracker.pickle")
+# df = pd.read_csv("iphone4.csv")
+df = pd.read_csv("g6_processed_not_cut.csv")
 
-df = pd.read_csv("iphone3.csv")
+df.loc[:, 'color'] = df['unique_id']%10
+df = pd.read_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv") 
 
-df.loc[:, 'border_width'] = df.loc[:, 'UniqueID'].astype(int)%2
-df.loc[:, 'simple_id'] = df.loc[:, 'UniqueID'].astype(int)%30
-
-# img = Image.open('../data/dbro_map.png')
-# img.LOAD_TRUNCATED_IMAGES = True
-
-# app = dash.Dash(__name__)
+df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
+df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+# -------------------------------------------------------------------
+# Components
+# -------------------------------------------------------------------
+
+def make_item(i, title="Unknown"):
+    return dbc.Card(
+        [
+            dbc.CardHeader(
+                html.H2(
+                    dbc.Button(
+                        title,
+                        color="link",
+                        id=f"group-{i}-toggle",
+                    )
+                )
+            ),
+            dbc.Collapse(
+                dbc.CardBody(f"This is the content of group {i}..."),
+                id=f"collapse-{i}",
+                style={"maxHeight": "230px", "overflow": "scroll"}
+            ),
+        ]
+    )
+
+# -------------------------------------------------------------------
+# Layout
 #---------------------------------------------------------------
 app.layout = html.Div([
-        html.Div([
-            html.Pre(children= "Dybbølsbro",
-            style={"text-align": "center", "font-size":"100%", "color":"black"})
-        ]),
+        html.H1(["Cyclist Analysis", dbc.Badge("Alpha", className="ml-1")], style={'margin-left': '20px', 'margin-top': "25px", 'margin-bottom': "25px"}, id="hej"),
 
-        html.Div([
-            dcc.Graph(id='img_plot')
-            ]),
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.Div(dcc.Graph(id='img_plot')),
+                    width={"size": 8},
+                    style={'background-color': 'black'}
+                ),
+                dbc.Col(
+                    html.Div([make_item(1, "🚲 All cyclists"), make_item(2, "🚳 Incidents"), make_item(3)], className="accordion"),
+                    # width={"offset": 1},
+                    style={'background-color': 'grey'}
+                ),
+            ],
+            no_gutters=True,
+        ),
+
 
         dbc.Row([
                 dbc.Col([
                     dcc.Slider(id='frame-slider',
-                        min=2000,
-                        max=20000,
-                        value=12933,
+                        min=300,
+                        max=10000,
+                        value=300,
                         step=1,)
                 ], 
-                style={'padding': '0% 30%'}),
+                style={'padding': '0% 30%', 'margin-top': '10px'}),
             ]),
 
 
@@ -82,7 +119,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_S7_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_S7_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -91,7 +128,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player2',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_edi_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_edi_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -100,7 +137,7 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player3',
-                    url='http://localhost:8000/Videos/24032021/Processed/2403_G6_sync.mp4',
+                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_G6_sync.mp4',
                     controls=False,
                     width='96%'
                 ),
@@ -154,35 +191,21 @@ def update_img_plot(val):
     fig.update_xaxes(showgrid=False, range=(0, img_width), visible=False, showticklabels=False)
     fig.update_yaxes(showgrid=False, scaleanchor='x', range=(img_height, 0), visible=False, showticklabels=False)
     
-    # source="https://i.imgur.com/gaFSyAI.png"
-    
-    # Line shape added programatically
-    # fig.add_shape(
-    #     type='line', xref='x', yref='y',
-    #     x0=650, x1=1080, y0=380, y1=180*val, line_color='cyan'
-    # )
-
-    # points = test.iloc[(1500*(val-1)):(1500*val), :]
     frame = val
     window = 150
 
-    points = df[df['frameId'].between(frame-window, frame)]
+    points = df[df['frame_id'].between(frame-window, frame)]
 
-    _max = points['frameId'].max()
-    _min = points['frameId'].min()
+    _max = points['frame_id'].max()
+    _min = points['frame_id'].min()
     diff = _max-_min
-    points.loc[:, 'opacity'] = 1-((_max-points.loc[:, 'frameId'])/diff).round(2)
+    points.loc[:, 'opacity'] = 1-((_max-points.loc[:, 'frame_id'])/diff).round(2)
 
     fig.add_trace(go.Scatter(
     x=points['x'],
     y=points['y'],
     text=points['simple_id'],
     mode = "markers",
-    # title="layout.hovermode='x'",
-    marker_line=dict(
-            width=points['border_width'],
-            color='Black'
-            ),
     marker=dict(
             color=points['color'],
             size=6,
@@ -192,37 +215,94 @@ def update_img_plot(val):
 
     # Set dragmode and newshape properties; add modebar buttons
     fig.update_layout(
-        dragmode='drawrect',
+        dragmode='drawclosedpath',
         newshape=dict(line_color='cyan'),
-        title_text='Bike Detections',
-        height=900,
+        # height=900,
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)'
+        plot_bgcolor='rgba(0,0,0,0)',
+        margin={"l": 0, "r": 0, "t": 0, "b": 0},
     )
 
     return fig
 
 @app.callback(
     Output('frame-slider','value'),
-    [dash.dependencies.Input('inc_button', 'n_clicks'),
-    dash.dependencies.Input('dec_button', 'n_clicks')],
-    [dash.dependencies.State('frame-slider', 'value')])
+    [Input('inc_button', 'n_clicks'),
+    Input('dec_button', 'n_clicks'), 
+    Input({'type': 'incident', 'index': ALL}, 'n_clicks')],
+    [State('frame-slider', 'value')])
 
-def update_output(inc, dec, value):
-    pressed_btn = [p['prop_id'] for p in dash.callback_context.triggered][0]
+def update_output(inc, dec, incident, value):
+    ctx = dash.callback_context
+    pressed_btn = [p['prop_id'] for p in ctx.triggered][0]
+    print("hwat")
     if 'inc_button' in pressed_btn:
         return value+20
-    else:
+    elif 'dec_button' in pressed_btn:
         return value-20
+    else:
+        button_id = json.loads(ctx.triggered[0]['prop_id'].split('.')[0])['index']
+        return int(button_id)
 
 @app.callback([Output('video-player', 'seekTo'),
               Output('video-player2', 'seekTo'),
               Output('video-player3', 'seekTo')],
               [Input('frame-slider', 'value')])
+
 def update_prop_seekTo(val):
     frame = val/30
     return frame, frame, frame
 
+
+@app.callback(
+    [Output(f"collapse-{i}", "is_open") for i in range(1, 4)],
+    [Input(f"group-{i}-toggle", "n_clicks") for i in range(1, 4)],
+    [State(f"collapse-{i}", "is_open") for i in range(1, 4)],
+)
+def toggle_accordion(n1, n2, n3, is_open1, is_open2, is_open3):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        return False, False, False
+    else:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+    if button_id == "group-1-toggle" and n1:
+        return not is_open1, False, False
+    elif button_id == "group-2-toggle" and n2:
+        return False, not is_open2, False
+    elif button_id == "group-3-toggle" and n3:
+        return False, False, not is_open3
+    return False, False, False
+
+# From SVG path to numpy array of coordinates, each row being a (row, col) point
+def path_to_coords(path):
+    indices_str = [el.replace("M", "").replace("Z", "").split(",") for el in path.split("L")]
+    return np.array(indices_str, dtype=float)
+
+
+@app.callback(
+    Output("collapse-2", "children"),
+    Input("img_plot", "relayoutData"),
+    prevent_initial_call=True,
+)
+def update_incident_list(relayout_data):
+    if relayout_data['shapes'] is not None:
+        path_string = relayout_data['shapes'][0]['path']
+        coordinates_raw = [coor.replace("M", "").replace("Z", "").split(",") for coor in path_string.split("L")]
+        coordinates = [(float(a), float(b)) for a, b in coordinates_raw]
+        polygon = Polygon(coordinates)
+
+        is_inside = lambda row: polygon.contains(Point(row['x'], row['y']))
+        points_inside = df[df.apply(is_inside, axis=1)]
+        incidents = points_inside.groupby('unique_id').first()
+        print(incidents)
+
+        btns = [dbc.ListGroupItem(f"{incidents.iloc[i]['frame_id']}", id={'type': 'incident', 'index': f"{incidents.iloc[i]['frame_id']}"}, n_clicks=incidents.iloc[i]['frame_id'], action=True) for i in range(len(incidents))]
+
+    list_group = dbc.ListGroup(btns)
+    return list_group
+
 if __name__ == '__main__':
     app.run_server(port=8050, host='127.0.0.1', debug=True)
-
+# 
