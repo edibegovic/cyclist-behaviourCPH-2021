@@ -20,17 +20,39 @@
 \input{structure.tex} % Specifies the document structure and loads requires packages
 \usepackage{subfiles} % Best loaded last in the preamble
 
+\hyphenation{intersections}
+
+% Abstract type defination
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{3.0cm}%
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \item\relax}
+ {\endlist}
+
+
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Quantifying cyclist behavior at intersections using video analysis} % The article title
+\title{
+	Quantifying cyclist behavior at intersections using video analysis 
+	\ \\
+	} % The article title
 
 \author{
-	\authorstyle{Edi Bergovic\textsuperscript{1} and Høgni Jacobsen\textsuperscript{1}} % Authors
-	\newline\newline % Space before institutions
-	\textsuperscript{1}\institution{The IT University of Copenhagen, Copenhagen, Denmark}\\ % Institution 1
-%	\textsuperscript{2}\institution{University of Texas at Austin, Texas, United States of America}\\ % Institution 2 
+	\authorstyle{Edi Bergovic and Høgni Jacobsen} % Authors
+	\newline
+	\institution{The IT University of Copenhagen, Copenhagen, Denmark}\\ % Institution
+	\newline
+	\authorstyle{Supervised by Michael Szell} % Authors
+	\\ \\ \\
+	\includegraphics[width=3in]{img/ITUlogo} 
 }
 
 % Example of a one line author/institution relationship
