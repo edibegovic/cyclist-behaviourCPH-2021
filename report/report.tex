@@ -61,26 +61,40 @@
 \date{\today} % Add a date here if you would like one to appear underneath the title block, use \today for the current date, leave empty for no date
 
 %----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
 
 \begin{document}
 
 \maketitle % Print the title
-
 \thispagestyle{firstpage} % Apply the page style for the first page (no headers and footers)
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
+\twocolumn[\begin{@twocolumnfalse}
+\ \\ \\
+\begin{abstract}
 
-% \lettrineabstract{Abstract}
-\noindent
-\textbf{Abstract}
+\centerline{\LARGE \textbf{Abstract}} 
 \ \\
-
-\noindent
 We will defiantly change this to a standard document, such that we have a single page for \textbf{front page}, 
-\textbf{table of contents} and \textbf{abstract}.
+\textbf{table of contents} and \textbf{abstract}. 
+I'm just filling in some more useless text here, just to get a sense of the margins.
+I think this is alright.
 
+\end{abstract}
+\end{@twocolumnfalse}]
+\clearpage
+
+%----------------------------------------------------------------------------------------
+%	Table of Contents 
+%----------------------------------------------------------------------------------------
+\twocolumn[\begin{@twocolumnfalse}
+\setcounter{tocdepth}{2} % Set the depth of the table of contents to show sections and subsections only
+\tableofcontents % Print the table of contents
+\end{@twocolumnfalse}]
+\clearpage
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
