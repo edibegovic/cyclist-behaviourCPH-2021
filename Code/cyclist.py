@@ -7,10 +7,6 @@ import pandas as pd
 pd.options.mode.chained_assignment = None
 import math
 import matplotlib.pyplot as plt
-from rdp import rdp
-import similaritymeasures as sm
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 
 class Camera:
     def __init__(self, user, video_folder, file_name, camera):
@@ -48,8 +44,11 @@ class Camera:
         self.tracker_df["x"] = self.tracker_df.groupby("unique_id")["x"].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
         self.tracker_df["y"] = self.tracker_df.groupby("unique_id")["y"].transform(lambda y: y.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
 
-    def smooth_bearings(self, smoothing_factor):
-        self.tracker_df["bearing"] = self.tracker_df.groupby("unique_id")["bearing"].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
+    def smooth_bearings(self, smoothing_factor, type = "bearing"):
+        self.tracker_df[type] = self.tracker_df.groupby("unique_id")[type].transform(lambda x: x.rolling(min_periods=1, center=True, window=smoothing_factor).mean())
+
+    def avg_bearing(self):
+        self.tracker_df["avg_bearing"] = self.tracker_df.groupby("unique_id")["bearing"].transform(lambda x: x.mean())
 
     def cut_tracks_with_few_points(self, n):
         self.tracker_df = self.tracker_df[self.tracker_df.groupby("unique_id")["unique_id"].transform("size") > n]
@@ -212,23 +211,6 @@ class Camera:
             p1x, p1y = p2x, p2y
         return inside
 
-    def remove_point_polygon(self, poly, remove="inside"):
-        remove_list = []
-        len_df = len(self.tracker_df)
-        for count, (index, row) in enumerate(self.tracker_df.iterrows()):
-            x = row["x"]
-            y = row["y"]
-            if self.point_inside_polygon(x, y, poly):
-                if remove == "inside":
-                    remove_list.append(index)
-            else:
-                if remove == "outside":
-                    remove_list.append(index)
-            if (count % 100) == 0:
-                sys.stdout.write("\r" + f"Removal progress - {round((count/len_df)*100, 2)} %")
-                sys.stdout.flush()
-        self.tracker_df_removed = self.tracker_df[self.tracker_df.index.isin(remove_list) == False]
-
     def remove_point_line(self, line, remove="above"):
         self.tracker_df = self.tracker_df.reset_index(drop=True)
         remove_list = []
@@ -290,8 +272,6 @@ class Camera:
         else:
             print("Pass 'new' or 'load'")
 
-# Color paths
-
     def add_color(self, type = "label"):
         self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
         len_df = len(self.tracker_df)
@@ -321,8 +301,10 @@ class Camera:
         for count, (_, row) in enumerate(self.tracker_df.iterrows()):
             if type == "label":
                 color = colour_list[row["label"]]
-            else:
+            elif type == "rainbow":
                 color = self.get_color(int(round(row["bearing"])))
+            else:
+                color = self.get_color(int(round(row["avg_bearing"])))
             self.tracker_df["color"][_] = [int(round(color[0]*255)), int(round(color[1]*255)), int(round(color[2]*255))]
             if not count % 100:
                     sys.stdout.write("\r" + f"Adding color Total: {round(((count)/(len_df))*100, 3)}%")
@@ -331,103 +313,6 @@ class Camera:
     def get_color(self, n):
         return plt.cm.gist_ncar(int(round(n)))
         
-# Ramer-Douglas-Peucker algorithm - Dimensinality reduction of line segments
-
-    def ramer_reduction(self):
-        self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
-
-        unique_id = 0
-        unique_id_list = []
-        line_list = []
-        len_tracker_df = len(self.tracker_df)
-        temp = []
-
-        for count, (_, row) in enumerate(self.tracker_df.iterrows()):
-            if count == 0:
-                unique_id = row["unique_id"]
-                unique_id_list.append(row["unique_id"])
-            elif unique_id != row["unique_id"]:
-                unique_id_list.append(row["unique_id"])
-                unique_id = row["unique_id"]
-                line_list.append(temp)
-                temp = []
-            temp.append([row["x"], row["y"]])
-
-            if count == len_tracker_df - 1:
-                line_list.append(temp)
-                temp = []
-
-            if not count%100:
-                sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 1: {round(((count)/(len_tracker_df))*100, 3)}%")
-                sys.stdout.flush()
-
-        ramer_list = []
-
-        for count, i in enumerate(line_list):
-            i = np.rint(np.array(i).reshape((len(i),2)))
-            desiredNumberOfPoints = 100
-            epsilon = (len(i) / (3 * desiredNumberOfPoints)) * 2
-            ramer_list.append(rdp(i, epsilon=epsilon))
-            if not count%100:
-                sys.stdout.write("\r" + f"Ramer-Douglas-Peucker reduction step 2: {round(((count)/(len_tracker_df))*100, 3)}%")
-                sys.stdout.flush()
-        self.ramer_list = ramer_list
-        self.ramer_id = unique_id_list
-
-    def distance_matrix(self, type = "load"):
-        if type == "load":
-            self.dist_matrix = np.load(f"{self.parent_path}/Data/States/{self.file_name}_distance_matrix.npy")
-        else:
-            self.ramer_reduction()
-            similarity = lambda track_1, track_2: sm.frechet_dist(track_1, track_2)
-            
-            len_ramer = len(self.ramer_list)
-            dist_matrix = np.zeros((len_ramer, len_ramer))
-
-            for i, group in enumerate(self.ramer_list):
-                shorter_group = self.ramer_list[i:]
-                len_sg = len(shorter_group)
-                for j, group2 in enumerate(shorter_group):
-                    distance_ = similarity(group, group2)
-                    dist_matrix[i, j] = distance_
-                    dist_matrix[j, i] = distance_
-                    if not j%10:
-                        sys.stdout.write("\r" + f"Distance matrix total: {round(((i)/(len_ramer))*100, 3)}% - current group: {round(((j)/(len_sg))*100, 3)}%")
-                        sys.stdout.flush()
-            np.save(f"{self.parent_path}/Data/States/{self.file_name}_distance_matrix", dist_matrix)
-            self.dist_matrix = dist_matrix
-
-    def calculate_best_n_clusters(self, range_n_clusters=[5,6,7,8,9,10]):
-        score, n, labels, model = [], [], [], []
-        for n_clusters in range_n_clusters:
-            k_model = self.k_mean_model(self.dist_matrix, n_clusters)
-            cluster_labels = self.k_predict(k_model, self.dist_matrix)
-            labels.append(cluster_labels)
-
-            silhouette_avg = silhouette_score(self.dist_matrix, cluster_labels)
-            score.append(silhouette_avg)
-            n.append(n_clusters)
-            model.append(k_model)
-            print(
-                f"For n_clusters = {n_clusters} The average silhouette_score is : {round(silhouette_avg, 3)}"
-            )
-
-        max_value = max(score)
-        max_index = score.index(max_value)
-        self.k_model = model[max_index]
-        self.best_n = n[max_index]
-        self.labels = labels[max_index]
-
-    def k_mean_model(self, dist_matrix, n_clusters):
-        clusterer = KMeans(n_clusters=n_clusters, random_state=10)
-        k_mean_model = clusterer.fit(dist_matrix)
-        return k_mean_model
-
-
-    def k_predict(self, model, dist_matrix):
-        cluster_labels = model.predict(dist_matrix)
-        return cluster_labels
-
 
 if __name__ == "__main__":
     g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
@@ -435,7 +320,7 @@ if __name__ == "__main__":
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     g6.cyclist_contact_coordiantes()
     g6.get_frame(1000)
-    g6.smooth_tracks(20)
+    g6.smooth_tracks(50)
     g6.cut_tracks_with_few_points(50)
     src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
     dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
@@ -443,55 +328,55 @@ if __name__ == "__main__":
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
     g6.transform_points()
-    g6.distance_matrix(type = "new")
-    g6.calculate_best_n_clusters()
-    g6.add_label()
-    # g6.add_bearing()
-    # g6.smooth_bearings(50)
-    g6.add_color(type="label")
+    # g6.distance_matrix(type = "load")
+    # g6.calculate_best_n_clusters()
+    # g6.add_label()
+    g6.add_bearing()
+    # g6.avg_bearing()
+    g6.smooth_bearings(10, type = "bearing")
+    g6.add_color(type="rainbow")
     plotted_points = g6.plot_object(g6.tracker_df, g6.map_path)
     g6.show_data("Points", plotted_points)
 
 
-    remove_line = g6.click_coordinates(g6.map_path, dst = 0, type = "line")
-    g6.remove_point_line(remove_line, "below")
-    plotted_removed = g6.plot_object(g6.tracker_df, g6.map_path)
-    g6.show_data("Warped img", plotted_removed)
+    # remove_line = g6.click_coordinates(g6.map_path, dst = 0, type = "line")
+    # g6.remove_point_line(remove_line, "below")
+    # plotted_removed = g6.plot_object(g6.tracker_df, g6.map_path)
+    # g6.show_data("Warped img", plotted_removed)
 
     s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
     s7.read_pkl("2403_s7_sync_yolov5x6")
-    # s7.file_name = ""
-    s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
-    s7.cyclist_contact_coordiantes()
-    s7.get_frame(1000)
-    s7.smooth_tracks(20)
-    s7.cut_tracks_with_few_points(10)
-    src = s7.click_coordinates(s7.frame, dst = "src", type = "load")
-    dst = s7.click_coordinates(s7.map_path, dst = "dst", type = "load")
-    s7.find_homography_matrix(src, dst)
-    # warped = s7.warped_perspective(s7.frame, s7.map_path)
-    # s7.show_data("Warped img", warped)
-    s7.transform_points()
-    #plotted_points = s7.plot_object(s7.tracker_df, s7.map_path)
-    #s7.show_data("Points", plotted_points)
-    s7.remove_point_line(remove_line, "above")
-    plotted_removed_s7 = s7.plot_object(s7.tracker_df, s7.map_path)
-    s7.show_data("Warped img", plotted_removed_s7)
+    s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "new")
+    # s7.cyclist_contact_coordiantes()
+    # s7.get_frame(1000)
+    # s7.smooth_tracks(20)
+    # s7.cut_tracks_with_few_points(10)
+    # src = s7.click_coordinates(s7.frame, dst = "src", type = "load")
+    # dst = s7.click_coordinates(s7.map_path, dst = "dst", type = "load")
+    # s7.find_homography_matrix(src, dst)
+    # # warped = s7.warped_perspective(s7.frame, s7.map_path)
+    # # s7.show_data("Warped img", warped)
+    # s7.transform_points()
+    # #plotted_points = s7.plot_object(s7.tracker_df, s7.map_path)
+    # #s7.show_data("Points", plotted_points)
+    # s7.remove_point_line(remove_line, "above")
+    # plotted_removed_s7 = s7.plot_object(s7.tracker_df, s7.map_path)
+    # s7.show_data("Warped img", plotted_removed_s7)
 
-    def join_df(df_list):
-        return pd.concat(df_list, ignore_index=True).sort_values("frame_id").reset_index(drop=True)
+    # def join_df(df_list):
+    #     return pd.concat(df_list, ignore_index=True).sort_values("frame_id").reset_index(drop=True)
 
-    joined_df = join_df([g6.tracker_df, s7.tracker_df])
-    joined = Camera("hogni", 24032021, "joined", "joined")
-    joined.tracker_df = joined_df
-    joined.new_bbox(10)
-    joined.df_format()
-    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
+    # joined_df = join_df([g6.tracker_df, s7.tracker_df])
+    # joined = Camera("hogni", 24032021, "joined", "joined")
+    # joined.tracker_df = joined_df
+    # joined.new_bbox(10)
+    # joined.df_format()
+    # joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
 
-    joined.tracker_df.to_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv")
-    joined.tracker_df
+    # joined.tracker_df.to_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv")
+    # joined.tracker_df
 
-    joined = Camera("hogni", 24032021, "joined", "joined")
-    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
-    # joined.tracker_df["x"] = joined.tracker_df["x"].round(0).astype(int)
-    # joined.tracker_df["y"] = joined.tracker_df["y"].round(0).astype(int)
+    # joined = Camera("hogni", 24032021, "joined", "joined")
+    # joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
+    # # joined.tracker_df["x"] = joined.tracker_df["x"].round(0).astype(int)
+    # # joined.tracker_df["y"] = joined.tracker_df["y"].round(0).astype(int)
