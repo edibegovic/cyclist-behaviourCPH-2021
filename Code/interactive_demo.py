@@ -11,25 +11,15 @@ from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_player
 import dash_bootstrap_components as dbc
 
-import plotly
-import plotly.express as px
 import plotly.graph_objects as go
 
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-from operator import itemgetter
 
 import json
-import base64
-from PIL import Image
-import tracker
+import easygui
 
-# df = pd.read_pickle("current_tracker.pickle")
-# df = pd.read_csv("iphone4.csv")
-df = pd.read_csv("g6_processed_not_cut.csv")
-
-df.loc[:, 'color'] = df['unique_id']%10
-df = pd.read_csv("Data/24032021/Data/CSV/joined_df_90_1_0.15_bbox10.csv") 
+df = pd.read_csv(easygui.fileopenbox(msg="Choose tracks file.")) 
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
@@ -74,7 +64,6 @@ app.layout = html.Div([
                 ),
                 dbc.Col(
                     html.Div([make_item(1, "🚲 All cyclists"), make_item(2, "🚳 Incidents"), make_item(3)], className="accordion"),
-                    # width={"offset": 1},
                     style={'background-color': 'grey'}
                 ),
             ],
@@ -169,7 +158,6 @@ def update_input_field(val):
 )
 
 def update_img_plot(val):
-    # print(years_chosen)
 
     fig = go.Figure()
 
@@ -217,7 +205,6 @@ def update_img_plot(val):
     fig.update_layout(
         dragmode='drawclosedpath',
         newshape=dict(line_color='cyan'),
-        # height=900,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
@@ -305,4 +292,3 @@ def update_incident_list(relayout_data):
 
 if __name__ == '__main__':
     app.run_server(port=8050, host='127.0.0.1', debug=True)
-# 
