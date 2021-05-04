@@ -1,3 +1,5 @@
+#http-server -p 8000
+
 import pandas as pd
 import dash
 import dash_core_components as dcc
@@ -14,24 +16,20 @@ from shapely.geometry.polygon import Polygon
 import json
 import easygui
 
-from applescript import tell
-
-tell.app( 'Terminal', 'do script "http-server -p 8000"') 
-
 file = easygui.fileopenbox(msg="Choose tracks file.")
 df = pd.read_csv(file) 
 
 video_1 = easygui.fileopenbox(msg="Select video 1.")
-video_1 = re.sub(r"^.+?(?=Code)", "", video_1)
+video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
 
 video_2 = easygui.fileopenbox(msg="Select video 2.")
-video_2 = re.sub(r"^.+?(?=Code)", "", video_2)
+video_2 = re.sub(r"^.+?(?=Data)", "", video_2)
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-max_len = len(df)
+max_len = len(df["frame_id"].unique())
 
 # -------------------------------------------------------------------
 # Components
