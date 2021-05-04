@@ -20,45 +20,75 @@
 \input{structure.tex} % Specifies the document structure and loads requires packages
 \usepackage{subfiles} % Best loaded last in the preamble
 
+\hyphenation{intersections}
+
+% Abstract type defination
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{3.0cm}%
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \item\relax}
+ {\endlist}
+
+
 %----------------------------------------------------------------------------------------
 %	ARTICLE INFORMATION
 %----------------------------------------------------------------------------------------
 
-\title{Quantifying cyclist behavior at intersections using video analysis} % The article title
+\title{
+	Quantifying cyclist behavior at intersections using video analysis 
+	\ \\
+	} % The article title
 
 \author{
-	\authorstyle{Edi Bergovic\textsuperscript{1} and Høgni Jacobsen\textsuperscript{1}} % Authors
-	\newline\newline % Space before institutions
-	\textsuperscript{1}\institution{The IT University of Copenhagen, Copenhagen, Denmark}\\ % Institution 1
-%	\textsuperscript{2}\institution{University of Texas at Austin, Texas, United States of America}\\ % Institution 2 
+	\authorstyle{Edi Bergovic and Høgni Jacobsen} % Authors
+	\newline
+	\institution{The IT University of Copenhagen, Copenhagen, Denmark}\\ % Institution
+	\newline
+	\authorstyle{Supervised by Michael Szell} % Authors
+	\\ \\ \\
+	\includegraphics[width=3in]{img/ITUlogo} 
 }
-
-% Example of a one line author/institution relationship
-%\author{\newauthor{John Marston} \newinstitution{Universidad Nacional Autónoma de México, Mexico City, Mexico}}
 
 \date{\today} % Add a date here if you would like one to appear underneath the title block, use \today for the current date, leave empty for no date
 
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
 \begin{document}
 
 \maketitle % Print the title
-
 \thispagestyle{firstpage} % Apply the page style for the first page (no headers and footers)
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
+\twocolumn[\begin{@twocolumnfalse}
+\ \\ \\
+\begin{abstract}
 
-% \lettrineabstract{Abstract}
-\noindent
-\textbf{Abstract}
+\centerline{\LARGE \textbf{Abstract}} 
 \ \\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-\noindent
-We will defiantly change this to a standard document, such that we have a single page for \textbf{front page}, 
-\textbf{table of contents} and \textbf{abstract}.
+\end{abstract}
+\end{@twocolumnfalse}]
+\clearpage
 
+%----------------------------------------------------------------------------------------
+%	Table of Contents 
+%----------------------------------------------------------------------------------------
+\twocolumn[\begin{@twocolumnfalse}
+\setcounter{tocdepth}{3} % Set the depth of the table of contents to show sections and subsections only
+\tableofcontents % Print the table of contents
+\end{@twocolumnfalse}]
+\clearpage
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
@@ -72,6 +102,7 @@ We will defiantly change this to a standard document, such that we have a single
 \section{Methodology}
 \subfile{sections/methodology}
 
+\color{red}
 \section{Results}
 \subfile{sections/results}
 
@@ -81,10 +112,11 @@ We will defiantly change this to a standard document, such that we have a single
 \section{Conclusion}
 Placeholder...
 
+\color{black}
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
-
+\clearpage
 \printbibliography[title={Bibliography}] % Print the bibliography, section title in curly brackets
 
 

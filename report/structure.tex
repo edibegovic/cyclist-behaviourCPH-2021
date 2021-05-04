@@ -41,8 +41,12 @@
 \usepackage{sectsty} % Enables custom section titles
 \allsectionsfont{\usefont{OT1}{phv}{b}{n}} % Change the font of all section commands (Helvetica)
 
+\usepackage[hidelinks,colorlinks=true,linkcolor=black,citecolor=blue]{hyperref}
+
 \usepackage{graphicx}
 \graphicspath{ {./img/} }
+
+\usepackage{xcolor}
 
 %----------------------------------------------------------------------------------------
 %	MARGINS AND SPACING
@@ -83,7 +87,7 @@
 \pagestyle{fancy} % Enables the custom headers/footers
 
 \renewcommand{\headrulewidth}{0.0pt} % No header rule
-\renewcommand{\footrulewidth}{0.4pt} % Thin footer rule
+\renewcommand{\footrulewidth}{0.0pt} % Thin footer rule
 
 \renewcommand{\sectionmark}[1]{\markboth{#1}{}} % Removes the section number from the header when \leftmark is used
 
@@ -91,7 +95,7 @@
 
 % Headers
 \lhead{} % Left header
-\chead{\textit{\thetitle}} % Center header - currently printing the article title
+% \chead{\textit{\thetitle}} % Center header - currently printing the article title
 \rhead{} % Right header
 
 % Footers
@@ -108,18 +112,18 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\newcommand{\authorstyle}[1]{{\large\usefont{OT1}{phv}{b}{n}\color{DarkRed}#1}} % Authors style (Helvetica)
+\newcommand{\authorstyle}[1]{{\large\usefont{OT1}{phv}{b}{n}\color{Black}#1}} % Authors style (Helvetica)
 
 \newcommand{\institution}[1]{{\footnotesize\usefont{OT1}{phv}{m}{sl}\color{Black}#1}} % Institutions style (Helvetica)
 
 \usepackage{titling} % Allows custom title configuration
 
-\newcommand{\HorRule}{\color{DarkGoldenrod}\rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
+\newcommand{\HorRule}{\color{Gray}\rule{\linewidth}{1pt}} % Defines the gold horizontal rule around the title
 
 \pretitle{
 	\vspace{-30pt} % Move the entire title section up
 	\HorRule\vspace{10pt} % Horizontal rule before the title
-	\fontsize{27}{36}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
+	\fontsize{22}{26}\usefont{OT1}{phv}{b}{n}\selectfont % Helvetica
 	\color{DarkRed} % Text colour for the title and author(s)
 }
 
