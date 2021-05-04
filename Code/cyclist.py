@@ -13,8 +13,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 
 class Camera:
-    def __init__(self, user, video_folder, file_name, camera):
-        self.user = user
+    def __init__(self, video_folder, file_name, camera):
         self.video_folder = video_folder
         self.file_name = file_name
         self.camera = camera
@@ -430,15 +429,16 @@ class Camera:
 
 
 if __name__ == "__main__":
-    g6 = Camera("hogni", 24032021, "2403_g6_sync", "g6")
-    g6.read_pkl("2403_g6_sync_yolov5x6")
+    g6 = Camera(24032021, "2403_g6_sync", "g6")
+    g6.read_pkl("2403_g6_sync_yolov5x6_corrected")
     g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     g6.cyclist_contact_coordiantes()
-    g6.get_frame(1000)
+    # g6.get_frame(1000)
+    g6.frame = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/assets/corrected_g6.jpg"
     g6.smooth_tracks(20)
     g6.cut_tracks_with_few_points(50)
-    src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
-    dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "load")
+    src = g6.click_coordinates(g6.frame, dst = "src", type = "new")
+    dst = g6.click_coordinates(g6.map_path, dst = "dst", type = "new")
     g6.find_homography_matrix(src, dst)
     # warped = g6.warped_perspective(g6.frame, g6.map_path)
     # g6.show_data("Warped img", warped)
@@ -458,12 +458,14 @@ if __name__ == "__main__":
     plotted_removed = g6.plot_object(g6.tracker_df, g6.map_path)
     g6.show_data("Warped img", plotted_removed)
 
-    s7 = Camera("hogni", 24032021, "2403_s7_sync", "s7")
-    s7.read_pkl("2403_s7_sync_yolov5x6")
+    s7 = Camera(24032021, "2403_s7_sync", "s7")
+    s7.read_pkl("2403_s7_sync_yolov5x6_corrected")
     # s7.file_name = ""
     s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     s7.cyclist_contact_coordiantes()
-    s7.get_frame(1000)
+    # s7.get_frame(1000)
+    g6.frame = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/assets/corrected_s7.jpg"
+    cv2.imwrite("inter_s7.jpg", s7.frame)
     s7.smooth_tracks(20)
     s7.cut_tracks_with_few_points(10)
     src = s7.click_coordinates(s7.frame, dst = "src", type = "load")
