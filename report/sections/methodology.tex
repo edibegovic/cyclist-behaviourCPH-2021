@@ -1,6 +1,6 @@
 
 Figure \ref{pipeline} summarizes the general methodology that will be discussed. We will focus
-on three main components, Data collection, Data processing and Data exploration.
+on three main components, Data collection, Data processing, and Data exploration.
 
 \ \\ 
 \noindent
@@ -13,13 +13,12 @@ on three main components, Data collection, Data processing and Data exploration.
 \subsection{Data Collection}
 
 The Yrsas Plads junction in Copenhagen was chosen as the location for our primary data collection. 
-This junction faces several challanges producing “conflicts, unsafe situations, illegal road user behaviour and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
-These challenges make the Yrsas Plads junction one of the more complicated junctions in Copenhagen and would serve as a good base to this quantitative analysis method. 
-As this is a large junction we have implmented a two cameras recording setup on opposite side of the junction, this provides good coverage regardless of traffic obstructions.
-
+This junction faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
+These challenges make the Yrsas Plads junction one of the more complicated junctions in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
+As this is a large junction, we have implemented a two cameras recording setup on the opposite side of the junction; this provides good coverage regardless of traffic obstructions.
 \subsubsection{Recording Location}
 
-There are three consideration to take into account when applying these methods to a junction.
+There are three considerations to take into account when applying these methods to a junction.
 \begin{itemize}
 	\item Junction size
 \end{itemize}
@@ -34,39 +33,42 @@ than the Yrsas Plads junction. A larger junction might require more cameras whic
 
 \subsubsection{Camera Selection}
 
-Modern mobile phones offer high resolution and quality cameras in a compact design. We used an LG G6 and a Samsung S7 Edge for recording the junction.
+Modern mobile phones offer high-resolution and quality cameras in a compact design. We used an LG G6 and a Samsung S7 Edge for recording the junction.
 These devices offer wide enough field-of-views (FOV) to record the parts of the junction we are interested in from the selected mounting locations.
-FOV being the maximum area a camera can image. A formal method of selecting a recording device would be to select one that has a large enough FOV that can image the entire junction 
-from the mounting position that is closest to the junction. Given a recording location we can calculate the FOV needed using equation \ref{eq:1}.
-If $\theta > FOV$ then the FOV is too small. 
-Note: Label image and make them more understandable.
+FOV being the maximum area a camera can image. A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire junction from the mounting position closest to the junction. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
+If $\theta > FOV$, then the FOV is too small. 
+\color{red}
+Note: Label images and make them more understandable.
+\color{black}
 
 \begin{equation}
     \theta = tan^-1(\frac{\frac{width}{2}}{adjacent}) * 2\label{eq:1}
   \end{equation}
 
 \ \\ 
-  \begin{figure}[h]
-    \includegraphics[scale=1.0]{location.png}
-    \centering 
-    \end{figure}
-    \captionof{figure}{Barrel Distortion}
-    \label{Camera location}
+\begin{figure}[h]
+\includegraphics[scale=1.0]{location.png}
+\centering 
+\end{figure}
+\captionof{figure}{Camera location}
+\label{Camera location}
 
-Battery life and storage capacity should also being considered depending on the amount of intended recording. 
-With regards to storage a good estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS, storage should be selected
+\ \\
+Battery life and storage capacity should also be considered depending on the amount of intended recording. 
+With regards to storage, a good estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS. Storage should be selected
 with the intended amount of recording time.
 
 \subsubsection{Camera mounting}
 
+\color{red}
 Note: To rewrite.
+\color{black}
 
-For best results the cameras should be set up with parralel to the roads surface as possible and high enougth to 
-image above any obsticles.
+For best results, the cameras should be set up as parallel to the road's surface as possible and high up enough not to have the FOV obstructed by obstacles.
 
-A minimum angle of 30 degrees downwards and a minimum height of 2 meters is recommended.
+A minimum angle of 30° downwards and a minimum height of 2 meters is recommended.
 
-Note: Picture of out locations and mounting system.
+Note: Picture of our locations and mounting system.
 
 \subsection{Data Processing}
 
@@ -79,15 +81,13 @@ Note: Picture of out locations and mounting system.
 \label{data}
 
 
-Figure \ref{data} offers a general overview of the data processing steps. No special hardware is required, but a CUDA enabled GPU
-device would be optimal for object detection.
+Figure \ref{data} offers a general overview of the data processing steps. No special hardware is required, but a CUDA-enabled GPU is optimal for object detection using YOLO.
 \ \\
 \subsubsection{Distortion Correction}
 
-Cameras often suffer from optical aberration where straight lines appear bent. This is specifically observable on 
-wide angle camera lenses such as that on the LG G6 used in this study.
-The specific type being positive radial distortion such as in figure \ref{distortion}, where lines curve outwards in a shape of a barrel.
-Another form of radial distortion is pincushion distortion where lines bend towards the centre of the image. These aberrations are a result 
+Cameras often suffer from optical aberration where straight lines appear bent. This can be observed on wide-angle camera lenses such as that of the LG G6 used in this study.
+The specific type is \textit{positive radial distortion} as shown in figure \ref{distortion}, with lines curving outwards in a barrel shape.
+Another form of radial distortion is \textit{pincushion distortion} with lines bend towards the center of the image. These aberrations are a result 
 of the curved shape of the camera lens.
 
 \ \\ 
@@ -100,37 +100,39 @@ of the curved shape of the camera lens.
 
 \ \\
 
-There is also a possability of further distortion if the camera sensor and the lense are not parralel, this is known as tangential distortion.
+There is also a possibility of further distortion if the camera sensor and the lens are not parallel, also known as \textit{tangential distortion}.
 Ideally, there should be no radial nor tangential distortion.
 \ \\
 Distortion can lead to incorrect projection and therefore joining of video sources later on.
 To correct for this we make use of OpenCVs \cite{noauthor_opencv/opencv_2021} camera calibration toolbox.
 
-In order to correct for distortion we need to find the camera matrix and distortion coefficients... Explain the maths a bit more.
+\color{red}
+In order to correct for distortion, we need to find the camera matrix and distortion coefficients... Explain the maths a bit more.
+\color{black}
 \ \\
 \subsubsection{Object Detection}
 
-The raw video is output as a .mp4 file this video file is if fed to YOLO v5 for object detection. YOLO, You Only Look Once,
+The raw video is output as a MPEG-4 file. This video file is fed to YOLOv5 for object detection. YOLO, \textit{You Only Look Once},
 is a real-time object detection algorithm. YOLOv5 is trained on the COCO dataset \url{https://cocodataset.org}, which comprises over 330,000 thousand images
 with over 1,5 million objects in over 80 object classes.
 \ \\ 
-YOLO is well known for its real-time speed and accuracy \cite{redmon2016look}.
+YOLO is well known for its real-time speed, and accuracy \cite{redmon2016look}.
 \ \\ 
-At the most basic level YOLO resizes an input image, runs a single convolutional network on the resized image
+At the most basic level, YOLO resizes an input image, runs a single convolutional network on the resized image
 and then thresholds the resulting detections by the model’s confidence.
 \ \\ 
-Predicted objects are represented as bounding boxes with output being represented as in \ref{representation} 
+Predicted objects are represented as bounding boxes with the output being represented as in \ref{representation} 
 
 \begin{equation}
   [ [frame id][xmin][ymin][xmax][ymax][confidence]]\label{representation}
 \end{equation}
 
-The min and max values for x and y represent a bounding box for the identified bicylce.
+The min and max values for x and y represent a bounding box for the identified bicycle.
 
 \subsubsection{Homography Matrix}
 
-An homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto a plane on a destination image $Q(x_i, y_i)$.
-The source image in our case being the plane of the road surface from the recorded video at the intersection to the road surface from an aerial view of the same intersection.  
+A homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto a plane on a destination image $Q(x_i, y_i)$.
+The source image in our case is the plane of the road surface from the recorded video at the intersection to the road surface from an aerial view of the same intersection.  
 This will allow us to view the cyclist movements from an aerial view.
 \ \\ 
 \begin{figure}[h]
@@ -140,7 +142,7 @@ This will allow us to view the cyclist movements from an aerial view.
   \captionof{figure}{SR to DST}
   \label{homography}
 \ \\ 
-To calculate the homography matrix we need to solve the for the system of linear equations \ref{eq:2}
+To calculate the homography matrix, we need to solve the for the system of linear equations \ref{eq:2}
 
 \begin{equation}
   P = HQ\label{eq:2}
@@ -168,33 +170,32 @@ Referencing \ref{eq:3}, $P$ being points in a polygon on the source image, $Q$ t
 
 \subsubsection{Projection}
 
-Before we can project the cyclist onto an aerial view we first need to calculate teh $(x, y)$ coordinates of their contact points with the road surafce.
-Given \ref{representation} we can calculate this by \ref{eq:4}
+Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
+Given \ref{representation} we can calculate this by the following
 
-\begin{align}
-  x = xmin + \frac{(xmax - xmin)}{2} 
-  y = ymin\label{eq:4}
-\end{align} 
-
-Using the homography matrix we can now project the contact points $(x, y)$ of the cyclist onto the destination
-image. This is achieved by applying $z$ to each point as a constant so as to create $Q(x_i, y_i, 1)$ and then we multipy it by 
-homography matrix. 
+$$x = xmin + \frac{(xmax - xmin)}{2}$$
+$$y = ymin$$
+\
+Using the homography matrix, we can now project the contact points $(x, y)$ of the cyclist onto the destination
+image. This is achieved by applying $z$ to each point as a constant to create $Q(x_i, y_i, 1)$ and then we multiply it by the homography matrix. 
 
 \subsubsection{Merging Sources}
 
-To merge the data from the two video sources we take a naive approach. For optimal coverage the cameras are setup on
-opposite sides of the junction. To join them we simply cut the video sources in half along the halfway point between
-the two cameras along the junction. The data is then merged.
+To merge the data from the two video sources, we take a naive approach. For optimal coverage, the cameras are set up on
+opposite sides of the junction. We simply cut the video sources in half along the mid-point between
+the two cameras along the junction to join them. The data is then merged.
 
 \subsubsection{Multiple object tracking}
 
-In order to connect observations into trajectories of individual cyclist we apply 
-simple online and real time tracking algorithm, SORT \cite{abewley_abewley/sort_2021}, as initially described in \cite{Bewley2016_sort}. 
-SORT aims to address the problem of multiple object tracking (MOT) where object across frames needs to be connected. 
-Note: Explain more about SORT predict bbox then iou for actualy bbox.
+In order to connect observations into trajectories of individual cyclist, we apply 
+simple online and real-time tracking algorithm, SORT \cite{abewley_abewley/sort_2021}, as initially described in \cite{Bewley2016_sort}. 
+SORT aims to address multiple object tracking (MOT) where object across frames needs to be connected. 
+\color{red}
+Note: Explain more about SORT predict bbox then IOU for actualy bbox.
+\color{black}
 \ \\
-To join the tracks from multiple sources we assume arbitrary bounding box dimensions of 10*10 pixels for the projected cyclists. 
-Passing the algorithm the bounding boxes per frame we get a unique ID associated with each observation.
+We assume arbitrary bounding box dimensions of 10*10 pixels for the projected cyclists to join the tracks from multiple sources. 
+Passing the algorithm the bounding boxes per frame, we get a unique ID associated with each observation.
 
 \subsection{Data Exploration}
 
@@ -206,7 +207,7 @@ There are two objectives for the data exploration, those being:
 
 \subsubsection{Rainbow Tracks}
 
-A method of Desire path discovery.
+A method of desire path discovery.
 
 \ \\ 
 \noindent
@@ -215,20 +216,22 @@ A method of Desire path discovery.
 \end{tabular}
 \captionof{figure}{Rainbow}
 \label{Rainbow}
+\ \\
 
-To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". This involves coloring tracks by the bearing between consequtive points in each 
-trajectory, after calculating the bearing we then get a color from a gardient color wheel. This approach has the added benefit of encoding direction into 
+To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". This involves coloring tracks by the bearing between consecutive points in each trajectory. After calculating the bearing, we then get a color from a gradient color wheel. This approach has the added benefit of encoding direction into 
 each track.
-Note: Maybe just an equation demonstaring the bearing calculation.
+Note: Maybe just an equation demonstrating the bearing calculation.
 \ \\ 
+
 \begin{equation}
   UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
 \end{equation}
 
 \subsubsection{Alert Zones and Counts}
 
-We created a "Tool name", that allows the defining of certain areas as "Red zones". These zones are provide us with easy reference to activty in the zones throught the videos.
-Using these zones we can count cyclist and observe their behaviour at points on the junction that might be difficult or
+\color{red}
+We created a "Tool name" that allows the definition of specific areas as "red zones". These zones provide us with easy reference to activity in the zones throughout the videos.
+Using these zones, we can count cyclist and observe their behavior at points on the junction that might be difficult or
 problematic.
 
 Note: Picture of interface?
