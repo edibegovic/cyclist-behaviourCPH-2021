@@ -22,11 +22,11 @@ df = pd.read_csv(file)
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
 # video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
-video_1 = "/Data/24032021/Videos/Processed/2403_G6_sync.mp4"
+video_1 = "Data/24032021/Videos/Processed/2403_G6_sync.mp4"
 
 # video_2 = easygui.fileopenbox(msg="Select video 2.")
 # video_2 = re.sub(r"^.+?(?=Data)", "", video_2)
-video_2 = "/Data/24032021/Videos/Processed/2403_S7_sync.mp4"
+video_2 = "Data/24032021/Videos/Processed/2403_S7_sync.mp4"
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
@@ -123,23 +123,15 @@ app.layout = html.Div([
                 ),
             ]),
 
-            # dbc.Col([
-            #     dash_player.DashPlayer(
-            #         id='video-player2',
-            #         url='http://localhost:8000/Data/24032021/Videos/Processed/2403_edi_sync.mp4',
-            #         controls=False,
-            #         width='96%'
-            #     ),
-            # ]),
-
             dbc.Col([
                 dash_player.DashPlayer(
-                    id='video-player3',
+                    id='video-player2',
                     url=f'http://localhost:8000/{video_2}',
                     controls=False,
-                    width='100%'
+                    width='96%'
                 ),
             ]),
+
             ], justify="center", 
             style={
                 'margin-left': '45px',
@@ -239,13 +231,12 @@ def update_output(inc, dec, incident, value):
         return int(button_id)
 
 @app.callback([Output('video-player', 'seekTo'),
-              Output('video-player2', 'seekTo'),
-              Output('video-player3', 'seekTo')],
+              Output('video-player2', 'seekTo')],
               [Input('frame-slider', 'value')])
 
 def update_prop_seekTo(val):
     frame = val/30
-    return frame, frame, frame
+    return frame, frame
 
 
 @app.callback(
