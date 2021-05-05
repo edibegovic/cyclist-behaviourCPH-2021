@@ -1,16 +1,13 @@
-# start a light-weight webserver
-# Go to iCloud folder and run:
-# http-server -p 8000
+#http-server -p 8000
 
 import pandas as pd
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, MATCH, ALL
 import dash_player
 import dash_bootstrap_components as dbc
-
+import re
 import plotly.graph_objects as go
 
 from shapely.geometry import Point
@@ -19,11 +16,23 @@ from shapely.geometry.polygon import Polygon
 import json
 import easygui
 
-df = pd.read_csv(easygui.fileopenbox(msg="Choose tracks file.")) 
+# file = easygui.fileopenbox(msg="Choose tracks file.")
+file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.15_bbox10.csv"
+df = pd.read_csv(file) 
+
+# video_1 = easygui.fileopenbox(msg="Select video 1.")
+# video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
+video_1 = "/Data/24032021/Videos/Processed/2403_G6_sync.mp4"
+
+# video_2 = easygui.fileopenbox(msg="Select video 2.")
+# video_2 = re.sub(r"^.+?(?=Data)", "", video_2)
+video_2 = "/Data/24032021/Videos/Processed/2403_S7_sync.mp4"
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+max_len = len(df["frame_id"].unique())
 
 # -------------------------------------------------------------------
 # Components
@@ -75,7 +84,7 @@ app.layout = html.Div([
                 dbc.Col([
                     dcc.Slider(id='frame-slider',
                         min=300,
-                        max=10000,
+                        max=max_len,
                         value=300,
                         step=1,)
                 ], 
@@ -108,32 +117,32 @@ app.layout = html.Div([
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player',
-                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_S7_sync.mp4',
+                    url=f'http://localhost:8000/{video_1}',
                     controls=False,
-                    width='96%'
+                    width='100%'
                 ),
             ]),
 
-            dbc.Col([
-                dash_player.DashPlayer(
-                    id='video-player2',
-                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_edi_sync.mp4',
-                    controls=False,
-                    width='96%'
-                ),
-            ]),
+            # dbc.Col([
+            #     dash_player.DashPlayer(
+            #         id='video-player2',
+            #         url='http://localhost:8000/Data/24032021/Videos/Processed/2403_edi_sync.mp4',
+            #         controls=False,
+            #         width='96%'
+            #     ),
+            # ]),
 
             dbc.Col([
                 dash_player.DashPlayer(
                     id='video-player3',
-                    url='http://localhost:8000/Data/24032021/Videos/Processed/2403_G6_sync.mp4',
+                    url=f'http://localhost:8000/{video_2}',
                     controls=False,
-                    width='96%'
+                    width='100%'
                 ),
             ]),
             ], justify="center", 
             style={
-                'margin-left': '10px',
+                'margin-left': '45px',
                 'margin-top': '15px',
                 }),
 
@@ -161,7 +170,6 @@ def update_img_plot(val):
 
     fig = go.Figure()
 
-    # Add image
     img_width = 1920
     img_height = 1080
     scale_factor = 0.5
@@ -201,7 +209,6 @@ def update_img_plot(val):
             ),
     ))
 
-    # Set dragmode and newshape properties; add modebar buttons
     fig.update_layout(
         dragmode='drawclosedpath',
         newshape=dict(line_color='cyan'),
@@ -262,11 +269,9 @@ def toggle_accordion(n1, n2, n3, is_open1, is_open2, is_open3):
         return False, False, not is_open3
     return False, False, False
 
-# From SVG path to numpy array of coordinates, each row being a (row, col) point
 def path_to_coords(path):
     indices_str = [el.replace("M", "").replace("Z", "").split(",") for el in path.split("L")]
     return np.array(indices_str, dtype=float)
-
 
 @app.callback(
     Output("collapse-2", "children"),
