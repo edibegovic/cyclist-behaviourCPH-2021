@@ -33,11 +33,22 @@ than the Yrsas Plads junction. A larger junction might require more cameras whic
 
 \subsubsection{Camera Selection}
 
+Any camera device with a wide enough field-of-view (FOV) to image the selected intersection, can record at 720p (1280×720 resolution, or 1-megapixel), and that allows remote viewing of its interface,
+will suffice. Having tested a Raspberry Pi recording setup (Raspberry Pi, camera external battery bank and an LCD screen case) we would not recomended a setup with self built hardware.
+Although the Raspberry Pi setup meets the basic requirements mentioned earlier, the major issue is the usability of such a setup. There are unneeded complexities in
+setting up the hardware and having a surety of its correct functioning when compared to alternatives that are built and optimized for video recordings such as
+mobile phones or action cameras. Mobile phones and action cameras often offer methods of remote viewing of their interfaces that are much more
+intuitive than what can be reasonably achieved with a Raspberry Pi setup, as these devices often have data connectivity and/or WIFI allowing for the use of remote control/viewing apps such as TeamViewer or in terms of action cameras
+offer software applications that allow connecting to the camera for remote viewing. Being able to remotely view the camera interface is important when mounting the
+camera and adjusting it's position to get a good view of the intersection.
 
+\ \\
+For these reason, we chose to use two mobile phones those being an LG G6 and a Samsung S7 Edge.
+These devices offer wide enough FOV to record the parts of the junction we are interested in from the selected mounting locations, have high-resolution cameras, and allow for remote viewing over WIFI using TeamViewer.
+FOV being the maximum area a camera can image. 
+\ \\
 
-Modern mobile phones offer high-resolution and quality cameras in a compact design. We used an LG G6 and a Samsung S7 Edge for recording the junction.
-These devices offer wide enough field-of-views (FOV) to record the parts of the junction we are interested in from the selected mounting locations.
-FOV being the maximum area a camera can image. A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire junction from the mounting position closest to the junction. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
+A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire junction from the mounting position closest to the junction. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
 If $\theta > FOV$, then the FOV is too small. 
 \color{red}
 Note: Label images and make them more understandable.
@@ -62,12 +73,13 @@ with the intended amount of recording time.
 
 \subsubsection{Camera mounting}
 
-\color{red}
-Note: To rewrite.
-\color{black}
+As we chose mobile phones to record with we had access to a wide variety of mobile phone mounts on store such as Amazon.
+To mount the Samsung S7 Edge we used a flexible arm mount and for the LG G6, we used a custom-made mounting system.
+The method of mounting a camera is very much dependant on where the camera is placed and on what. For example, the Samsung S7 Edge's
+mounting location was easily accessible and therefore we could simply clamp the system onto a pole. Whereas the LG G6's location was relatively 
+high off the ground and unreachable, therefore we created a mount that allowed us to use an extendable arm to hook the camera onto the position.
 
 For best results, the cameras should be set up as parallel to the road's surface as possible and high up enough not to have the FOV obstructed by obstacles.
-
 A minimum angle of 30° downwards and a minimum height of 2 meters is recommended.
 
 Note: Picture of our locations and mounting system.
@@ -123,12 +135,8 @@ YOLO is well known for its real-time speed, and accuracy \cite{redmon2016look}.
 At the most basic level, YOLO resizes an input image, runs a single convolutional network on the resized image
 and then thresholds the resulting detections by the model’s confidence.
 \ \\ 
-Predicted objects are represented as bounding boxes with the output being represented as in \ref{representation} 
-
-\begin{equation}
-  [ [frame id][xmin][ymin][xmax][ymax][confidence]]\label{representation}
-\end{equation}
-
+Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
+\ \\
 The min and max values for x and y represent a bounding box for the identified bicycle.
 
 \subsubsection{Homography Matrix}
@@ -144,13 +152,9 @@ This will allow us to view the cyclist movements from an aerial view.
   \captionof{figure}{SR to DST}
   \label{homography}
 \ \\ 
-To calculate the homography matrix, we need to solve the for the system of linear equations \ref{eq:2}
-
-\begin{equation}
-  P = HQ\label{eq:2}
-\end{equation} 
-
-Referencing \ref{eq:3}, $P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
+To calculate the homography matrix, we need to solve the for the system of linear equations, $P = HQ$,
+\ \\
+$P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
 \begin{align}
 \label{eq:3}
   \begin{bmatrix}

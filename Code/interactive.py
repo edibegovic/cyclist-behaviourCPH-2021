@@ -17,7 +17,7 @@ import json
 import easygui
 
 # file = easygui.fileopenbox(msg="Choose tracks file.")
-file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.15_bbox10.csv"
+file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.05_bbox10.csv"
 df = pd.read_csv(file) 
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
