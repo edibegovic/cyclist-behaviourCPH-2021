@@ -12,23 +12,23 @@ on three main components, Data collection, Data processing, and Data exploration
 
 \subsection{Data Collection}
 
-The Yrsas Plads junction in Copenhagen was chosen as the location for our primary data collection. 
-This junction faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
-These challenges make the Yrsas Plads junction one of the more complicated junctions in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
-As this is a large junction, we have implemented a two cameras recording setup on the opposite side of the junction; this provides good coverage regardless of traffic obstructions.
+The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
+This intersection faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
+These challenges make the Dybbølsbro intersection one of the more complicated intersections in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
+As this is a large intersection, we have implemented a two cameras recording setup on the opposite side of the intersection; this provides good coverage regardless of traffic obstructions.
 \subsubsection{Recording Location}
 
-There are three considerations to take into account when applying these methods to a junction.
+There are three considerations to take into account when applying these methods to a intersection.
 \begin{itemize}
-	\item Junction size
+	\item intersection size
 \end{itemize}
-Larger junctions would require a two camera setup as detailed, but this might not be optimal for intersections much Larger
-than the Yrsas Plads junction. A larger junction might require more cameras which will need some implmentation tweeks.
+Larger intersections would require a two camera setup as detailed, but this might not be optimal for intersections much Larger
+than the Dybbølsbro intersection. A larger intersection might require more cameras which will need some implmentation tweeks.
 \begin{itemize}
 	\item Camera mounting points
 \end{itemize}
 \begin{itemize}
-	\item Junction composition
+	\item intersection composition
 \end{itemize}
 
 \subsubsection{Camera Selection}
@@ -44,11 +44,11 @@ camera and adjusting it's position to get a good view of the intersection.
 
 \ \\
 For these reason, we chose to use two mobile phones those being an LG G6 and a Samsung S7 Edge.
-These devices offer wide enough FOV to record the parts of the junction we are interested in from the selected mounting locations, have high-resolution cameras, and allow for remote viewing over WIFI using TeamViewer.
+These devices offer wide enough FOV to record the parts of the intersection we are interested in from the selected mounting locations, have high-resolution cameras, and allow for remote viewing over WIFI using TeamViewer.
 FOV being the maximum area a camera can image. 
 \ \\
 
-A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire junction from the mounting position closest to the junction. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
+A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire intersection from the mounting position closest to the intersection. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
 If $\theta > FOV$, then the FOV is too small. 
 \color{red}
 Note: Label images and make them more understandable.
@@ -188,8 +188,8 @@ image. This is achieved by applying $z$ to each point as a constant to create $Q
 \subsubsection{Merging Sources}
 
 To merge the data from the two video sources, we take a naive approach. For optimal coverage, the cameras are set up on
-opposite sides of the junction. We simply cut the video sources in half along the mid-point between
-the two cameras along the junction to join them. The data is then merged.
+opposite sides of the intersection. We simply cut the video sources in half along the mid-point between
+the two cameras along the intersection to join them. The data is then merged.
 
 \subsubsection{Multiple object tracking}
 
@@ -237,7 +237,7 @@ Note: Maybe just an equation demonstrating the bearing calculation.
 
 \color{red}
 We created a "Tool name" that allows the definition of specific areas as "red zones". These zones provide us with easy reference to activity in the zones throughout the videos.
-Using these zones, we can count cyclist and observe their behavior at points on the junction that might be difficult or
+Using these zones, we can count cyclist and observe their behavior at points on the intersection that might be difficult or
 problematic.
 
 Note: Picture of interface?
