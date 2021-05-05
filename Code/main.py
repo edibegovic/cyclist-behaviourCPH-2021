@@ -36,11 +36,9 @@ joined.tracker_df = joined_df
 joined.new_bbox(10)
 joined.df_format()
 joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "new")
+joined.cut_tracks_with_few_points(50)
 
 joined.tracker_df.to_csv("/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.10_bbox10.csv")
-
-joined.smooth_tracks(20)
-joined.tracker_df.to_csv("/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.10_bbox10_smooth.csv")
 
 if __name__ == "__main__":
     pass
