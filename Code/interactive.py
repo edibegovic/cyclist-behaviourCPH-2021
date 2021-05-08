@@ -16,23 +16,24 @@ from shapely.geometry.polygon import Polygon
 import json
 import easygui
 
-# file = easygui.fileopenbox(msg="Choose tracks file.")
-file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.15_bbox10.csv"
-df = pd.read_csv(file) 
+df = pd.read_pickle("g6_corrected.pickle") 
+df = df.astype({'frame_id': 'int32'})
+df.loc[:, 'color'] = "red"
+df = df[df.groupby("unique_id")["unique_id"].transform("size") > 20]
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
 # video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
-video_1 = "Data/24032021/Videos/Processed/2403_G6_sync.mp4"
+video_1 = "/Videos/24032021/Processed/2403_G6_sync.mp4"
 
 # video_2 = easygui.fileopenbox(msg="Select video 2.")
-# video_2 = re.sub(r"^.+?(?=Data)", "", video_2)
-video_2 = "Data/24032021/Videos/Processed/2403_S7_sync.mp4"
+# video_2 = re.sub(r"^.+?(?=../Data)", "", video_2)
+video_2 = "/Videos/24032021/Processed/2403_S7_sync.mp4"
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-max_len = len(df["frame_id"].unique())
+max_len = len(df["frame_id"].unique()-500)
 
 # -------------------------------------------------------------------
 # Components
@@ -174,7 +175,7 @@ def update_img_plot(val):
             yref="y",
             opacity=1.0,
             layer="below",
-            source="assets/dbro_map.png"
+            source="/assets/dbro_map.png"
     )
     fig.update_xaxes(showgrid=False, range=(0, img_width), visible=False, showticklabels=False)
     fig.update_yaxes(showgrid=False, scaleanchor='x', range=(img_height, 0), visible=False, showticklabels=False)
@@ -270,6 +271,7 @@ def path_to_coords(path):
     prevent_initial_call=True,
 )
 def update_incident_list(relayout_data):
+    print(relayout_data['shapes'])
     if relayout_data['shapes'] is not None:
         path_string = relayout_data['shapes'][0]['path']
         coordinates_raw = [coor.replace("M", "").replace("Z", "").split(",") for coor in path_string.split("L")]
