@@ -146,23 +146,13 @@ Using the camera matrix and distortion coefficients we then apply OpenCV remap o
 
 Object detection is the most important factor to consider, it is the key component in making this method work. The accuracy of detecting cyclist and the accuracy of the
 predicted bounding boxes are the most important data components.
-
-The project initially made use of OpenDataCam which is an open-source tool used to quantify urban environments with object detection, Multiple object tracking, and object counting at certain points.
-OpenDataCam implements YOLO, specifically v4, for object detection.
-YOLO, \textit{You Only Look Once}, is a real-time object detection algorithm. YOLO is trained on the COCO dataset \url{https://cocodataset.org}, which comprises over 330,000 thousand images
-with over 1,5 million objects in over 80 object classes.
-YOLO is well known for its real-time speed, and accuracy \cite{redmon2016look}.
-The novelty of OpenDataCam is that it is designed for the onsite processing of live-streamed video feeds. This requires dedicated CUDA GPU-enabled hardware such as an Nvidia Jetson series device (Embedded AI computing board).
 \ \\
-We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars, but didn't perform as well on cyclist. We therfore implemented our own object detection setup using
-YOLOv5. YOLOv5 showed a good improvement on cyclist.
-\ \\ 
-At the most basic level, YOLO resizes an input image, runs a single convolutional network on the resized image
-and then thresholds the resulting detections by the model’s confidence.
+
+We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but didn't perform well on cyclists. 
+We, therefore, implemented our object detection setup using
+YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
-\ \\
-The min and max values for x and y represent a bounding box for the identified bicycle.
 
 \subsubsection{Homography Matrix}
 
@@ -274,9 +264,16 @@ Note: Maybe just an equation demonstrating the bearing calculation.
 
 \subsection{Recognizing abnormal behaviour}
 
+One of
+\subsubsection{Deviation from desire lines}
+Automatic aproach
+
+
 \color{red}
 We created a "Tool name" that allows the definition of specific areas as "red zones". These zones provide us with easy reference to activity in the zones throughout the videos.
 Using these zones, we can count cyclist and observe their behavior at points on the intersection that might be difficult or
 problematic.
+
+\subsection{Recognizing abnormal behaviour}
 
 Note: Picture of interface?
