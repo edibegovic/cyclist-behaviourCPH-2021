@@ -83,11 +83,14 @@ Note: Label images and make them more understandable.
 \label{Camera location}
 
 \ \\
-Battery life and storage capacity should also be considered depending on the amount of intended recording. 
-With regards to storage, a good estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS. Storage should be selected
-with the intended amount of recording time.
+% Battery life and storage capacity should also be considered depending on the amount of intended recording. 
+% With regards to storage, a good estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS. Storage should be selected
+% with the intended amount of recording time.
 
 \subsubsection{Camera mounting}
+
+% Images of camera mounts: contraption + grabby arm
+% Merge with prevoius section: change name to "camera setup"
 
 As we chose mobile phones to record with we had access to a wide variety of mobile phone mounts on store such as Amazon.
 To mount the Samsung S7 Edge we used a flexible arm mount and for the LG G6, we used a custom-made mounting system.
@@ -108,12 +111,12 @@ Note: Picture of our locations and mounting system.
 \end{tabular}
 \captionof{figure}{Data Pipeline}
 \label{data}
-
-
-Figure \ref{data} offers a general overview of the data processing steps. No special hardware is required, but a CUDA-enabled GPU is optimal for object detection using YOLO.
 \ \\
-\subsubsection{Distortion Correction}
 
+% Figure \ref{data} offers a general overview of the data processing steps. No special hardware is required, but a CUDA-enabled GPU is optimal for object detection using YOLO.
+\ \\
+
+\subsubsection{Camera calibration}
 Cameras often suffer from optical aberration where straight lines appear bent. This can be observed on wide-angle camera lenses such as that of the LG G6 used in this study.
 The specific type is \textit{positive radial distortion} as shown in figure \ref{distortion}, with lines curving outwards in a barrel shape.
 Another form of radial distortion is \textit{pincushion distortion} with lines bend towards the center of the image. These aberrations are a result 
@@ -148,7 +151,7 @@ started experimenting with joining the video sources did it become evident that 
 In figure \ref{} we can see the results after performing calibration on both video sources and the results are starkly different.
 
 Distortion can lead to incorrect projection and therefore joining of video sources later on.
-To correct for this we make use of OpenCVs \cite{noauthor_opencv/opencv_2021} camera calibration toolbox.
+To correct for this we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
 In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this we used the calibrate.py script provided with OpenCV
 passing it several snapshots, taken with the device to be calibrated, of a calibration object as an input. The calibration object being a black-white chessboard pattern.
@@ -170,16 +173,18 @@ YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
-\subsubsection{Homography Matrix}
-
+\color{red}
+\subsubsection{Projection}
 After several failed attempts of trying to analyze the video data in its raw form, we decided a different approach was needed.
 These attempts involved trying to interpolate the cardinal direction of each cyclist at specific points in the video. Calculating the cardinal direction
 of a cyclist was a matter of adding the cyclist bearing to the cardinal direction of the video frame. The idea being that we could interpret
 the desired path by the change in cardinality between 2 or more defined points. These points being selected by where the object detection algorithm worked best.
 This however was not a good approach as we would have had to make too many assumptions about the data in addition this was used in conjunction
 with OpenDataCam which for our purposes did not produce the desired results.
-
+\color{black}
 \ \\
+
+\textit{Note: write about top-down connection to "the river"}
 After switching to our own YOLOv5 object detection implementation we decided that we needed to view the data from a different angle and therefore
 started exploring the homography matrix.
 \ \\
@@ -216,21 +221,21 @@ $P$ being points in a polygon on the source image, $Q$ the corresponding polygon
     z_{r} \\
   \end{bmatrix}
 \end{align}
-
-\subsubsection{Projection}
+\ \\
 
 Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
-Given \ref{representation} we can calculate this by the following
+Given the below equation, we can calculate the contact points.
 
 $$x = xmin + \frac{(xmax - xmin)}{2}$$
 $$y = ymin$$
-\
+
 Using the homography matrix, we can now project the contact points $(x, y)$ of the cyclist onto the destination
 image. This is achieved by applying $z$ to each point as a constant to create $Q(x_i, y_i, 1)$ and then we multiply it by the homography matrix. 
 
 \subsubsection{Merging Sources}
-
-To merge the data from the two video sources, we take a naive approach. For optimal coverage, the cameras are set up on
+As we are using multiple video sources, there will be an overlap of the detected cyclists. 
+That is, the trajectory of the same cyclist will be captured by multiple cameras for certain areas. 
+To merge the trajectories from the video sources, we take a naive approach. For optimal coverage, the cameras are set up on
 opposite sides of the intersection. We simply cut the video sources in half along the mid-point between
 the two cameras along the intersection to join them. The data is then merged.
 
@@ -239,17 +244,16 @@ Example:
 \subsubsection{Multiple object tracking}
 
 In order to connect observations into trajectories of individual cyclist, we apply 
-simple online and real-time tracking algorithm, SORT \cite{abewley_abewley/sort_2021}, as initially described in \cite{Bewley2016_sort}. 
+the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
 SORT aims to address multiple object tracking (MOT) where object across frames needs to be connected. 
 \color{red}
 Note: Explain more about SORT predict bbox then IOU for actualy bbox.
 \color{black}
 \ \\
-We assume arbitrary bounding box dimensions of 10*10 pixels for the projected cyclists to join the tracks from multiple sources. 
-Passing the algorithm the bounding boxes per frame, we get a unique ID associated with each observation.
+While most tracking algorithms a based on bounding box representations of detected objects, 
+we simply define an arbitrary bounding box around the center point of the projected detection; we used a 10x10 pixel bounding box.
 
 \subsection{Data Exploration}
-
 There are two objectives for the data exploration, those being:
 \begin{itemize}
 	\item Desire path discovery
@@ -278,10 +282,12 @@ Note: Maybe just an equation demonstrating the bearing calculation.
   UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
 \end{equation}
 
-\subsection{Recognizing abnormal behaviour}
+\subsubsection{Recognizing abnormal behaviour}
 
 One of
-\subsubsection{Deviation from desire lines}
+\ \\
+
+\textbf{Deviation from desire lines} \\
 Automatic aproach
 
 
