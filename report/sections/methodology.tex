@@ -12,33 +12,44 @@ on three main components, Data collection, Data processing, and Data exploration
 
 \subsection{Data Collection}
 
-The Yrsas Plads junction in Copenhagen was chosen as the location for our primary data collection. 
-This junction faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
-These challenges make the Yrsas Plads junction one of the more complicated junctions in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
-As this is a large junction, we have implemented a two cameras recording setup on the opposite side of the junction; this provides good coverage regardless of traffic obstructions.
+The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
+This intersection faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
+These challenges make the Dybbølsbro intersection one of the more complicated intersections in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
+As this is a large intersection, we have implemented a two cameras recording setup on the opposite side of the intersection; this provides good coverage regardless of traffic obstructions.
 \subsubsection{Recording Location}
 
-There are three considerations to take into account when applying these methods to a junction.
+There are two considerations to take into account when applying these methods to an intersection.
 \begin{itemize}
-	\item Junction size
+\item intersection size
 \end{itemize}
-Larger junctions would require a two camera setup as detailed, but this might not be optimal for intersections much Larger
-than the Yrsas Plads junction. A larger junction might require more cameras which will need some implmentation tweeks.
+The size of the intersection will determin the camera setup needed. Larger intersections would require a two-camera setup as detailed, but this might not be optimal for intersections much Larger
+than the Dybbølsbro intersection. A larger intersection might require more cameras which will need some implementation tweaks. Initially we used a single camera setup, but found that
+while we had a good view of the entire intersection we lost a lot of tracking data when cyclist on the opposite side on the intersection where obstructed by vehicles.
 \begin{itemize}
-	\item Camera mounting points
+\item Camera mounting points
 \end{itemize}
-\begin{itemize}
-	\item Junction composition
-\end{itemize}
+We tried four different mounting locations as seen in figure x. The main problems we encountered with these were: Camera stability, obstructions to the camera view, and the height of the mounting positions. Camera stability is partially a mounting system issue, but location x was a bit windy, this caused the camera system to sway a lot more than it would otherwise.
+Location Edi and S7 both had a good view of the intersection except for poles blocking part of the view. As location G6 had a good clear view of the intersection and we decided on a two-camera setup
+we continued with the recording location S7 as the G6 and S7 combined covered opposing sides of the intersection.
+
 
 \subsubsection{Camera Selection}
 
+Any camera device with a wide enough field-of-view (FOV) to image the selected intersection, can record at 720p (1280×720 resolution, or 1-megapixel), and that allows remote viewing of its interface,
+will suffice however having tested a Raspberry Pi recording setup (Raspberry Pi, camera external battery bank, and an LCD screen case) we would not recommend a setup with self-built recording hardware.
+Although the Raspberry Pi setup meets the basic requirements mentioned earlier, the major issue is the usability of such a setup. There are unneeded complexities in
+setting up the hardware and having surety of its correct functioning when compared to alternatives that are built and optimized for video recordings such as
+mobile phones or action cameras. Mobile phones and action cameras often offer methods of remote viewing of their interfaces that are much more
+intuitive than what can be reasonably achieved with a Raspberry Pi setup, as these devices often have data connectivity and/or WIFI allowing for the use of remote control/viewing apps such as TeamViewer.
+Being able to remotely view the camera interface is important when mounting the camera and adjusting its position to get a good view of the intersection.
 
+\ \\
+For these reasons, we chose to use two mobile phones an LG G6 and a Samsung S7 Edge. Along with meeting the basic requirements they also have Ingress Protection ratings, 
+commonly referred to as waterproofing. This should be considered if rain is a possibility.
+\ \\
 
-Modern mobile phones offer high-resolution and quality cameras in a compact design. We used an LG G6 and a Samsung S7 Edge for recording the junction.
-These devices offer wide enough field-of-views (FOV) to record the parts of the junction we are interested in from the selected mounting locations.
-FOV being the maximum area a camera can image. A formal method of selecting a recording device would be to select one with a large enough FOV that can image the entire junction from the mounting position closest to the junction. Given a recording location, we can calculate the FOV needed using equation \ref{eq:1}.
-If $\theta > FOV$, then the FOV is too small. 
+Given a recording location, we can use \ref{eq:1} to calculate the FOV a camera needs to image an intersection.
+If $\theta > FOV$, then the FOV is too small.
 \color{red}
 Note: Label images and make them more understandable.
 \color{black}
@@ -62,12 +73,12 @@ with the intended amount of recording time.
 
 \subsubsection{Camera mounting}
 
-\color{red}
-Note: To rewrite.
-\color{black}
+As we chose mobile phones to record with we had access to a wide variety of mobile phone mounts on store such as Amazon.
+To mount the Samsung S7 Edge we used a flexible arm mount and for the LG G6, we used a custom-made mounting system.
+The method of mounting a camera is very much dependant on where the camera is placed and on what. For example, the Samsung S7 Edge's
+mounting location was easily accessible and therefore we could simply clamp the system onto a pole. Whereas the LG G6's location was relatively high off the ground and unreachable, therefore we created a mount that allowed us to use an extendable arm to hook the camera onto the position.
 
-For best results, the cameras should be set up as parallel to the road's surface as possible and high up enough not to have the FOV obstructed by obstacles.
-
+For best results, the cameras should be set up as a parallel to the road's surface as possible and high up enough not to have the FOV obstructed by obstacles.
 A minimum angle of 30° downwards and a minimum height of 2 meters is recommended.
 
 Note: Picture of our locations and mounting system.
@@ -92,6 +103,7 @@ The specific type is \textit{positive radial distortion} as shown in figure \ref
 Another form of radial distortion is \textit{pincushion distortion} with lines bend towards the center of the image. These aberrations are a result 
 of the curved shape of the camera lens.
 
+Note: Add real examples above.
 \ \\ 
 \begin{figure}[h]
   \includegraphics[scale=0.65]{calibration_radial_distortion.png}
@@ -105,37 +117,60 @@ of the curved shape of the camera lens.
 There is also a possibility of further distortion if the camera sensor and the lens are not parallel, also known as \textit{tangential distortion}.
 Ideally, there should be no radial nor tangential distortion.
 \ \\
+The discovery that leads to the realization that calibration was needed happened in the later stages of constructing this method. When we
+started experimenting with joining the video sources did it become evident that distortion was having adverse effects on the data. As we can see in figure 
+\ref{joined_distortion} it is clear that the two video sources do not line up.
+
+\begin{figure}[h]
+  \includegraphics[scale=0.23]{Need_for_calibration.png}
+  \centering 
+  \end{figure}
+  \captionof{figure}{Distortion}
+  \label{joined_distortion}
+\ \\
+
+In figure \ref{} we can see the results after performing calibration on both video sources and the results are starkly different.
+
 Distortion can lead to incorrect projection and therefore joining of video sources later on.
 To correct for this we make use of OpenCVs \cite{noauthor_opencv/opencv_2021} camera calibration toolbox.
 
-\color{red}
-In order to correct for distortion, we need to find the camera matrix and distortion coefficients... Explain the maths a bit more.
-\color{black}
+In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this we used the calibrate.py script provided with OpenCV
+passing it several snapshots, taken with the device to be calibrated, of a calibration object as an input. The calibration object being a black-white chessboard pattern.
+We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processes the calibration object pictures and
+return the camera matrix and distortion coefficients.
+\ \\
+Using the camera matrix and distortion coefficients we then apply OpenCV remap onto each frame in the videos. This unwarps the images.
+
 \ \\
 \subsubsection{Object Detection}
 
-The raw video is output as a MPEG-4 file. This video file is fed to YOLOv5 for object detection. YOLO, \textit{You Only Look Once},
-is a real-time object detection algorithm. YOLOv5 is trained on the COCO dataset \url{https://cocodataset.org}, which comprises over 330,000 thousand images
-with over 1,5 million objects in over 80 object classes.
-\ \\ 
-YOLO is well known for its real-time speed, and accuracy \cite{redmon2016look}.
-\ \\ 
-At the most basic level, YOLO resizes an input image, runs a single convolutional network on the resized image
-and then thresholds the resulting detections by the model’s confidence.
-\ \\ 
-Predicted objects are represented as bounding boxes with the output being represented as in \ref{representation} 
+Object detection is the most important factor to consider, it is the key component in making this method work. The accuracy of detecting cyclist and the accuracy of the
+predicted bounding boxes are the most important data components.
+\ \\
 
-\begin{equation}
-  [ [frame id][xmin][ymin][xmax][ymax][confidence]]\label{representation}
-\end{equation}
-
-The min and max values for x and y represent a bounding box for the identified bicycle.
+We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but didn't perform well on cyclists. 
+We, therefore, implemented our object detection setup using
+YOLOv5. YOLOv5 showed a good improvement on cyclists.
+\ \\ 
+Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
 \subsubsection{Homography Matrix}
 
+After several failed attempts of trying to analyze the video data in its raw form, we decided a different approach was needed.
+These attempts involved trying to interpolate the cardinal direction of each cyclist at specific points in the video. Calculating the cardinal direction
+of a cyclist was a matter of adding the cyclist bearing to the cardinal direction of the video frame. The idea being that we could interpret
+the desired path by the change in cardinality between 2 or more defined points. These points being selected by where the object detection algorithm worked best.
+This however was not a good approach as we would have had to make too many assumptions about the data in addition this was used in conjunction
+with OpenDataCam which for our purposes did not produce the desired results.
+
+\ \\
+After switching to our own YOLOv5 object detection implementation we decided that we needed to view the data from a different angle and therefore
+started exploring the homography matrix.
+\ \\
 A homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto a plane on a destination image $Q(x_i, y_i)$.
-The source image in our case is the plane of the road surface from the recorded video at the intersection to the road surface from an aerial view of the same intersection.  
+The source image in our case is the plane of the road surface from the recorded video at the intersection to the road surface from an aerial view of the same intersection. 
 This will allow us to view the cyclist movements from an aerial view.
+
 \ \\ 
 \begin{figure}[h]
   \includegraphics[scale=1.0]{Homography_proj.png}
@@ -144,13 +179,9 @@ This will allow us to view the cyclist movements from an aerial view.
   \captionof{figure}{SR to DST}
   \label{homography}
 \ \\ 
-To calculate the homography matrix, we need to solve the for the system of linear equations \ref{eq:2}
-
-\begin{equation}
-  P = HQ\label{eq:2}
-\end{equation} 
-
-Referencing \ref{eq:3}, $P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
+To calculate the homography matrix, we need to solve the for the system of linear equations, $P = HQ$,
+\ \\
+$P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
 \begin{align}
 \label{eq:3}
   \begin{bmatrix}
@@ -184,8 +215,10 @@ image. This is achieved by applying $z$ to each point as a constant to create $Q
 \subsubsection{Merging Sources}
 
 To merge the data from the two video sources, we take a naive approach. For optimal coverage, the cameras are set up on
-opposite sides of the junction. We simply cut the video sources in half along the mid-point between
-the two cameras along the junction to join them. The data is then merged.
+opposite sides of the intersection. We simply cut the video sources in half along the mid-point between
+the two cameras along the intersection to join them. The data is then merged.
+
+Example:
 
 \subsubsection{Multiple object tracking}
 
@@ -229,11 +262,18 @@ Note: Maybe just an equation demonstrating the bearing calculation.
   UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
 \end{equation}
 
-\subsubsection{Alert Zones and Counts}
+\subsection{Recognizing abnormal behaviour}
+
+One of
+\subsubsection{Deviation from desire lines}
+Automatic aproach
+
 
 \color{red}
 We created a "Tool name" that allows the definition of specific areas as "red zones". These zones provide us with easy reference to activity in the zones throughout the videos.
-Using these zones, we can count cyclist and observe their behavior at points on the junction that might be difficult or
+Using these zones, we can count cyclist and observe their behavior at points on the intersection that might be difficult or
 problematic.
+
+\subsection{Recognizing abnormal behaviour}
 
 Note: Picture of interface?
