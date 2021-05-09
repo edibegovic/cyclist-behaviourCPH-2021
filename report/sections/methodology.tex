@@ -11,44 +11,60 @@ on three main components, Data collection, Data processing, and Data exploration
 \label{pipeline}
 
 \subsection{Data Collection}
+Our work is centered around the Dybbølsbro / Ingerslevgade intersection south-east of Copenhagen
+city center. This intersection faces several challenges, producing \textit{"conflicts, unsafe situations, illegal 
+road user behavior and great dissatisfaction among road users at the intersection"} (\cite{CPHpost_2021}).
+Due to its issues, size and pre-existing analysis on the intersection, we found it to be a good baseline
+for experimentation.
 
-The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
-This intersection faces several challenges producing “conflicts, unsafe situations, illegal road user behavior and great dissatisfaction among road users at the intersection” \cite{CPHpost_2021}.
-These challenges make the Dybbølsbro intersection one of the more complicated intersections in Copenhagen and would serve as an excellent base for this quantitative analysis method. 
-As this is a large intersection, we have implemented a two cameras recording setup on the opposite side of the intersection; this provides good coverage regardless of traffic obstructions.
+% The Dybbølsbro intersection in Copenhagen was chosen as the location for our primary data collection. 
+% This intersection faces several challenges producing “conflicts, unsafe situations, 
+% illegal road user behavior and great dissatisfaction among road users at the intersection” (\cite{CPHpost_2021}).
+% These challenges make the Dybbølsbro intersection one of the more complicated intersections in 
+% Copenhagen and would serve as an excellent base for this quantitative analysis method. 
+% As this is a large intersection, we have implemented a two cameras recording setup on the opposite 
+% side of the intersection; this provides good coverage regardless of traffic obstructions.
 \subsubsection{Recording Location}
 
 There are two considerations to take into account when applying these methods to an intersection.
-\begin{itemize}
-\item intersection size
-\end{itemize}
+\ \\
+
+\textbf{intersection size} \\
 The size of the intersection will determin the camera setup needed. Larger intersections would require a two-camera setup as detailed, but this might not be optimal for intersections much Larger
 than the Dybbølsbro intersection. A larger intersection might require more cameras which will need some implementation tweaks. Initially we used a single camera setup, but found that
 while we had a good view of the entire intersection we lost a lot of tracking data when cyclist on the opposite side on the intersection where obstructed by vehicles.
-\begin{itemize}
-\item Camera mounting points
-\end{itemize}
-We tried four different mounting locations as seen in figure x. The main problems we encountered with these were: Camera stability, obstructions to the camera view, and the height of the mounting positions. Camera stability is partially a mounting system issue, but location x was a bit windy, this caused the camera system to sway a lot more than it would otherwise.
-Location Edi and S7 both had a good view of the intersection except for poles blocking part of the view. As location G6 had a good clear view of the intersection and we decided on a two-camera setup
-we continued with the recording location S7 as the G6 and S7 combined covered opposing sides of the intersection.
+\ \\
+
+\textbf{Camera mounting points} \\
+We tried four different mounting locations as seen in figure x. 
+We faced several issues with camera mounting at the Dybbølsbro intersection.
+These include camera stability, obstructions to the camera view, and the height of the mounting positions. 
+With some of our camera mounts, stability was impacted by wind and thus camera was swaying. 
+To cover the entire intersection with adequate precision, we selected a two-camera setup on opposite 
+sides of the intersection.
 
 
 \subsubsection{Camera Selection}
+Any camera device with a wide enough field-of-view (FOV) to capture the chosen intersection, 
+can record in HD (1280×720 resolution), and allows remote viewing of its viewfinder will suffice. 
 
-Any camera device with a wide enough field-of-view (FOV) to image the selected intersection, can record at 720p (1280×720 resolution, or 1-megapixel), and that allows remote viewing of its interface,
-will suffice however having tested a Raspberry Pi recording setup (Raspberry Pi, camera external battery bank, and an LCD screen case) we would not recommend a setup with self-built recording hardware.
-Although the Raspberry Pi setup meets the basic requirements mentioned earlier, the major issue is the usability of such a setup. There are unneeded complexities in
-setting up the hardware and having surety of its correct functioning when compared to alternatives that are built and optimized for video recordings such as
-mobile phones or action cameras. Mobile phones and action cameras often offer methods of remote viewing of their interfaces that are much more
-intuitive than what can be reasonably achieved with a Raspberry Pi setup, as these devices often have data connectivity and/or WIFI allowing for the use of remote control/viewing apps such as TeamViewer.
-Being able to remotely view the camera interface is important when mounting the camera and adjusting its position to get a good view of the intersection.
+However, having tested a Raspberry Pi recording setup (Raspberry Pi, RaspiCam, external battery bank, 
+and an LCD touch screen), we would not recommend a setup with self-built recording hardware.
+Although the Raspberry Pi setup meets the above-mentioned technical requirements, the major issue is 
+the usability of such a setup. 
+It introduces unnecessary complexities in setting up the hardware and having surety of its correct functioning in the field.
+Alternative devices optimized for video recording (such as mobile phones or action cameras) are more suitable.
+Mobile phones and action cameras typically offer methods of remotely controlling and viewing their viewfinder from 
+another device such as a PC or smartphone. 
+This is useful when mounting the camera and adjusting its position to get a good view of the intersection. 
+While also possible with a Raspberry Pi, it is less stable and unintuitive compared to using smartphones or action cameras.
+For these reasons, we chose to use smartphones for recording, namely an \textit{LG G6} and a \textit{Samsung Galaxy S7}.
 
+% Along with meeting the basic requirements they also have Ingress Protection ratings, 
+% commonly referred to as waterproofing. This should be considered if rain is a possibility.
 \ \\
-For these reasons, we chose to use two mobile phones an LG G6 and a Samsung S7 Edge. Along with meeting the basic requirements they also have Ingress Protection ratings, 
-commonly referred to as waterproofing. This should be considered if rain is a possibility.
-\ \\
 
-Given a recording location, we can use \ref{eq:1} to calculate the FOV a camera needs to image an intersection.
+Given a recording location, we can use (eq. \ref{eq:1}) to calculate the FOV a camera needs to capture an intersection.
 If $\theta > FOV$, then the FOV is too small.
 \color{red}
 Note: Label images and make them more understandable.
