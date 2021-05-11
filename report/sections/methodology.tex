@@ -168,18 +168,9 @@ YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
-\color{red}
 \subsubsection{Projection}
-After several failed attempts of trying to analyze the video data in its raw form, we decided a different approach was needed.
-These attempts involved trying to interpolate the cardinal direction of each cyclist at specific points in the video. Calculating the cardinal direction
-of a cyclist was a matter of adding the cyclist bearing to the cardinal direction of the video frame. The idea being that we could interpret
-the desired path by the change in cardinality between 2 or more defined points. These points being selected by where the object detection algorithm worked best.
-This however was not a good approach as we would have had to make too many assumptions about the data in addition this was used in conjunction
-with OpenDataCam which for our purposes did not produce the desired results.
-\color{black}
-\ \\
-
 \textit{Note: write about top-down connection to "the river"}
+
 After switching to our own YOLOv5 object detection implementation we decided that we needed to view the data from a different angle and therefore
 started exploring the homography matrix.
 \ \\
@@ -244,16 +235,18 @@ the two cameras along the intersection to join them.
 \label{slice}
 \
 
-
 \subsubsection{Tracking}
 
 In order to connect detections into trajectories of individual cyclist, we apply 
 the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
 SORT aims to address multiple object tracking (MOT) where objects across frames needs to be connected. 
 \ \\ 
+
 SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
-frame t+1 are compared using their Intersection over Union (IOU). If they IOU is above a certain threshold, the two points are connected as the same object.
-\ \\
+frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the area of overlap between the 
+bounding boxes by the area of union of the bounding boxes. If the IOU is above a certain threshold, the two points are connected as the same object.
+\ \\ 
+
 In our implementation we define arbitrary bounding boxes around the center point of the projected detections; 
 we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection is on
 a different plane to that of the roads surface.
