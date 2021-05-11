@@ -139,18 +139,18 @@ These aberrations are a result of the curved shape of the camera lens.
 There is also a possibility of further distortion if the camera sensor and the lens are not parallel, also known as \textit{tangential distortion}.
 Ideally, there should be no radial nor tangential distortion.
 \ \\
-It became apparent when merging data from multiple camera sources that lens distortion had an effect on the alligenment of data points.
-This is shown in figure \ref{joined_distortion} with trajectories not lining up.
+It became apparent when merging data from multiple camera sources that lens distortion had an effect on the alignment of data points.
+This is shown in figure \ref{joined_distortion}, Before Calibration.
 
 \begin{figure}[h]
-  \includegraphics[scale=0.23]{Need_for_calibration.png}
+  \includegraphics[scale=0.6]{calibration.png}
   \centering 
   \end{figure}
   \captionof{figure}{Distortion}
   \label{joined_distortion}
 \ \\
 
-To correct for this we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
+To correct for teh distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
 In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this we used the calibrate script provided with OpenCV,
 passing several snapshots of a calibration object with the device to be calibrated. The calibration object being a black-white chessboard pattern.
@@ -292,8 +292,10 @@ select video sources, map the \textit{ground control points} (for aereal project
 \label{Rainbow}
 \
 
-To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". This involves coloring tracks by the bearing between consecutive points in each trajectory. After calculating the bearing, we then get a color from a gradient color wheel. This approach has the added benefit of encoding direction into 
-each track.
+To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". 
+This involves coloring tracks by the bearing between consecutive points in each trajectory. 
+After calculating the bearing, we then get a color from a gradient color wheel. 
+This approach has the added benefit of encoding direction into each track.
 \ \\ 
 
 % \begin{equation}
