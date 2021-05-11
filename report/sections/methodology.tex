@@ -282,31 +282,20 @@ It would be relatively easy to connect the data processing pipeline to the web i
 select video sources, map the \textit{ground control points} (for aereal projection) and potentially tweaking other hyper-parameters. 
 
 \subsubsection{Rainbow Tracks}
-A method of desire path discovery.
 
 \ \\ 
 \noindent
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{rainbow.png} 
 \end{tabular}
-\captionof{figure}{Rainbow}
+\captionof{figure}{Rainbow Tracks}
 \label{Rainbow}
 \
 
 To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". This involves coloring tracks by the bearing between consecutive points in each trajectory. After calculating the bearing, we then get a color from a gradient color wheel. This approach has the added benefit of encoding direction into 
 each track.
-Note: Maybe just an equation demonstrating the bearing calculation.
 \ \\ 
 
-\begin{equation}
-  UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
-\end{equation}
-
-\subsubsection{Recognizing abnormal behaviour}
-
-We created a "Tool name" that allows the definition of drawn areas on the intersection as "Alert Zones". 
-Alert Zones provide us with easy reference to activity in the zones throughout the videos. 
-Using these zones, we can quickly reference and observe the behavior of cyclist at points on the 
-intersection that might be difficult or problematic.
-
-Note: Picture of interface?
+% \begin{equation}
+%   UniqueID_i = [(x_1, y_1)...(x_a+1, y_a+1)]\label{eq:3}
+% \end{equation}
