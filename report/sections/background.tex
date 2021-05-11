@@ -1,10 +1,8 @@
-\color{red}
-Firstly we cover the technical advances in object detection over the past decade and its usage in traffic monitoring.
-\color{black}
-
 % --------------------------------------------------------------------------------------
-\color{red}
 \subsection{Inclusive infrastructure}
+
+
+\color{red}
 Why it is crucial to understand cyclist behavior, and especially in cities with emerging bike infrastructure, \textit{how they adapt}.
 We focus on the psychological aspects of a cyclist,
 
@@ -21,7 +19,31 @@ under-used, which can further result in a back-clash against "bike culture".
 
 \color{black}
  % -----------------------------------------------------------------------------------
-\subsection{Staging mobilities}
+\subsection{Previous work}
+
+\subsubsection{Bicycle choreography}
+In the study (\cite{copenhagenize2014}) an intersection in Copenhagen is reviewed focusing on high-level aspects
+such as routes taken by cyclists, as well as the behavior exhibited by the individual cyclists.
+This is done by using \textit{Desire lines Analysis}, a tool pioneered by the same autohers as the study (\cite{copenhagenize_book}).
+\textit{Desire lines} encompass the trajectories of cyclists using both "inteded pathways", usually directed through infrastructure such as
+ bike lanes, but also their own paths which may deviate from the engineered structure or legal framework.
+ To asses behavior, the study splits cyclists into three groups:
+
+\begin{itemize}
+	\item \textbf{Conformists}: fully rule compliant
+	\item \textbf{Momentumists}: lose interpretation of current rules. Encompasses actions legal in other countries, thus acting like a  flexible 'superset'
+	\item \textbf{Recklists}: dangerous behavior - both for self and others
+\end{itemize}
+
+The proportions of cyclists belonging to each the above groups were then compared over the span of a day. 
+Notably, the share of \textit{momentumists} increased during the afternoon.
+ \ \\
+
+A recurring observation made by the study was the tendency of cyclists to get influenced by their fellow riders. 
+This behavior is described as "\textit{follow the leader}", with cyclists being more likely to imitate non-conformist 
+actions when another cyclists goes first. 
+
+\subsubsection{Staging mobilities}
 The book 'Designing Mobilities' (\cite{designinig_mobilities}) explores \textit{what physical, social, technical, 
 and cultural conditions contribute to the staging of contemporary urban mobilities?} 
 It covers how to capture and represent \textit{mobilities} and flows by presenting a theoretical framework for 'staging mobilities'. 
@@ -32,8 +54,8 @@ including the two metaphors \textit{the river} and \textit{the ballet}.
  The \textit{river} references the notion of capturing mobility from a 'birds-eye view' including the layout, 
  flows, and obstacles of a location, and hence, can be interpreted as a 'flowing riverbed'. 
  From this perspective, we can observe road users' behavior in aggregate and as part of more significant 'streams'. 
- This can be used to encapsulate abstract and high-level features of cyclists, such as the change in paths
- when infrastructure is changed or when temporary obstacles come along (e.g., road work).
+ This can be used to encapsulate abstract and high-level features of cyclists, such as the desire lines
+ when infrastructure is changed or temporary obstacles come along (e.g. road work).
  \ \\
 
 In contrast, the \textit{ballet} is the micro-perspective, encompassing the gestures and small interactions at the individual level.
@@ -41,32 +63,13 @@ This perspective is an important supplement to the former \textit{river} as subt
  signal agreement or evasion.
 
  % -----------------------------------------------------------------------------------
-\subsubsection{Case studies}
+\subsubsection{Case study}
 \textit{Study of mobilities in 'situ'} (\cite{situ}) uses the above framework as part of a case study involving cycling infrastructure in 
 Copenhagen and Amsterdam. Quantitative data (as part of the \textit{river} perspective) was obtained by filming cyclists and conducting 
 "desire lines analysis" (\cite{cva}) to gain a structured overview of the behavior of cyclists and intersections. 
 
 
  % -----------------------------------------------------------------------------------
-\ \\
-
- While on-site assertion of an intersection is plausible, the scope of a single observer is limited, as one can only keep track of 
- so many cyclists at once. Likewise, while not bounded by time, analyzing recorded video footage is still a time-consuming process, 
- especially as the views of cyclists can be obstructed by other passing vehicles or permanent installations.
-\ \\
-
-The latter issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
-object tracking algorithms in video. We therefore propose deploying a multi-camera setup, overlooking the intersection from
-multiple sides.
-
-In theory, a top-down overhead view, overlooking from the center of the intersection would be optimal for minimizing obstruction.
-The height required for such a recording setup as well as lack of permanent fixtures makes this approach very impractical. 
-Further, current state-of-the-art object detection algorithms (e.g. YOLO) perform worse at catecorising objects, especially bicycles, 
-using an overhead view compared to a semi-frontal view.
-
-Pragmatic approach
-
-
 \subsection{OpenDataCam}
 OpenDataCam (ODC) is an exsisting open-source tool for processing video footage from urban environments to quantify
 trafic. The novelty of OpenDataCam comes from the simple on-site, real-time processing of video. 
@@ -76,7 +79,7 @@ The backbone of the application is based on Darknet with YOLOv4 as the model use
 \href{https://pjreddie.com/darknet/yolo/}{YOLO}, \textit{You Only Look Once}, is a real-time object detection algorithm. 
 YOLO is trained on the \href{https://cocodataset.org}{COCO dataset}, which comprises over 330,000 thousand images
 with over 1,5 million objects in over 80 object classes, including cars, people and cyclists. 
-YOLO is well known for its real-time speed and accuracy (\cite{redmon2016look}). 
+It is well known for its real-time speed and accuracy (\cite{redmon2016look}). 
 For OpenDataCam to run locally thus requires dedicated CUDA-enabled hardware such as an Nvidia Jetson-series device. 
 \ \\
 
@@ -93,12 +96,12 @@ indicators around all detected objects.
 \ \\
 
 Using the interface, a user can draw bi-directional counting lines, which, when passed by a detected object at a certain angle, 
-increments a counter. Apart from counting functionality, the app also offers the trajectories of uniquely identified objects. 
+increments a counter and keeps track of the objects idetifier. Apart from counting functionality, the app also offers the trajectories of uniquely identified objects. 
 
 \raggedbottom
 \subsubsection{Application}
 As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from the Dybbølsbro intersection in Copenhagen.
-Our setup ran on an Nvidia Jetson Xavier NX in combination with two Raspberry Pi's, used for filming/streaming video from the intersection.
+Our setup ran on an Nvidia Jetson Xavier NX in combination with two Raspberry Pis, used for filming/streaming video from the intersection.
 
 Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an inital 
 'base line' followed two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments. Inspecting the
@@ -117,8 +120,8 @@ they took through the intersection.
 
 However, this approach was limited by the poor performance of the detection of cyclists implemented in the current 
 version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
-re-identify the same cyclists as new ones. Thus, even when the same cyclists passed both the 'base line' and one of the 
-branching lines, they wouldn't be included in desire line.
+re-identify the same cyclists as new ones. Thus, even when the same cyclist passed both the 'base line' and one of the 
+branching lines, they wouldn't be included in desire line count.
 \ \\
 
-We will discuss the findings derived from OpenDataCam on our own case study in later sections of the report.
+We discuss the findings derived from OpenDataCam on our own case study in later sections of the report.
