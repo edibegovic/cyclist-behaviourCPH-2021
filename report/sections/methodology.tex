@@ -242,16 +242,18 @@ the two cameras along the intersection to join them.
 \label{slice}
 \
 
-
 \subsubsection{Tracking}
 
 In order to connect detections into trajectories of individual cyclist, we apply 
 the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
 SORT aims to address multiple object tracking (MOT) where objects across frames needs to be connected. 
 \ \\ 
+
 SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
-frame t+1 are compared using their Intersection over Union (IOU). If they IOU is above a certain threshold, the two points are connected as the same object.
-\ \\
+frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the area of overlap between the 
+bounding boxes by the area of union of the bounding boxes. If the IOU is above a certain threshold, the two points are connected as the same object.
+\ \\ 
+
 In our implementation we define arbitrary bounding boxes around the center point of the projected detections; 
 we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection is on
 a different plane to that of the roads surface.
