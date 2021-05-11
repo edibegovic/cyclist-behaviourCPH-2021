@@ -48,6 +48,7 @@ Copenhagen and Amsterdam. Quantitative data (as part of the \textit{river} persp
 
 
  % -----------------------------------------------------------------------------------
+\ \\
 
  While on-site assertion of an intersection is plausible, the scope of a single observer is limited, as one can only keep track of 
  so many cyclists at once. Likewise, while not bounded by time, analyzing recorded video footage is still a time-consuming process, 
@@ -68,15 +69,15 @@ Pragmatic approach
 
 \subsection{OpenDataCam}
 OpenDataCam (ODC) is an exsisting open-source tool for processing video footage from urban environments to quantify
-*URABN environments*. The novelty of OpenDataCam is that it is designed for the on-site, real-time processing of video. 
-This requires dedicated CUDA-enabled hardware such as an Nvidia Jetson series of devices. 
+trafic. The novelty of OpenDataCam comes from the simple on-site, real-time processing of video. 
 \ \\
 
 The backbone of the application is based on Darknet with YOLOv4 as the model used for detecting objects in video.
 \href{https://pjreddie.com/darknet/yolo/}{YOLO}, \textit{You Only Look Once}, is a real-time object detection algorithm. 
 YOLO is trained on the \href{https://cocodataset.org}{COCO dataset}, which comprises over 330,000 thousand images
 with over 1,5 million objects in over 80 object classes, including cars, people and cyclists. 
-YOLO is well known for its real-time speed and accuracy (\cite{redmon2016look}).
+YOLO is well known for its real-time speed and accuracy (\cite{redmon2016look}). 
+For OpenDataCam to run locally thus requires dedicated CUDA-enabled hardware such as an Nvidia Jetson-series device. 
 \ \\
 
 The user interacts with the application through a web interface which displays a live preview of the footage with
@@ -88,30 +89,36 @@ indicators around all detected objects.
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{odc} 
 \end{tabular}
-\captionof{figure}{OpenDataCam web interface}
+\captionof{figure}{OpenDataCam Web Interface}
 \ \\
 
-Using the interface, a user can draw counting lines, which, when passed by a detected object at a certain angle, 
+Using the interface, a user can draw bi-directional counting lines, which, when passed by a detected object at a certain angle, 
 increments a counter. Apart from counting functionality, the app also offers the trajectories of uniquely identified objects. 
 
 \raggedbottom
 \subsubsection{Application}
 As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from the Dybbølsbro intersection in Copenhagen.
+Our setup ran on an Nvidia Jetson Xavier NX in combination with two Raspberry Pi's, used for filming/streaming video from the intersection.
+
 Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an inital 
-'base line' followed two (or more) additional counting lines, which allow us to branch cyclists into multiple segments. Inspecting the
-overlap of unique cyclists who have passed both the base line and one (or more) of the branching lines would thus yield which path
-they took. 
+'base line' followed two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments. Inspecting the
+overlap of unique cyclists who passed both the base line and one (or more) of the branching lines would thus yield which path
+they took through the intersection. 
 \ \\
 
-\color{red}
-Insert graphic here :) 
-\color{black}
+\ \\
+\raggedbottom
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{base_line} 
+\end{tabular}
+\captionof{figure}{'base line' (pink) and branching lines (orange)}
 \ \\
 
 However, this approach was limited by the poor performance of the detection of cyclists implemented in the current 
-version of OpenDataCam (YOLOv4). Due to the intermittent detection of cyclists, the tracking algorithm would constantly 
+version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
 re-identify the same cyclists as new ones. Thus, even when the same cyclists passed both the 'base line' and one of the 
-branching lines, they wouldn't be included in desire line. Hence, not useful :(
+branching lines, they wouldn't be included in desire line.
 \ \\
 
 We will discuss the findings derived from OpenDataCam on our own case study in later sections of the report.
