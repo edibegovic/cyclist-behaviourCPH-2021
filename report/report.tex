@@ -69,6 +69,7 @@
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
+
 \twocolumn[\begin{@twocolumnfalse}
 \ \\ \\
 \begin{abstract}
@@ -79,6 +80,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 \end{abstract}
 \end{@twocolumnfalse}]
+\thispagestyle{empty}
 \clearpage
 
 %----------------------------------------------------------------------------------------
@@ -88,10 +90,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 \setcounter{tocdepth}{3} % Set the depth of the table of contents to show sections and subsections only
 \tableofcontents % Print the table of contents
 \end{@twocolumnfalse}]
+\thispagestyle{empty}
 \clearpage
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
+
+% Page numbering starts from here
+\setcounter{page}{1}
 
 \section{Introduction}
 \subfile{sections/introduction}
