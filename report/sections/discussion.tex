@@ -1,11 +1,35 @@
+\subsection{Discussion}
+
 \subsection{Privacy}
 
+Consideration should be taken towards privacy and the legality of collecting and processing data.
+\ \\
+In the European Union (EU), where major cycling hubs of the world lie, we are governed by 
+the General Data Protection Regulation (GDPR). GDPR regulates the processing of personal data 
+relating to individuals by individuals, companies and organisations.
+\ \\
+Article 6 of the EU GDPR deals with the "Lawfulness of processing". Specifically Article 6(1)(f)
+makes provision for legitimate interests, which could cover the scope of research.
+This however is not the only consideration. Consult with local authorities before commencing any research.
 
 \subsection{Limitations}
-
+Only got Mate 20 later on.
+Time constraints
+small sample size
+inability to generalize the research findings ?? sounds fancy.
 The intersection at Dybbølsbro is also very large and thus allows for easier segmentation of road users. 
 Smaller intersections with more congested areas may perform worse. 
+\ \\
 
 \subsection{Future work}
 
-clustering, online processing, 
+Future work could implemnt a method of clustering trajectories,
+such as in \cite{gariel_trajectory_2011}. Clustering could enable a more fine-grained examination of desire lines,
+along with greater metadata such as counts per desire path.
+\ \\
+
+The SORT method of multiple object detection could be replaced with it's extended version \href{https://github.com/nwojke/deep_sort}{Deep SORT}.
+Deep SORT extends on SORT by, in addition to IOU as a linking critera, also incorporating
+deep features of the objects for linking. Deep SORT could greatly improve on the multiple object tracking
+and paving way for an implementation that uses more than two cameras.
+\ \\

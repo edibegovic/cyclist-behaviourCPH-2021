@@ -46,7 +46,7 @@ sides of the intersection.
 
 \subsubsection{Camera Selection}
 Any camera device with a wide enough field-of-view (FOV) to capture the chosen intersection, 
-can record in HD (1280×720 resolution), and allows remote viewing of its viewfinder will suffice. 
+can record in HD at 30FPS (1280×720 resolution), and allows remote viewing of its viewfinder will suffice. 
 
 However, having tested a Raspberry Pi recording setup (Raspberry Pi, RaspiCam, external battery bank, 
 and an LCD touch screen), we would not recommend a setup with self-built recording hardware.
@@ -114,6 +114,12 @@ Note: Picture of our locations and mounting system.
 \ \\
 
 % Figure \ref{data} offers a general overview of the data processing steps. No special hardware is required, but a CUDA-enabled GPU is optimal for object detection using YOLO.
+\ \\
+
+\subsubsection{Video Syncing}
+An important preprocessing step is to cut the different video soucres to the same time stamp.
+Should the video have different frame rates or resolutions then these should be processed to match.
+
 \ \\
 
 \subsubsection{Camera calibration}
@@ -246,12 +252,14 @@ Example:
 In order to connect observations into trajectories of individual cyclist, we apply 
 the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
 SORT aims to address multiple object tracking (MOT) where object across frames needs to be connected. 
-\color{red}
-Note: Explain more about SORT predict bbox then IOU for actualy bbox.
-\color{black}
+\ \\ 
+SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
+frame t+1 are compared using their Intersection over Union (IOU). If they are the highest match over a threshold then
+they are assigned to the same unique ID.
 \ \\
-While most tracking algorithms a based on bounding box representations of detected objects, 
-we simply define an arbitrary bounding box around the center point of the projected detection; we used a 10x10 pixel bounding box.
+In our implementation we define arbitrary bounding boxes around the center point of the projected detection; 
+we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection is on
+a different plane to that of the roads surface.
 
 \subsection{Data Exploration}
 There are two objectives for the data exploration, those being:
@@ -284,18 +292,9 @@ Note: Maybe just an equation demonstrating the bearing calculation.
 
 \subsubsection{Recognizing abnormal behaviour}
 
-One of
-\ \\
-
-\textbf{Deviation from desire lines} \\
-Automatic aproach
-
-
-\color{red}
-We created a "Tool name" that allows the definition of specific areas as "red zones". These zones provide us with easy reference to activity in the zones throughout the videos.
-Using these zones, we can count cyclist and observe their behavior at points on the intersection that might be difficult or
-problematic.
-
-\subsection{Recognizing abnormal behaviour}
+We created a "Tool name" that allows the definition of drawn areas on the intersection as "Alert Zones". 
+Alert Zones provide us with easy reference to activity in the zones throughout the videos. 
+Using these zones, we can quickly reference and observe the behavior of cyclist at points on the 
+intersection that might be difficult or problematic.
 
 Note: Picture of interface?
