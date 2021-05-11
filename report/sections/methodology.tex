@@ -1,4 +1,4 @@
-Our approach takes place in three discrete phases: \textit{data collecton}, \textit{data processing} and \textit{analysis}, as summarized
+The approach takes place in three discrete phases: \textit{data collecton}, \textit{data processing} and \textit{analysis}, as summarized
 by figure \ref{pipeline}.
 
 \ \\ 
@@ -28,7 +28,7 @@ This is an unusual setup in Copenhagen, as most streets feature unidirectional c
 following vehicle traffic. Therefore, south-bound cyclists coming from the north (Skelbækgade) have to perform a two-phase 
 turn to continue over the bridge. Firstly by heading straight over the intersection, but then having to stop and perform a left turn to 
 continue. This leads to high congestion at the south-west corner of the intersection with many cyclists looking for a shortcut across. 
-Due to its issues, size and previous analysis done on the intersection, we found it to be a good baseline for experimentation.
+Due to its issues and size as well as previous analysis done on the intersection, we found it to be a good baseline for experimentation.
 
 \subsubsection{Recording Location}
 There are two considerations to take into account when recording an intersection for video analysis.
@@ -36,7 +36,7 @@ There are two considerations to take into account when recording an intersection
 
 \textbf{intersection size} \\
 The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup as detailed, 
-but this might not be optimal for intersections much Larger than the Dybbølsbro intersection. 
+but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
 Initially we used a single camera setup, but found that while we had a good view of the entire intersection, 
 we lost a lot of tracking data when the view of the cyclist on the opposite side on the intersection where obstructed by vehicles.
 \ \\
@@ -101,12 +101,13 @@ Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a
 
 We used two different methods of mounting cameras at the intersection. One includes a flexible arm which can be clammed onto infrastructure such as light poles.
 The second mounting solution was a self-built holder made out of cardboard and a hook, allowing us to easily mount it at high spots using a long extension rod.
-Selecting an appropriate mounting height is a trade-off between maximizing the area of the intersection captured and having a frontal view of traffic.
+Selecting an appropriate mounting height is a trade-off between maximizing the captured area of the intersection and having a frontal view of traffic.
 We aimed to always have cameras mounted at least 3-4 meters above ground.
 
 \subsection{Data Processing}
 \ \\ 
 
+\color{red}
 \raggedbottom
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{data_flow.png} 
@@ -114,6 +115,7 @@ We aimed to always have cameras mounted at least 3-4 meters above ground.
 \captionof{figure}{Data Pipeline}
 \label{data}
 \raggedbottom
+\color{black}
 
 \subsubsection{Video Syncing}
 An important preprocessing step is to cut the different video soucres to the same time stamp.
@@ -257,14 +259,35 @@ we used a 10x10 pixel bounding box. This is a result of the plane of the boundin
 a different plane to that of the roads surface.
 
 \subsection{Data Exploration}
-There are two objectives for the data exploration, those being:
-\begin{itemize}
-	\item Desire path discovery
-	\item Alert Zones - For behaviour observations and counts
-\end{itemize}
+
+\subsubsection{Web app}
+To interact with the tools implemented, we created a simple web application using the \href{https://plotly.com/dash/}{Dash library} for Python. 
+Its main components consist of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
+One can then scrub through time by either explicitly referencing to a timestamp or frame, using a slider or jump in set increments.
+Below the aerial view is a set of image viewers showing the current frame from all the cameras with markers around selected cyclists.
+
+\ \\ 
+\raggedbottom
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{webapp} 
+\end{tabular}
+\captionof{figure}{Web application}
+\label{webapp}
+\
+
+To gain insight into specific areas of the intersection, one can filter observations by drawing a mask on the aerial view. 
+When an area is selected, all cyclists passing it will be listed in a side panel, from which one can jump directly to the matching timestamp.
+\
+Counting lines (as also found in OpenDataCam) are also implemented, giving the user the ability to imidietly see the number of 
+cylists passing certain points in either direction.
+\ \\
+
+\textbf{Future work} \\
+Currently the data pre-proccesing is not part of the application, thereby functioning more as a \textit{proof of concept}.
+It would be relatively easy to connect the data processing pipeline to the web interface, thus simply making the user 
+select video sources, map the \textit{ground control points} (for aereal projection) and potentially tweaking other hyper-parameters. 
 
 \subsubsection{Rainbow Tracks}
-
 A method of desire path discovery.
 
 \ \\ 
