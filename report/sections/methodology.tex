@@ -166,18 +166,9 @@ YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
-\color{red}
 \subsubsection{Projection}
-After several failed attempts of trying to analyze the video data in its raw form, we decided a different approach was needed.
-These attempts involved trying to interpolate the cardinal direction of each cyclist at specific points in the video. Calculating the cardinal direction
-of a cyclist was a matter of adding the cyclist bearing to the cardinal direction of the video frame. The idea being that we could interpret
-the desired path by the change in cardinality between 2 or more defined points. These points being selected by where the object detection algorithm worked best.
-This however was not a good approach as we would have had to make too many assumptions about the data in addition this was used in conjunction
-with OpenDataCam which for our purposes did not produce the desired results.
-\color{black}
-\ \\
-
 \textit{Note: write about top-down connection to "the river"}
+
 After switching to our own YOLOv5 object detection implementation we decided that we needed to view the data from a different angle and therefore
 started exploring the homography matrix.
 \ \\
