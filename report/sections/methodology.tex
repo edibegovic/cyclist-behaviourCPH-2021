@@ -38,7 +38,7 @@ There are two considerations to take into account when recording an intersection
 The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup as detailed, 
 but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
 Initially we used a single camera setup, but found that while we had a good view of the entire intersection, 
-we lost a lot of tracking data when the view of the cyclist on the opposite side on the intersection where obstructed by vehicles.
+we lost tracking data when the view of the cyclist on the opposite side on the intersection where obstructed by vehicles.
 \ \\
 
 \textbf{Camera mounting points} \\
@@ -61,7 +61,7 @@ These devices typically offer methods of remotely controlling and viewing their 
 another device such as a PC or smartphone, including the viewfinder. 
 This is useful when mounting the camera and adjusting its position to get a good view of the intersection. 
 While also possible with a Raspberry Pi, it is less stable in comparison to using smartphones or action cameras.
-Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a \textit{Samsung Galaxy S7}.
+Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a \textit{Samsung Galaxy S7 Edge}.
 
 % Along with meeting the basic requirements they also have Ingress Protection ratings, 
 % commonly referred to as waterproofing. This should be considered if rain is a possibility.
@@ -169,16 +169,17 @@ YOLOv5. YOLOv5 showed a good improvement on cyclists.
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
 \subsubsection{Projection}
-\textit{Note: write about top-down connection to "the river"}
-
-After switching to our own YOLOv5 object detection implementation we decided that we needed to view the data from a different angle and therefore
-started exploring the homography matrix.
+To achieve the "birds-eye view" of the intersection, we needed to explore methods of 
+transforming the data from the camera views.  
 \ \\
-A homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto a plane on a destination image $Q(x_i, y_i)$.
-The source image in our case is the plane of the road surface from the recorded video at the intersection to the road surface from an aerial view of the same intersection. 
-This will allow us to view the cyclist movements from an aerial view.
-
+A homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It 
+can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto 
+a plane on a destination image $Q(x_i, y_i)$.
+The source image in our case is the plane of the road surface from the recorded videos at the intersection 
+to the road surface from an aerial view of the same intersection. 
+This will allow us to transform and plot the cyclist movements onto an aerial photograph of the intersection.
 \ \\ 
+
 \noindent
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{projection_figure} 
