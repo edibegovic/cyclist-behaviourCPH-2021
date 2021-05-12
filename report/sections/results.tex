@@ -1,25 +1,66 @@
-Here we expect to cover a mix of some technical metrics of the system and the \textit{case study} on Dybbølsbro. 
-For the former, we expect to cover the precision of OpenDataCam (including YOLO4) with stats such as
+To quantify the effectiveness of this method we compare it to the existing OpenDataCam tool.
+We will compare the counts, produced by OpenDataCam and manual annotation, of cyclists at strategic parts of the intersection with the counts produced by our system. The manually annotated counts being the ground truth.
+This is followed by an analysis of the desire paths and an analysis of body language when cyclist trigger a defined
+alert zone.
+\ \\ 
 
-\begin{itemize}
-	\item Share of bicycles detected (\%)
-	\item Mean and median trajectory length
-	\item For all frames a bike is visible (and detected at least once), what share of them was the bike detected.
-\end{itemize}
+\subsubsection{Comparison between three different methods}
+Table x shows a comparison between OpenDataCam, manual annotation and our method.
+The comparison is based on how well each method captured cyclist driving on along three different 
+desire lines towards Fisketorvet.
+Our method captured x ‰ of what manual annotation has, manual annotation being the base line.
+\ \\
 
-which are all compared to the "ground truth" dataset that we annotate manually. We know from previous works with OpenDataCam
-that vehicle detection has achieved 95\% accuracy while performing worse for pedestrians and motorcycles (\cite{BROEKMAN2021100068}).
+\subsubsection{Interpretation of desire paths desire paths}
+The trajectory analysis in Figure~\ref{Rainbow} we can determine eight commonly taken desire paths. 
+Where as with manual annotation we can determine x amount.
+\ \\
+\raggedbottom
+\ \\ 
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{desire_paths_overhead} 
+\end{tabular}
+\captionof{figure}{Common trajectories of cyclists comming from NW}
+\label{traject}
 
 \ \\
-On the Dybbølsbro study, we will focus on how well it reproduces the real-world trajectories (desire lines) that
-we observe. While the desire line analysis report of Dybbølsbro (from Copenhagenize) is gone, it is from 2014, and many changes have happened since.
-We may apply the system to an intersection at Holmens Kanal, as a report is available. Although from 2015, it is a good benchmark to compare against. 
+\subsubsection{behavioral analysis}
+As mentinoed in the web application, we couple the the top-level view with references to time stamps in the recorded footage, 
+such that the behavior of cyclists can be observed at street level.
+Whenever a unique trajectory is selected or a part of the intersection is marked off, one can inspect each individual cyclist 
+and the context leading up to a detection.
+\\
 
+In the below image we see a typical detection of a rider passing straight over Dybbølsbro instead of turning left and 
+continuing over the bi-directional cycle path. Uknowingly thinking he is in the right, he closely passes, at full speed, another rider crossing
+the street. Shortly after he notices the traffic markings and turns around. 
+
+\ \\ 
+\raggedbottom
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{behaviour_fast} 
+\end{tabular}
+\captionof{figure}{Detection zone triggered}
+\label{Alert}
+\ \\
+
+Another commonly observed behaviour was cyclists trying to shorten the trajectories of their turns 
+at the "waiting corner" at Ingerslevgade.
 
 \raggedbottom
 \ \\ 
 \noindent
 \begin{tabular}{@{}cc}
-\includegraphics[width=1.0\columnwidth]{paths} 
+\includegraphics[width=1.0\columnwidth]{shorten_traj} 
 \end{tabular}
-\captionof{figure}{Common trajectories of cyclists comming from NW}
+\captionof{figure}{Shortend turn}
+\label{Alert}
+\ \\
+
+When volumes of other traffic was low or over the short window of all traffc having red lights, cyclists would use the opertunity 
+to switly cross the intersection while still "following the correct path" (that is, not crossing in a fully diagnol path). 
+
+% Which are all compared to the "ground truth" dataset that we annotate manually. We know from previous works with OpenDataCam
+% that vehicle detection has achieved 95\% accuracy while performing worse for pedestrians and motorcycles (\cite{BROEKMAN2021100068}).
+

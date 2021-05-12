@@ -20,7 +20,7 @@
 \input{structure.tex} % Specifies the document structure and loads requires packages
 \usepackage{subfiles} % Best loaded last in the preamble
 
-\hyphenation{intersections}
+\hyphenation{intersections OpenDataCam}
 
 % Abstract type defination
 \renewenvironment{abstract}
@@ -64,21 +64,40 @@
 \begin{document}
 
 \maketitle % Print the title
-\thispagestyle{firstpage} % Apply the page style for the first page (no headers and footers)
+\thispagestyle{empty}  % Apply the page style for the first page (no headers and footers)
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
+
 \twocolumn[\begin{@twocolumnfalse}
 \ \\ \\
 \begin{abstract}
 
 \centerline{\LARGE \textbf{Abstract}} 
 \ \\
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+In many European cities, such as Copenhagen and Amsterdam, cycling is an important part of the urban 
+transportation network. But infrastructure often favors cars, resulting in unfriendly or even dangerous 
+cycling infrastructure. 
+\ \\
 
+Having quantifiable data on the movement and behavior of cyclists is a crucial element in modern city 
+planning and would result in friendlier urban infrastructure for cyclists. The current methods of data 
+collection are reliant on the human annotation of video recordings, this is expensive, time-consuming, 
+and could face challenges in reproducibility. We aim to evaluate a new methodological approach to replace 
+manual annotation.
+\ \\
+
+Using video recordings of the Dybbølsbro intersection from multiple cameras, we perform object detection 
+on the videos and then transform the detected objects from the camera view to a birds-eye-view of the
+intersection. Allowing us to view cyclists in more fine-grained details as well as at an aggregated 
+levels.
+\ \\
+
+Using our method we produced favorable results when compared to manual annotation.
 \end{abstract}
 \end{@twocolumnfalse}]
+\thispagestyle{empty}
 \clearpage
 
 %----------------------------------------------------------------------------------------
@@ -88,10 +107,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 \setcounter{tocdepth}{3} % Set the depth of the table of contents to show sections and subsections only
 \tableofcontents % Print the table of contents
 \end{@twocolumnfalse}]
+\thispagestyle{empty}
 \clearpage
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
+
+% Page numbering starts from here
+\setcounter{page}{1}
 
 \section{Introduction}
 \subfile{sections/introduction}
@@ -99,19 +122,21 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 \section{Background}
 \subfile{sections/background}
 
-\section{Methodology}
+\section{Methodological Proposal}
+\subfile{sections/proposal}
+
+\section{Implementation}
 \subfile{sections/methodology}
 
-\section{Results}
+\section{Case Study}
 \subfile{sections/results}
 
 \section{Discussion}
 \subfile{sections/discussion}
 
 \section{Conclusion}
-Placeholder...
+\subfile{sections/conclusion}
 
-\color{black}
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
@@ -120,5 +145,16 @@ Placeholder...
 
 
 %----------------------------------------------------------------------------------------
+%   APPENDIX
+%----------------------------------------------------------------------------------------
 
+\onecolumn
+
+\begin{appendices}
+\section{Behavior Analysis}
+\includegraphics[scale=0.2]{confused.jpg} 
+
+\end{appendices}
+
+% ---------------------------------------------------------------------------------------
 \end{document}
