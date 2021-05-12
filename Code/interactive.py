@@ -28,8 +28,11 @@ video_1 = "/Videos/24032021/Processed/2403_G6_sync.mp4"
 # video_2 = easygui.fileopenbox(msg="Select video 2.")
 # video_2 = re.sub(r"^.+?(?=../Data)", "", video_2)
 video_2 = "/Videos/24032021/Processed/2403_S7_sync.mp4"
+<<<<<<< HEAD
+=======
 
 video_3 = "/Videos/24032021/Processed/2403_edi_sync.mp4"
+>>>>>>> report
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
