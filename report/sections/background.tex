@@ -1,22 +1,22 @@
 % --------------------------------------------------------------------------------------
 \subsection{Inclusive infrastructure}
-As bicycle infrastructure is primarily publically funded, it easily becomes a politicized topic. 
+As bicycle infrastructure is primarily publically funded, it quickly becomes a politicized topic. 
 While many cities push for a \textit{build it and they will come}-approach, what is being neglected
 is the need for a certain mass of cyclists to attract the casual rider and have the investment succeed.
-If new cyclists feel uncomfortable (stress, embarrassment, etc.) they are more likely to give up on the bike as a viable means of everyday transportation. 
+If new cyclists feel uncomfortable (stress, embarrassment, etc.), they are more likely to give up on the bike as a viable means of everyday transportation. 
 This leaves the infrastructure underutilized, with the public image of money and space being wasted, 
 thus resulting in a pushback against further cycling initiatives (\cite{backlash}).
-It is therefore important to carefully plan new cycling infrastructure and rapidly adapt to the observed behavior of new users.
+Therefore, it is important to carefully plan new cycling infrastructure and rapidly adapt to the observed behavior of new users.
 
  % -----------------------------------------------------------------------------------
 \subsection{Previous work}
 
 \subsubsection{Bicycle choreography}
-In the study (\cite{copenhagenize2014}) an intersection in Copenhagen is reviewed focusing on high-level aspects
+In the study (\cite{copenhagenize2014}) an intersection in Copenhagen is reviewed, focusing on high-level aspects
 such as routes taken by cyclists, as well as the behavior exhibited by the individual cyclists.
 This is done by using \textit{Desire lines Analysis}, a tool pioneered by the same authors as the study (\cite{copenhagenize_book}).
 \textit{Desire lines} encompass the trajectories of cyclists using both "intended pathways", usually directed through infrastructure such as
- bike lanes, but also their own paths which may deviate from the engineered structure or legal framework.
+ bike lanes, but also their own paths, which may deviate from the engineered structure or legal framework.
  To assess behavior, the study splits cyclists into three groups:
 
 \begin{itemize}
@@ -25,7 +25,7 @@ This is done by using \textit{Desire lines Analysis}, a tool pioneered by the sa
 	\item \textbf{Recklists}: dangerous behavior - both for self and others
 \end{itemize}
 
-The proportions of cyclists belonging to each of the above groups were then compared over the span of a day. 
+The proportions of cyclists belonging to each of the above groups were then compared for a day. 
 Notably, the share of \textit{momentumists} increased during the afternoon.
  \ \\
 
@@ -41,7 +41,7 @@ Most importantly it introduces a set of concepts for articulating \textit{situat
 including the two metaphors \textit{the river} and \textit{the ballet}. 
  \ \\
 
- The \textit{river} references the notion of capturing mobility from a 'birds-eye view' including the layout, 
+ The \textit{river} references the notion of capturing mobility from a 'birds-eye view', including the layout, 
  flows, and obstacles of a location, and hence, can be interpreted as a 'flowing riverbed'. 
  From this perspective, we can observe road users' behavior in aggregate and as part of more significant 'streams'. 
  This can be used to encapsulate abstract and high-level features of cyclists, such as the desire lines
@@ -91,11 +91,11 @@ increments a counter and keeps track of the object's identifier. Apart from coun
 \raggedbottom
 \subsubsection{Application}
 As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from the Dybbølsbro intersection in Copenhagen.
-Our setup ran on an Nvidia Jetson Xavier NX in combination with two Raspberry Pis, used for filming/streaming video from the intersection.
+Our setup ran on an Nvidia Jetson Xavier NX combined with two Raspberry Pis, used for filming/streaming video from the intersection.
 
 Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an initial 
 'base line' followed by two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments. Inspecting the
-overlap of unique cyclists who passed both the base line and one (or more) of the branching lines would thus yield which path
+overlap of unique cyclists who passed both the base line and one (or more) of the branching lines would yield which path
 they took through the intersection. 
 \ \\
 
@@ -111,7 +111,7 @@ they took through the intersection.
 However, this approach was limited by the poor performance of the detection of cyclists implemented in the current 
 version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
 re-identify the same cyclists as new ones. Thus, even when the same cyclist passed both the 'base line' and one of the 
-branching lines, they wouldn't be included in the desire line count.
+branching lines, they would not be included in the desire line count.
 \ \\
 
-We discuss the findings derived from OpenDataCam in our own case study in later sections of the report.
+We discuss the findings derived from OpenDataCam in our case study in later sections of the report.

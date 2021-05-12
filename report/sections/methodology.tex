@@ -37,8 +37,8 @@ There are two considerations to take into account when recording an intersection
 \textbf{intersection size} \\
 The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup as detailed, 
 but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
-Initially, we used a single camera setup, but found that while we had a good view of the entire intersection, 
-we lost tracking data when the view of the cyclist on the opposite side of the intersection where obstructed by vehicles.
+Initially, we used a single-camera setup, but found that while we had a good view of the entire intersection, 
+we lost tracking data when the cyclist's view on the opposite side of the intersection was obstructed by vehicles.
 \ \\
 
 \textbf{Camera mounting points} \\
@@ -61,7 +61,7 @@ These devices typically offer methods of remotely controlling and viewing their 
 another device such as a PC or smartphone, including the viewfinder. 
 This is useful when mounting the camera and adjusting its position to get a good view of the intersection. 
 While also possible with a Raspberry Pi, it is less stable in comparison to using smartphones or action cameras.
-Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a \textit{Samsung Galaxy S7 Edge}.
+Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a \textit{Samsung Galaxy S7}.
 
 % Along with meeting the basic requirements they also have Ingress Protection ratings, 
 % commonly referred to as waterproofing. This should be considered if rain is a possibility.
@@ -87,7 +87,7 @@ Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a
 % \
 
 % Battery life and storage capacity should also be considered depending on the amount of intended recording. 
-% With regards to storage, a good estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS. Storage should be selected
+% With regards to storage, a reasonable estimate for video size would be 149MB per 1 min of FullHD (1920*1080) at 30FPS. Storage should be selected
 % with the intended amount of recording time.
 
 \ \\ 
@@ -99,10 +99,10 @@ Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a
 \label{camera_mouns}
 \
 
-We used two different methods of mounting cameras at the intersection. One includes a flexible arm which can be clammed onto infrastructure such as light poles.
+We used two different methods of mounting cameras at the intersection. One includes a flexible arm that can be clammed onto infrastructure such as light poles.
 The second mounting solution was a self-built holder made out of cardboard and a hook, allowing us to easily mount it at high spots using a long extension rod.
 Selecting an appropriate mounting height is a trade-off between maximizing the captured area of the intersection and having a frontal view of traffic.
-We aimed to always have cameras mounted at least 3-4 meters above ground.
+We aimed always to have cameras mounted at least 3-4 meters above the ground.
 
 \subsection{Data Processing}
 \ \\ 
@@ -118,12 +118,12 @@ We aimed to always have cameras mounted at least 3-4 meters above ground.
 \color{black}
 
 \subsubsection{Video Syncing}
-An important preprocessing step is to cut the different video soucres to the same time stamp.
-Should the video have different frame rates or resolutions then these should be processed to match.
+An important preprocessing step is to cut the different video sources to the same time stamp.
+Should the video have different frame rates or resolutions, then these should be processed to match.
 
 \subsubsection{Camera calibration}
-Cameras often suffer from optical aberration where straight lines appear bent, especially noticable in the edges of an image. 
-This can be observed on wide-angle camera lenses such as on the LG G6 we used.
+Cameras often suffer from optical aberration where straight lines appear bent, especially noticeable in the edges of an image. 
+This can be observed on wide-angle camera lenses, such as on the LG G6 we used.
 The specific type is \textit{positive radial distortion} as shown in figure \ref{distortion_types}, with lines curving outwards in a barrel shape.
 These aberrations are a result of the curved shape of the camera lens.
 \ \\ 
@@ -139,7 +139,7 @@ These aberrations are a result of the curved shape of the camera lens.
 There is also a possibility of further distortion if the camera sensor and the lens are not parallel, also known as \textit{tangential distortion}.
 Ideally, there should be no radial nor tangential distortion.
 \ \\
-It became apparent when merging data from multiple camera sources that lens distortion had an effect on the alignment of data points.
+It became apparent when merging data from multiple camera sources that lens distortion affected the alignment of data points.
 This is shown in figure \ref{joined_distortion}, Before Calibration.
 
 \begin{figure}[h]
@@ -152,17 +152,17 @@ This is shown in figure \ref{joined_distortion}, Before Calibration.
 
 To correct for teh distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
-In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this we used the calibrate script provided with OpenCV,
+In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this, we used the calibrate script provided with OpenCV,
 passing several snapshots of a calibration object with the device to be calibrated. The calibration object being a black-white chessboard pattern.
 We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processes the pictures and
 returns a camera matrix and the distortion coefficients, used for correcting the distortion of the frames.
 \ \\
 
 \subsubsection{Object Detection}
-Object detection is the most important factor to consider, it is the key component in making this method work.
+Object detection is the most important factor to consider, as it is the key component in making this method work.
 \ \\
 
-We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but didn't perform well on cyclists. 
+We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but did not perform well on cyclists. 
 We, therefore, implemented our object detection setup using
 YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
@@ -222,7 +222,7 @@ image. This is achieved by applying $z$ to each point as a constant to create $Q
 
 \subsubsection{Merging Sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
-That is, the trajectory of the same cyclist will be captured by multiple cameras for certain areas. 
+That is, the trajectory of the same cyclist will be captured by multiple cameras for specific areas. 
 To merge the trajectories from the video sources, we take a naive approach. As the cameras are set up on
 opposite sides of the intersection, we simply cut the video sources in half along the mid-point between
 the two cameras along the intersection to join them.
@@ -240,24 +240,24 @@ the two cameras along the intersection to join them.
 
 In order to connect detections into trajectories of individual cyclist, we apply 
 the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
-SORT aims to address multiple object tracking (MOT) where objects across frames needs to be connected. 
+SORT aims to address multiple object tracking (MOT), where objects across frames need to be connected. 
 \ \\ 
 
 SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
 frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the area of overlap between the 
-bounding boxes by the area of union of the bounding boxes. If the IOU is above a certain threshold, the two points are connected as the same object.
+bounding boxes by union of the bounding boxes. If the IOU is above a certain threshold, the two points are connected as the same object.
 \ \\ 
 
-In our implementation we define arbitrary bounding boxes around the center point of the projected detections; 
-we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection is on
-a different plane to that of the roads surface.
+In our implementation, we define arbitrary bounding boxes around the center point of the projected detections; 
+we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection being on
+a different plane to that of the road's surface.
 
 \subsection{Data Exploration}
 
 \subsubsection{Web app}
 To interact with the tools implemented, we created a simple web application using the \href{https://plotly.com/dash/}{Dash library} for Python. 
 Its main components consist of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
-One can then scrub through time by either explicitly referencing to a timestamp or frame, using a slider or jump in set increments.
+One can then scrub through time by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
 Below the aerial view is a set of image viewers showing the current frame from all the cameras with markers around selected cyclists.
 
 \ \\ 
@@ -277,7 +277,7 @@ cylists passing certain parts of the intersection in either direction.
 \ \\
 
 \textbf{Future work} \\
-Currently the data pre-proccesing is not part of the application, thereby functioning more as a \textit{proof of concept}.
+Currently, the data pre-processing is not part of the application, thereby functioning more as a \textit{proof of concept}.
 It would be relatively easy to connect the data processing pipeline to the web interface, thus simply making the user 
 select video sources, map the \textit{ground control points} (for aerial projection) and potentially tweaking other hyper-parameters. 
 
