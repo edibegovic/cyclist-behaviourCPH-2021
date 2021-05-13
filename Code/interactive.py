@@ -16,10 +16,9 @@ from shapely.geometry.polygon import Polygon
 import json
 import easygui
 
-df = pd.read_pickle("g6_corrected.pickle") 
-df = df.astype({'frame_id': 'int32'})
-df.loc[:, 'color'] = "red"
-df = df[df.groupby("unique_id")["unique_id"].transform("size") > 20]
+# file = easygui.fileopenbox(msg="Choose tracks file.")
+file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.15_bbox10.csv"
+df = pd.read_csv(file) 
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
 # video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
@@ -236,7 +235,6 @@ def update_img_plot(val):
 def update_output(inc, dec, incident, value):
     ctx = dash.callback_context
     pressed_btn = [p['prop_id'] for p in ctx.triggered][0]
-    print("hwat")
     if 'inc_button' in pressed_btn:
         return value+20
     elif 'dec_button' in pressed_btn:
