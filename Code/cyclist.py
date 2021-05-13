@@ -10,14 +10,13 @@ import matplotlib.pyplot as plt
 pd.options.mode.chained_assignment = None
 
 class Camera:
-    def __init__(self, video_folder, file_name, camera):
-        self.video_folder = video_folder
+    def __init__(self, file_name, camera):
         self.file_name = file_name
         self.camera = camera
 
-        self.parent_path = f"Data/{self.video_folder}"
-        self.video_path = f"{self.parent_path}/Videos/Processed/{self.file_name}.mp4"
-        self.map_path = f"{self.parent_path}/Data/Assets/dbro_map.png"
+        self.video_path = f"Videos/{self.file_name}.mp4"
+        self.map_path = f"Assets/dbro_map.png"
+        self.frame = f"Assets/corrected_{self.camera}.jpg"
         self.temp = []
         self.img = 0
 
@@ -34,7 +33,7 @@ class Camera:
 
     def read_pkl(self, name):
         self.file_name = name
-        self.tracker_df = pd.read_pickle(f"{self.parent_path}/Data/TrackerDF/{name}.pickle")
+        self.tracker_df = pd.read_pickle(f"TrackerDF/{name}.pickle")
         self.df_format()
 
     def cyclist_contact_coordiantes(self):
@@ -111,7 +110,7 @@ class Camera:
     def click_coordinates(self, image, dst = 0, type = "load"):
         if type == "load":
             try:
-                with open(f"{self.parent_path}/Data/States/{self.camera}_{dst}.pickle", "rb") as file:
+                with open(f"States/{self.camera}_{dst}.pickle", "rb") as file:
                     self.temp = pickle.load(file)
                 print("Coordinates loaded")
             except FileNotFoundError:
@@ -132,7 +131,7 @@ class Camera:
             cv2.destroyAllWindows()
             cv2.waitKey(1)
             if type != "line":
-                with open(f"{self.parent_path}/Data/States/{self.camera}_{dst}.pickle", 'wb') as file:
+                with open(f"States/{self.camera}_{dst}.pickle", 'wb') as file:
                     pickle.dump(self.temp, file)
         return self.temp
 
@@ -257,14 +256,14 @@ class Camera:
                     new_df = new_df.append(pd.DataFrame(unique_id, columns=new_df.columns))
             self.tracker_df = new_df
             self.df_format()
-            name = self.file_name + "_unique_id"
-            with open(f"{self.parent_path}/Data/TrackerDF/{name}.pickle", 'wb') as file:
+            name = self.file_name + f"_unique_id_{max_age}_{iou_threshold}"
+            with open(f"TrackerDF/{name}.pickle", 'wb') as file:
                 pickle.dump(self.tracker_df, file)
                 print("\n" + "Unique ID's saved")
         elif save_load == "load":
             try:
-                name = self.file_name + "_unique_id"
-                with open(f"{self.parent_path}/Data/TrackerDF/{name}.pickle", "rb") as file:
+                name = self.file_name + f"_unique_id_{max_age}_{iou_threshold}"
+                with open(f"TrackerDF/{name}.pickle", "rb") as file:
                     self.tracker_df = pickle.load(file)
                 print("DF with Unique ID's loaded")
             except FileNotFoundError:
@@ -320,7 +319,6 @@ if __name__ == "__main__":
     # g6.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     g6.cyclist_contact_coordiantes()
     # g6.get_frame(1000)
-    g6.frame = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/assets/corrected_g6.jpg"
     g6.smooth_tracks(20)
     # g6.cut_tracks_with_few_points(50)
     src = g6.click_coordinates(g6.frame, dst = "src", type = "load")
@@ -351,7 +349,7 @@ if __name__ == "__main__":
     # s7.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "load")
     s7.cyclist_contact_coordiantes()
     # s7.get_frame(1000)
-    s7.frame = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/assets/corrected_s7.jpg"
+    s7.frame = "Assets/corrected_s7.jpg"
     # cv2.imwrite("inter_s7.jpg", s7.frame)
     s7.smooth_tracks(20)
     # s7.cut_tracks_with_few_points(50)
@@ -381,10 +379,4 @@ if __name__ == "__main__":
     joined.df_format()
     joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "new")
 
-    joined.tracker_df.to_csv("Data/24032021/Data/joined_df_corrected_90_1_0.15_bbox10.csv")
-    # joined.tracker_df
-
-    # joined = Camera("hogni", 24032021, "joined", "joined")
-    # joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
-    # # joined.tracker_df["x"] = joined.tracker_df["x"].round(0).astype(int)
-    # # joined.tracker_df["y"] = joined.tracker_df["y"].round(0).astype(int)
+    joined.tracker_df.to_csv("CSV/joined_df_corrected_90_1_0.15_bbox10.csv")
