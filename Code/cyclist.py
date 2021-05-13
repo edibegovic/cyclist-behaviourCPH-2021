@@ -85,6 +85,12 @@ class Camera:
                     sys.stdout.flush()
             unique_id = row["unique_id"]
 
+    def color_label(self):
+        df_ids = list(set(self.tracker_df["unique_id"]))
+        label = []
+        for _, row in self.tracker_df.iterrows():
+            label.append(df_ids.index(row["unique_id"]))
+        self.tracker_df["label"] = label
 
     def calculate_bearing(self, row, previous_row):
         x_1, y_1 = row["x"], row["y"]
@@ -110,7 +116,8 @@ class Camera:
     def click_coordinates(self, image, dst = 0, type = "load"):
         if type == "load":
             try:
-                with open(f"States/{self.camera}_{dst}.pickle", "rb") as file:
+                name = self.file_name + f"_{self.max_age}_{self.iou_threshold}_{dst}"
+                with open(f"States/{name}.pickle", "rb") as file:
                     self.temp = pickle.load(file)
                 print("Coordinates loaded")
             except FileNotFoundError:
@@ -130,8 +137,9 @@ class Camera:
             cv2.waitKey(0)
             cv2.destroyAllWindows()
             cv2.waitKey(1)
+            name = self.file_name + f"_{self.max_age}_{self.iou_threshold}"
             if type != "line":
-                with open(f"States/{self.camera}_{dst}.pickle", 'wb') as file:
+                with open(f"States/{name}_{dst}.pickle", 'wb') as file:
                     pickle.dump(self.temp, file)
         return self.temp
 
@@ -187,7 +195,7 @@ class Camera:
                     xy.append((row["x"], row["y"]))
                     color_list.append(row["color"])
                     if len(xy) > 1:
-                        image = cv2.line(image, xy[count - 1], xy[count], color_list[count], 3)
+                        image = cv2.line(image, xy[count - 1], xy[count], color_list[count], 3) #color=(255, 0, 0, 150)
         else:
             for _, row in df.iterrows():
                 image = cv2.circle(image, (row["x"], row["y"]), 3, (0, 0, 255), -1)
@@ -236,6 +244,8 @@ class Camera:
         self.tracker_df["ymax"] = self.tracker_df["y"] + bbox_size
 
     def unique_id(self, max_age=30, min_hits=1, iou_threshold=0.15, save_load = 0):
+        self.max_age = max_age
+        self.iou_threshold = iou_threshold
         if save_load == "new":
             tracker = Sort(max_age, min_hits, iou_threshold)
             self.tracker_df = self.tracker_df.sort_values(by="frame_id").reset_index(drop = True)
@@ -274,32 +284,9 @@ class Camera:
     def add_color(self, type = "label"):
         self.tracker_df = self.tracker_df.sort_values(["unique_id", "frame_id"]).reset_index(drop=True)
         len_df = len(self.tracker_df)
-        colour_list = [
-        (230, 25, 75),
-        (60, 180, 75),
-        (255, 225, 25),
-        (0, 130, 200),
-        (245, 130, 48),
-        (145, 30, 180),
-        (70, 240, 240),
-        (240, 50, 230),
-        (210, 245, 60),
-        (250, 190, 212),
-        (0, 128, 128),
-        (220, 190, 255),
-        (170, 110, 40),
-        (255, 250, 200),
-        (128, 0, 0),
-        (170, 255, 195),
-        (128, 128, 0),
-        (255, 215, 180),
-        (0, 0, 128),
-        (128, 128, 128),
-        (255, 255, 255),
-        (0, 0, 0)]
         for count, (_, row) in enumerate(self.tracker_df.iterrows()):
             if type == "label":
-                color = colour_list[row["label"]]
+                color = self.get_color(int(round(row["label"])))
             elif type == "rainbow":
                 color = self.get_color(int(round(row["bearing"])))
             else:
