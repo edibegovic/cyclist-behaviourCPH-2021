@@ -150,7 +150,7 @@ This is shown in figure \ref{joined_distortion}, Before Calibration.
   \label{joined_distortion}
 \ \\
 
-To correct for teh distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
+To correct for the distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
 In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this, we used the calibrate script provided with OpenCV,
 passing several snapshots of a calibration object with the device to be calibrated. The calibration object being a black-white chessboard pattern.
@@ -166,6 +166,13 @@ We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup work
 We, therefore, implemented our object detection setup using
 YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
+We ran the largest YOLOv5 model available, yolov5x6, with the P6 architecture. The P6 architecture processes video resolution
+at 1280 pixels, mention p5. The model was run on an NVIDIA Tesla P100 GPU with 16GB of memory. The model was set to only detect cyclists.
+\ \\
+YOLO does not requitre such powerful hardware to run, less powerful hardware would also work.
+If processing speeds are too low then changing to the P5 architecture or a smaller model would help. 
+\ \\
+With this setup videos are being processed at 8 FPS. This results in a total processing time for object detection at 
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
 
 \subsubsection{Projection}
