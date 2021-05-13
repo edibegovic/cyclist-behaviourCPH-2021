@@ -41,14 +41,14 @@
 %----------------------------------------------------------------------------------------
 
 \title{
-	Quantifying cyclist behavior at intersections using video analysis 
+	Quantifying cyclist behavior at intersections using automated video analysis 
 	\ \\
 	} % The article title
 
 \author{
 	\authorstyle{Edi Begovic and Høgni Jacobsen} % Authors
 	\newline
-	\institution{The IT University of Copenhagen, Copenhagen, Denmark}\\ % Institution
+	\institution{IT University of Copenhagen, Denmark}\\ % Institution
 	\newline
 	\authorstyle{Supervised by Michael Szell} % Authors
 	\\ \\ \\
@@ -75,26 +75,24 @@
 \begin{abstract}
 
 \centerline{\LARGE \textbf{Abstract}} 
-\ \\
-In many European cities, such as Copenhagen and Amsterdam, cycling is an important part of the urban 
-transportation network. But infrastructure often favors cars, resulting in unfriendly or even dangerous 
-cycling infrastructure. 
-\ \\
 
-Having quantifiable data on the movement and behavior of cyclists is a crucial element in modern city 
-planning and would result in friendlier urban infrastructure for cyclists. The current methods of data 
-collection are reliant on the human annotation of video recordings, this is expensive, time-consuming, 
-and could face challenges in reproducibility. We aim to evaluate a new methodological approach to replace 
+\ \\
+In many European cities, such as Copenhagen and Amsterdam, cycling is an important part of urban 
+transportation. But transport infrastructure often prioritizes cars, resulting in unfriendly or even dangerous 
+environments for cycling. 
+Having quantifiable data on the movement and behavior of cyclists is a crucial element in modern city B
+planning and would result in friendlier urban infrastructure for cyclists. The current methods of dataB
+collection are reliant on the human annotation of video recordings, which is expensive, time-consuming,B
+and could face challenges in reproducibility. Here we set up and evaluate a new methodological approach to replace 
 manual annotation.
-\ \\
+In this approach we set up a data collection and analysis pipeline, consisting of camera selection and setup, 
+video syncing, camera calibration, machine-learning based object detection, projection, merging of different 
+camera sources, and object tracking. We also develop a web app for efficiently exploring collected footage. 
+To test our setup in a case study, we record and analyze videos of the Dybbelsbro intersection in Copenhagen 
+with multipe cameras. Our method succeeds to detect cyclist trajectories and to transform them into a 
+birds-eye view, allowing us to explore both fine-grained details and an aggregated view of cyclist behavior.
+Using our method we produce favorable results compared to manual annotation.
 
-Using video recordings of the Dybbølsbro intersection from multiple cameras, we perform object detection 
-on the videos and then transform the detected objects from the camera view to a birds-eye-view of the
-intersection. Allowing us to view cyclists in more fine-grained details as well as at an aggregated 
-levels.
-\ \\
-
-Using our method we produced favorable results when compared to manual annotation.
 \end{abstract}
 \end{@twocolumnfalse}]
 \thispagestyle{empty}
@@ -122,13 +120,13 @@ Using our method we produced favorable results when compared to manual annotatio
 \section{Background}
 \subfile{sections/background}
 
-\section{Methodological Proposal}
+\section{Methodological proposal}
 \subfile{sections/proposal}
 
 \section{Implementation}
 \subfile{sections/methodology}
 
-\section{Case Study}
+\section{Case studies}
 \subfile{sections/results}
 
 \section{Discussion}
@@ -151,7 +149,7 @@ Using our method we produced favorable results when compared to manual annotatio
 \onecolumn
 
 \begin{appendices}
-\section{Behavior Analysis}
+\section{Behavior analysis}
 \includegraphics[scale=0.2]{confused.jpg} 
 
 \end{appendices}

@@ -9,32 +9,32 @@ by figure \ref{pipeline}.
 \captionof{figure}{Overview of data pipeline} 
 \label{pipeline}
 
-\subsection{Data Collection}
+\subsection{Data collection}
 \ \\ 
 \noindent
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{dybbølsbro}
 \end{tabular}
-\captionof{figure}{Dybbølsbro/Ingerslevgade intersection \\ (\textit{Københavns Kommune})} 
+\captionof{figure}{Dybbølsbro/Ingerslevgade intersection \\ \textit{Image source: Københavns Kommune}} 
 \label{intersection_overview}
 \
 
-Our work is centered around the Dybbølsbro / Ingerslevgade intersection south-east of Copenhagen
-city center. The intersection faces several challenges, producing \textit{"conflicts, unsafe situations, illegal 
-road user behavior and great dissatisfaction among road users at the intersection"} (\cite{CPHpost_2021}).
+Our work is centered around the Dybbølsbro / Ingerslevgade intersection south-west of Copenhagen
+city center. The intersection faces several challenges, producing \textit{'conflicts, unsafe situations, illegal 
+road user behavior and great dissatisfaction among road users at the intersection'} (\cite{CPHpost_2021}).
 From the south, the intersection connects to the Dybbølsbro bridge, which features a bi-directional cycle path, two
 lanes for vehicle traffic as well as pedestrians from the nearby train station. 
 This is an unusual setup in Copenhagen, as most streets feature unidirectional cycle paths 
 following vehicle traffic. Therefore, south-bound cyclists coming from the north (Skelbækgade) have to perform a two-phase 
-turn to continue over the bridge. Firstly by heading straight over the intersection, but then having to stop and perform a left turn to 
+turn to continue over the bridge, firstly by heading straight over the intersection but then having to stop and perform a left turn to 
 continue. This leads to high congestion at the south-west corner of the intersection with many cyclists looking for a shortcut across. 
 Due to its issues and size as well as previous analysis conducted on the intersection, we found it to be a good baseline for experimentation.
 
-\subsubsection{Recording Location}
+\subsubsection{Recording location}
 There are two considerations to take into account when recording an intersection for video analysis.
 \ \\
 
-\textbf{intersection size} \\
+\textbf{Intersection size} \\
 The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup as detailed, 
 but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
 Initially, we used a single-camera setup, but found that while we had a good view of the entire intersection, 
@@ -46,11 +46,12 @@ We tried three different mounting locations as shown by the red and purple circl
 We faced several difficulties with camera mounting at the intersection, including camera stability, 
 obstructions of the camera view, and the height of the mounting positions. 
 With some of our camera mounts, stability was impacted by wind and thus the camera was swaying, resulting in skewed detections later on.
-To cover the entire intersection with adequate coverage, we selected a two-camera setup on opposite sides of the intersection.
+To cover the entire intersection with adequate coverage, we selected a two-camera setup on opposite sides of the intersection 
+(purple circles on figure \ref{intersection_overview}).
 
 \subsubsection{Camera setup}
-Any camera device with an adequate field-of-view (FOV) to capture the intersection, records in HD (1280×720 resolution) at a constant 
-frame rate (at least 10FPS), and allows remote viewing of its viewfinder will suffice. 
+Any camera device with an adequate field-of-view (FOV) to capture the intersection, that records in HD (1280×720 resolution) at a constant 
+frame rate (at least 10FPS), and that allows remote viewing of its viewfinder will suffice. 
 However, having tested a Raspberry Pi recording setup (including a camera module, external battery, and an LCD touch screen), 
 we would not recommend a self-built recording setup. Although the Raspberry Pi setup meets the above-mentioned technical requirements, 
 the challenges lie in the usability of such a setup. 
@@ -96,10 +97,10 @@ Hence, we chose to use smartphones for recording, namely an \textit{LG G6} and a
 \includegraphics[width=1.0\columnwidth]{contraptions}
 \end{tabular}
 \captionof{figure}{Camera mounts} 
-\label{camera_mouns}
+\label{camera_mounts}
 \
 
-We used two different methods of mounting cameras at the intersection. One includes a flexible arm that can be clammed onto infrastructure such as light poles.
+We used two different methods of mounting cameras at the intersection (figure \ref{camera_mounts}). One includes a flexible arm that can be clammed onto infrastructure such as light poles.
 The second mounting solution was a self-built holder made out of cardboard and a hook, allowing us to easily mount it at high spots using a long extension rod.
 Selecting an appropriate mounting height is a trade-off between maximizing the captured area of the intersection and having a frontal view of traffic.
 We aimed always to have cameras mounted at least 3-4 meters above the ground.
@@ -117,7 +118,7 @@ We aimed always to have cameras mounted at least 3-4 meters above the ground.
 \raggedbottom
 \color{black}
 
-\subsubsection{Video Syncing}
+\subsubsection{Video synchronization}
 An important preprocessing step is to cut the different video sources to the same time stamp.
 Should the video have different frame rates or resolutions, then these should be processed to match.
 
@@ -140,30 +141,30 @@ There is also a possibility of further distortion if the camera sensor and the l
 Ideally, there should be no radial nor tangential distortion.
 \ \\
 It became apparent when merging data from multiple camera sources that lens distortion affected the alignment of data points.
-This is shown in figure \ref{joined_distortion}, Before Calibration.
+This is shown in figure \ref{joined_distortion}, where trajectories detected from one camera source do not match the other.
 
-\begin{figure}[h]
-  \includegraphics[scale=0.6]{calibration.png}
-  \centering 
-  \end{figure}
-  \captionof{figure}{Distortion}
-  \label{joined_distortion}
-\ \\
+\raggedbottom
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{calibration.png}
+\end{tabular}
+\captionof{figure}{Projection - ground control points}
+\label{joined_distortion}
+\
 
 To correct for the distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
 In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this, we used the calibrate script provided with OpenCV,
-passing several snapshots of a calibration object with the device to be calibrated. The calibration object being a black-white chessboard pattern.
-We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processes the pictures and
-returns a camera matrix and the distortion coefficients, used for correcting the distortion of the frames.
+passing several snapshots of a calibration object with the device to be calibrated. The calibration object is a black-white chessboard pattern.
+We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processed the images and
+returned a camera matrix and the distortion coefficients, used for correcting the distortion of the frames.
 \ \\
 
-\subsubsection{Object Detection}
-Object detection is the most important factor to consider, as it is the key component in making this method work.
+\subsubsection{Object detection}
+Object detection is the most important factor to consider, as it is the key component in making our method work.
 \ \\
 
 We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but did not perform well on cyclists. 
-We, therefore, implemented our object detection setup using
+We, therefore, implemented our own object detection setup using
 YOLOv5. YOLOv5 showed a good improvement on cyclists.
 \ \\ 
 We ran the largest YOLOv5 model available, yolov5x6, with the P6 architecture. The P6 architecture processes video resolution
@@ -173,13 +174,13 @@ YOLO does not requitre such powerful hardware to run, less powerful hardware wou
 If processing speeds are too low then changing to the P5 architecture or a smaller model would help. 
 \ \\
 With this setup videos are being processed at 8 FPS. This results in a total processing time for object detection at 
-Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$
+Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$.
 
 \subsubsection{Projection}
-To achieve the "birds-eye view" of the intersection, we needed to explore methods of 
+To achieve the 'birds-eye view' of the intersection, we needed to explore methods of 
 transforming the data from the camera views.  
 \ \\
-A homography matrix is a transformation matrix between two planes \cite{hartley_zisserman_2004}. It 
+A homography matrix is a transformation matrix between two planes (\cite{hartley_zisserman_2004}). It 
 can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto 
 a plane on a destination image $Q(x_i, y_i)$.
 The source image in our case is the plane of the road surface from the recorded videos at the intersection 
@@ -195,7 +196,7 @@ This will allow us to transform and plot the cyclist movements onto an aerial ph
 \label{projection_figure}
 \
 
-To calculate the homography matrix, we need to solve the for the system of linear equations, $P = HQ$,
+To calculate the homography matrix, we need to solve the system of linear equations, $P = HQ$,
 \ \\
 $P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
 \begin{align}
@@ -219,15 +220,21 @@ $P$ being points in a polygon on the source image, $Q$ the corresponding polygon
 \ \\
 
 Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
-Given the below equation, we can calculate the contact points.
+Given eq. \ref{eqn:eq1}, we can calculate the contact points.
 
-$$x = xmin + \frac{(xmax - xmin)}{2}$$
-$$y = ymin$$
+\begin{equation}
+\label{eqn:eq1}
+\begin{array}{l}
+x = x_\mathrm{min} + \frac{(x_\mathrm{max} - x_\mathrm{min})}{2} \\
+y = y_\mathrm{min}
+\end{array}
+\end{equation}
+\
 
 Using the homography matrix, we can now project the contact points $(x, y)$ of the cyclist onto the destination
 image. This is achieved by applying $z$ to each point as a constant to create $Q(x_i, y_i, 1)$ and then we multiply it by the homography matrix. 
 
-\subsubsection{Merging Sources}
+\subsubsection{Merging sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
 That is, the trajectory of the same cyclist will be captured by multiple cameras for specific areas. 
 To merge the trajectories from the video sources, we take a naive approach. As the cameras are set up on
@@ -256,15 +263,15 @@ bounding boxes by union of the bounding boxes. If the IOU is above a certain thr
 \ \\ 
 
 In our implementation, we define arbitrary bounding boxes around the center point of the projected detections; 
-we used a 10x10 pixel bounding box. This is a result of the plane of the bounding boxes from the object detection being on
+we used a $10 \times 10$ pixel bounding box. This is a result of the plane of the bounding boxes from the object detection being on
 a different plane to that of the road's surface.
 
 \subsection{Data Exploration}
 
-\subsubsection{Web app}
-To interact with the tools implemented, we created a simple web application using the \href{https://plotly.com/dash/}{Dash library} for Python. 
+\subsubsection{Web application}
+To interact with the tools implemented, we created a simple web application using the Dash\footnote{\href{https://plotly.com/dash/}{Dash library}} for Python. 
 Its main components consist of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
-One can then scrub through time by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
+One can then explore the timeline through time by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
 Below the aerial view is a set of image viewers showing the current frame from all the cameras with markers around selected cyclists.
 
 \ \\ 
@@ -276,10 +283,10 @@ Below the aerial view is a set of image viewers showing the current frame from a
 \label{webapp}
 \
 
-To gain insight into specific areas of the intersection, one can filter observations by drawing a mask on the aerial view. 
+To gain insight into specific areas of the intersection, observations can be filtered by drawing a mask on the aerial view. 
 When an area is selected, all cyclists passing it will be listed in a side panel, from which one can jump directly to the matching timestamp.
 \
-Counting lines (as also found in OpenDataCam) are also implemented, giving the user the ability to immediately see the number of 
+We also implemented counting lines (as found in OpenDataCam) are also implemented, giving the user the ability to immediately see the number of 
 cylists passing certain parts of the intersection in either direction.
 \ \\
 
@@ -288,18 +295,18 @@ Currently, the data pre-processing is not part of the application, thereby funct
 It would be relatively easy to connect the data processing pipeline to the web interface, thus simply making the user 
 select video sources, map the \textit{ground control points} (for aerial projection) and potentially tweaking other hyper-parameters. 
 
-\subsubsection{Rainbow Tracks}
+\subsubsection{Rainbow tracks}
 
 \ \\ 
 \noindent
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{rainbow.png} 
 \end{tabular}
-\captionof{figure}{Rainbow Tracks}
+\captionof{figure}{Rainbow tracks}
 \label{Rainbow}
 \
 
-To find aggregated desire lines from the data we took an approach which we call "Rainbow tracks". 
+To find aggregated desire lines from the data we took an approach which we call 'Rainbow tracks'. 
 This involves coloring tracks by the bearing between consecutive points in each trajectory. 
 After calculating the bearing, we then get a color from a gradient color wheel. 
 This approach has the added benefit of encoding direction into each track.
