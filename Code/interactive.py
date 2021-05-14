@@ -17,21 +17,16 @@ import json
 import easygui
 
 # file = easygui.fileopenbox(msg="Choose tracks file.")
-file = "/Users/hogni/Documents/GitHub/cyclist-behaviourCPH-2021/Code/Data/24032021/Data/CSV/joined_df_corrected_90_1_0.15_bbox10.csv"
+file = "CSV/joined_df_corrected_90_1_0.15_bbox5_delete.csv"
 df = pd.read_csv(file) 
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
 # video_1 = re.sub(r"^.+?(?=Data)", "", video_1)
-video_1 = "/Videos/24032021/Processed/2403_G6_sync.mp4"
+video_1 = "Videos/2403_G6_sync.mp4"
 
 # video_2 = easygui.fileopenbox(msg="Select video 2.")
 # video_2 = re.sub(r"^.+?(?=../Data)", "", video_2)
-video_2 = "/Videos/24032021/Processed/2403_S7_sync.mp4"
-<<<<<<< HEAD
-=======
-
-video_3 = "/Videos/24032021/Processed/2403_edi_sync.mp4"
->>>>>>> report
+video_2 = "Videos/2403_S7_sync.mp4"
 
 df.loc[:, 'border_width'] = df.loc[:, 'unique_id'].astype(int)%2
 df.loc[:, 'simple_id'] = df.loc[:, 'unique_id'].astype(int)
@@ -137,15 +132,6 @@ app.layout = html.Div([
                 ),
             ]),
 
-            dbc.Col([
-                dash_player.DashPlayer(
-                    id='video-player3',
-                    url=f'http://localhost:8000/{video_3}',
-                    controls=False,
-                    width='96%'
-                ),
-            ]),
-
             ], justify="center", 
             style={
                 'margin-left': '45px',
@@ -244,8 +230,7 @@ def update_output(inc, dec, incident, value):
         return int(button_id)
 
 @app.callback([Output('video-player', 'seekTo'),
-              Output('video-player2', 'seekTo'),
-              Output('video-player3', 'seekTo')],
+              Output('video-player2', 'seekTo')],
               [Input('frame-slider', 'value')])
 
 def update_prop_seekTo(val):
