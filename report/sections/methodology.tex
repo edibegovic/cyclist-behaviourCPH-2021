@@ -163,17 +163,21 @@ returned a camera matrix and the distortion coefficients, used for correcting th
 Object detection is the most important factor to consider, as it is the key component in making our method work.
 \ \\
 
-We found that our offline OpenDataCam setup using an Nvidia Jetson NX setup worked well for detecting cars but did not perform well on cyclists. 
-We, therefore, implemented our own object detection setup using
-YOLOv5. YOLOv5 showed a good improvement on cyclists.
+We found that our offline OpenDataCam setup using an Nvidia Jetson NX device worked well for detecting cars, but did not perform as ell on cyclists. 
+We, therefore, implemented our object detection setup using YOLOv5. YOLOv5, trained on the same COCO dataset\footnote{\href{https://cocodataset.org}{COCO dataset}}
+as previous YOLO models, showed a market improvement on the detection of
+cyclists.
 \ \\ 
-We ran the largest YOLOv5 model available, yolov5x6, with the P6 architecture. The P6 architecture processes video resolution
-at 1280 pixels, mention p5. The model was run on an NVIDIA Tesla P100 GPU with 16GB of memory. The model was set to only detect cyclists.
+
+We ran  YOLOv5 using the largest model available, yolov5x6.
+The model was run on an NVIDIA Tesla P100 GPU (CUDA enabled) with 16GB of memory. The model was set to only detect cyclists and to process
+video at a resolution of 1280 pixels.
 \ \\
-YOLO does not requitre such powerful hardware to run, less powerful hardware would also work.
-If processing speeds are too low then changing to the P5 architecture or a smaller model would help. 
+ 
+YOLO does not require such powerful hardware, less powerful hardware would also work.
 \ \\
-With this setup videos are being processed at 8 FPS. This results in a total processing time for object detection at 
+
+With this setup, videos were processed at 10 FPS. This results in a total processing time of circa 4.5 hours for a 1.5-hour video.
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$.
 
 \subsubsection{Projection}
