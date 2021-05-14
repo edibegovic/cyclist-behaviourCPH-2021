@@ -151,9 +151,9 @@ This is shown in figure \ref{joined_distortion}, where trajectories detected fro
 \label{joined_distortion}
 \
 
-To correct for the distortion we make use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
+To correct for the distortion we made use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
 
-In order to correct for distortion, we need to find the camera matrix and distortion coefficients. To do this, we used the calibrate script provided with OpenCV,
+In order to correct for distortion, the camera matrix and distortion coefficients are needed. To do this, we used the calibrate script provided with OpenCV,
 passing several snapshots of a calibration object with the device to be calibrated. The calibration object is a black-white chessboard pattern.
 We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processed the images and
 returned a camera matrix and the distortion coefficients, used for correcting the distortion of the frames.

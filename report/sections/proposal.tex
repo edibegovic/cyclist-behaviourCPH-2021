@@ -1,6 +1,7 @@
- While on-site assertion of an intersection is plausible, the scope of a single observer is limited, as one can only keep track of 
- so many cyclists at once. Likewise with analyzing recorded video footage, while not bound by time, is still a time-consuming process, 
- especially as the views of cyclists can be obstructed by other passing vehicles or permanent fixtures.
+While on-site assertion of an intersection is plausible, the scope of a single observer is limited, as one can only keep track of 
+so many cyclists at once. Likewise with analyzing recorded video footage, while not bound by time, is still a time-consuming process, 
+especially as the views of cyclists can be obstructed by other passing vehicles or permanent fixtures. Previous desire line 
+studies conducted by Copenhagenize were done by keeping counts of hand-written references to trajectories (figure \ref{manual_desire_line}).
 \ \\
 
 \raggedbottom
@@ -9,14 +10,52 @@
 \includegraphics[width=1.0\columnwidth]{desire_line_counts} 
 \end{tabular}
 \captionof{figure}{Manual desire line counts (Copenhagenize, 2014)}
+\label{manual_desire_line}
 \
 
-The latter issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
-object tracking algorithms in video. In theory, a top-down overhead view, overlooking from the center of the intersection would be optimal for minimizing obstruction.
-However, the height required for such a recording setup as well as the lack of permanent fixtures makes this approach very impractical. 
-Current state-of-the-art object detection algorithms (e.g.~YOLO) also perform worse at categorizing objects, especially bicycles, 
-using an overhead view compared to a semi-frontal view. We therefore propose deploying a multi-camera setup, overlooking an intersection from
-multiple sides.
+\subsection{Initial tests with OpenDataCam}
+As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from the Dybbølsbro intersection in Copenhagen.
+Our setup ran on an Nvidia Jetson Xavier NX combined with two Raspberry Pis, used for filming/streaming video from the intersection.
+
+Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an initial 
+'base line' followed by two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments. Inspecting the
+overlap of unique cyclists who passed both the base line and one (or more) of the branching lines would yield which path
+they took through the intersection. 
+\ \\
+
+\ \\
+\raggedbottom
+\noindent
+\begin{tabular}{@{}cc}
+\includegraphics[width=1.0\columnwidth]{base_line} 
+\end{tabular}
+\captionof{figure}{'base line' (pink) and branching lines (orange)}
+\ \\
+
+However, this approach was limited by the poor performance of the detection of cyclists implemented in the current 
+version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
+re-identify the same cyclists as new ones. Thus, even when the same cyclist passed both the 'base line' and one of the 
+branching lines, they would not be included in the desire line count.
+\ \\
+ 
+We discuss the findings derived from OpenDataCam in our case study in later sections of the report.
+
+\subsection{improvement}
+We wish to improve and extend the functionality of OpenDataCam centered around cyclists and intersections.
+Using a newer version of YOLO for object detection will result better tracking accuracy for cyclists, 
+and thus more complete trajectories.
+While OpenDataCam emphasizes real-time metrics on traffic, we specifically work with 'post-processed' footage 
+form intersections, and thus we can apply further assumptions about the tracking behavior to improve accuracy.
+\ \\
+
+The aforementioned issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
+object tracking algorithms in video. In theory, a top-down overhead view, overlooking from the center of the 
+intersection would be optimal for minimizing obstruction.
+However, the height required for such a recording setup as well as the lack of permanent fixtures makes this 
+approach very impractical. 
+Current state-of-the-art object detection algorithms (e.g.~YOLO) also perform worse at categorizing objects, 
+especially bicycles, using an overhead view compared to a semi-frontal view. 
+We therefore propose deploying a multi-camera setup, overlooking an intersection from multiple sides.
 \ \\
 
 A top-level areal view can help identify rule compliance through the intersection by comparing
