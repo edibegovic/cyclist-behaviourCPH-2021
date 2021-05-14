@@ -298,7 +298,9 @@ class Camera:
 
     def get_color(self, n):
         return plt.cm.gist_ncar(int(round(n)))
-        
+
+    def shift_frames(self, n):
+        self.tracker_df["frame_id"] += n
 
 if __name__ == "__main__":
     g6 = Camera(24032021, "2403_g6_sync", "g6")
