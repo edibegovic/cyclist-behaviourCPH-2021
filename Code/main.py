@@ -48,11 +48,15 @@ if __name__ == "__main__":
     g6.remove_point_line(remove_line, "below")
     s7.remove_point_line(remove_line, "above")
 
-    joined = cyclist.Camera("joined_corrected", "joined")
+    g6.tracker_df = g6.tracker_df[:100000]
+    s7.shift_frames(12)
+    s7.tracker_df = s7.tracker_df[:100000]
+    s7.tracker_df
+    joined = cyclist.Camera("joined_corrected_test", "joined")
     joined.tracker_df = join_df([g6.tracker_df, s7.tracker_df])
-    joined.new_bbox(5)
+    joined.new_bbox(15)
     joined.df_format()
-    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.15, save_load = "load")
+    joined.unique_id(max_age=90, min_hits=1, iou_threshold=0.10, save_load = "new")
     # joined.cut_tracks_with_few_points(50)
 
     # joined.add_bearing()

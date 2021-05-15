@@ -106,7 +106,9 @@ app.layout = html.Div([
 
         dbc.Row([
             dbc.Col([], width=4),
-            dbc.Button('⏪ -20 frames', id='dec_button', color="dark"),
+            dbc.Button('⏪ -1 frames', id='dec_button_small', color="dark"),
+            dbc.Button('+1 frames ⏩', id='inc_button_small', color="dark", style={'padding': '10px', 'margin-left': '20px'}),
+            dbc.Button('⏪ -20 frames', id='dec_button', color="dark", style={'padding': '10px', 'margin-left': '20px'}),
             dbc.Button('+20 frames ⏩', id='inc_button', color="dark", style={'padding': '10px', 'margin-left': '20px'}),
             dbc.Col([], width=4),
             ], justify="center", style={'margin-top': '20px'}),
@@ -213,15 +215,21 @@ def update_img_plot(val):
 
 @app.callback(
     Output('frame-slider','value'),
-    [Input('inc_button', 'n_clicks'),
+    [Input('dec_button_small', 'n_clicks'),
+    Input('inc_button_small', 'n_clicks'),
     Input('dec_button', 'n_clicks'), 
+    Input('inc_button', 'n_clicks'), 
     Input({'type': 'incident', 'index': ALL}, 'n_clicks')],
     [State('frame-slider', 'value')])
 
-def update_output(inc, dec, incident, value):
+def update_output(dec_small, inc_small, dec, inc, incident, value):
     ctx = dash.callback_context
     pressed_btn = [p['prop_id'] for p in ctx.triggered][0]
-    if 'inc_button' in pressed_btn:
+    if 'inc_button_small' in pressed_btn:
+        return value+1
+    elif 'dec_button_small' in pressed_btn:
+        return value-1
+    elif 'inc_button' in pressed_btn:
         return value+20
     elif 'dec_button' in pressed_btn:
         return value-20
