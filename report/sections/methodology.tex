@@ -114,7 +114,7 @@ We aimed always to have cameras mounted at least 3-4 meters above the ground.
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{data_flow.png} 
 \end{tabular}
-\captionof{figure}{Data Pipeline}
+\captionof{figure}{Generalized Data Pipeline}
 \label{data}
 \raggedbottom
 \color{black}
@@ -178,7 +178,7 @@ video at a resolution of 1280 pixels.
 YOLO does not require such powerful hardware, less powerful hardware would also work.
 \ \\
 
-With this setup, videos were processed at 10 FPS. This results in a total processing time of circa 4.5 hours for a 1.5-hour video.
+With this setup, videos were processed at ~10 FPS. This results in a total processing time of ~4.5 hours for a 1.5-hour video.
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$.
 
 \subsubsection{Projection}
@@ -186,12 +186,15 @@ To achieve the 'birds-eye view' of the intersection, we needed to explore method
 transforming the data from the camera views.  
 \ \\
 A homography matrix is a transformation matrix between two planes (\cite{hartley_zisserman_2004}). It 
-can be used to perform a perspective transformation of a plane from a source image $P(x_r, y_r)$ onto 
-a plane on a destination image $Q(x_i, y_i)$.
+can be used to perform a perspective transformation of a plane from a source image (Figure \ref{projection_figure}, video view) onto 
+a plane on a destination image (Figure \ref{projection_figure}, aerial view).
 The source image in our case is the plane of the road surface from the recorded videos at the intersection 
 to the road surface from an aerial view of the same intersection. 
 This will allow us to transform and plot the cyclist movements onto an aerial photograph of the intersection.
 \ \\ 
+
+We made a function that allows for the selection of a polygon on the source and destination image, the points
+of the polygon
 
 \noindent
 \begin{tabular}{@{}cc}
