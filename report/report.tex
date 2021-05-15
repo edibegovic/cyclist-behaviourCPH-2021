@@ -19,6 +19,7 @@
 
 \input{structure.tex} % Specifies the document structure and loads requires packages
 \usepackage{subfiles} % Best loaded last in the preamble
+\usepackage{setspace}
 
 \hyphenation{intersections OpenDataCam}
 
@@ -46,13 +47,15 @@
 	} % The article title
 
 \author{
-	\authorstyle{Edi Begovic and Høgni Jacobsen} % Authors
+	\begin{spacing}{1.7}
+	\authorstyle{Edi Begovic (edbe@itu.dk) \\ Høgni Jacobsen (hoja@tiu.dk) } % Authors
 	\newline
-	\institution{IT University of Copenhagen, Denmark}\\ % Institution
+	\institution{Bachelor project}\\ % Institution
 	\newline
 	\authorstyle{Supervised by Michael Szell} % Authors
 	\\ \\ \\
 	\includegraphics[width=3in]{img/ITUlogo} 
+	\end{spacing}
 }
 
 \date{\today} % Add a date here if you would like one to appear underneath the title block, use \today for the current date, leave empty for no date
