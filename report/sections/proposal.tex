@@ -32,7 +32,7 @@ they took through the intersection.
 \captionof{figure}{'base line' (pink) and branching lines (orange)}
 \ \\
 
-However, this approach was limited by the poor performance of the detection of cyclists implemented in the current 
+However, this approach was limited by the performance of the detection of cyclists implemented in the current 
 version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
 re-identify the same cyclists as new ones. Thus, even when the same cyclist passed both the 'base line' and one of the 
 branching lines, they would not be included in the desire line count.
@@ -40,12 +40,12 @@ branching lines, they would not be included in the desire line count.
  
 We discuss the findings derived from OpenDataCam in our case study in later sections of the report.
 
-\subsection{improvement}
-We wish to improve and extend the functionality of OpenDataCam centered around cyclists and intersections.
-Using a newer version of YOLO for object detection will result better tracking accuracy for cyclists, 
+\subsection{Proposal}
+We wish to improve and extend the functionality of OpenDataCam, centering around cyclists and intersections.
+Using a newer version of YOLO for object detection will result in better tracking accuracy for cyclists, 
 and thus more complete trajectories.
 While OpenDataCam emphasizes real-time metrics on traffic, we specifically work with 'post-processed' footage 
-form intersections, and thus we can apply further assumptions about the tracking behavior to improve accuracy.
+from intersections, and thus we can apply further assumptions about the tracking behavior to improve accuracy.
 \ \\
 
 The aforementioned issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
@@ -58,7 +58,7 @@ especially bicycles, using an overhead view compared to a semi-frontal view.
 We therefore propose deploying a multi-camera setup, overlooking an intersection from multiple sides.
 \ \\
 
-A top-level areal view can help identify rule compliance through the intersection by comparing
+A top-level aerial view can help identify rule compliance through the intersection by comparing
 the shares of cyclists using chosen desire lines to reach the same destination. 
 To bring nuance to the analysis, one can dig into the footage to assess the behavior of 
 each identified cyclist using a specific desire line. 
