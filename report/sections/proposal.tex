@@ -1,7 +1,7 @@
 While on-site assertion of an intersection is plausible, the scope of a single observer is limited, as one can only keep track of 
 so many cyclists at once. Likewise with analyzing recorded video footage, while not bound by time, is still a time-consuming process, 
-especially as the views of cyclists can be obstructed by other passing vehicles or permanent fixtures. Previous desire line 
-studies conducted by Copenhagenize were done by keeping counts of hand-written references to trajectories (figure \ref{manual_desire_line}).
+especially as the views of cyclists can be obstructed by other passing vehicles or permanent fixtures. 
+As an example, previous desire line studies conducted by Copenhagenize were done by keeping counts of hand-written references to trajectories (figure \ref{manual_desire_line}).
 \ \\
 
 \raggedbottom
@@ -18,7 +18,7 @@ As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from 
 Our setup ran on an Nvidia Jetson Xavier NX combined with two Raspberry Pis, used for filming/streaming video from the intersection.
 
 Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an initial 
-'base line' followed by two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments. Inspecting the
+'base line' followed by two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments (figure \ref{base_line}). Inspecting the
 overlap of unique cyclists who passed both the base line and one (or more) of the branching lines would yield which path
 they took through the intersection. 
 \ \\
@@ -30,7 +30,8 @@ they took through the intersection.
 \includegraphics[width=1.0\columnwidth]{base_line} 
 \end{tabular}
 \captionof{figure}{'base line' (pink) and branching lines (orange)}
-\ \\
+\label{base_line}
+\
 
 However, this approach was limited by the performance of the detection of cyclists implemented in the current 
 version of OpenDataCam (YOLOv4). Due to the intermittent identification of cyclists, the tracking algorithm would constantly 
@@ -45,7 +46,7 @@ We wish to improve and extend the functionality of OpenDataCam, centering around
 Using a newer version of YOLO for object detection will result in better tracking accuracy for cyclists, 
 and thus more complete trajectories.
 While OpenDataCam emphasizes real-time metrics on traffic, we specifically work with 'post-processed' footage 
-from intersections, and thus we can apply further assumptions about the tracking behavior to improve accuracy.
+from intersections, and therefore we can apply further assumptions about the tracking behavior to improve accuracy.
 \ \\
 
 The aforementioned issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
@@ -54,7 +55,7 @@ intersection would be optimal for minimizing obstruction.
 However, the height required for such a recording setup as well as the lack of permanent fixtures makes this 
 approach very impractical. 
 Current state-of-the-art object detection algorithms (e.g.~YOLO) also perform worse at categorizing objects, 
-especially bicycles, using an overhead view compared to a semi-frontal view. 
+especially bicycles, using an overhead view compared to a semi-frontal view (\cite{overhead}). 
 We therefore propose deploying a multi-camera setup, overlooking an intersection from multiple sides.
 \ \\
 

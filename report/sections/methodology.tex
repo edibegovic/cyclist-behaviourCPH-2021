@@ -26,7 +26,7 @@ From the south, the intersection connects to the Dybbølsbro bridge, which featu
 lanes for vehicle traffic as well as pedestrians from the nearby train station. 
 This is an unusual setup in Copenhagen, as most streets feature unidirectional cycle paths 
 following vehicle traffic. Therefore, south-bound cyclists coming from the north (Skelbækgade) have to perform a two-phase 
-turn to continue over the bridge, firstly by heading straight over the intersection but then having to stop and perform a left turn to 
+turn to continue over the bridge; firstly by heading straight over the intersection but then having to stop and perform a left turn to 
 continue. This leads to high congestion at the south-west corner of the intersection with many cyclists looking for a shortcut across. 
 Due to its issues and size as well as previous analysis conducted on the intersection, we found it to be a good baseline for experimentation.
 
@@ -104,7 +104,7 @@ however, we recommend using the same recording devices. Using the same device br
 We used two different methods of mounting cameras at the intersection (figure \ref{camera_mounts}). One includes a flexible arm that can be clammed onto infrastructure such as light poles.
 The second mounting solution was a self-built holder made out of cardboard and a hook, allowing us to easily mount it at high spots using a long extension rod.
 Selecting an appropriate mounting height is a trade-off between maximizing the captured area of the intersection and having a frontal view of traffic.
-We aimed always to have cameras mounted at least 3-4 meters above the ground.
+We aimed to have cameras mounted at least 3-4 meters above the ground.
 
 \subsection{Data Processing}
 \ \\ 
@@ -217,7 +217,7 @@ $P$ being points in a polygon on the source image, $Q$ the corresponding polygon
   \begin{bmatrix}
     x_{r} \\
     y_{r} \\
-    z_{r} \\
+    z_{r} \\ 
   \end{bmatrix}
 \end{align}
 \ \\
@@ -272,8 +272,8 @@ a different plane to that of the road's surface.
 \subsection{Analysis}
 
 \subsubsection{Web application}
-To interact with the tools implemented, we created a simple web application using the Dash\footnote{\href{https://plotly.com/dash/}{Dash library}} for Python. 
-Its main components consist of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
+To interact with the tools implemented, we built a simple web application using the Dash\footnote{\href{https://plotly.com/dash/}{Dash library}} for Python. 
+Its main component consists of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
 One can then explore the timeline by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
 Below the aerial view is a set of image viewers showing the current frame from all the cameras with markers around selected cyclists.
 

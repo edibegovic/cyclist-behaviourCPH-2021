@@ -49,8 +49,8 @@ including the two metaphors \textit{the river} and \textit{the ballet}.
  \ \\
 
 In contrast, the \textit{ballet} is the micro-perspective, encompassing the gestures and small interactions at the individual level.
-This perspective is an important supplement to the \textit{river} as subtle interactional patterns which can, for instance,
- signal agreement or evasion.
+This perspective is an important supplement to the \textit{river} as subtle interactional patterns, for instance,
+ signaling agreement or evasion cannot be seen from above.
 
  % -----------------------------------------------------------------------------------
 \subsubsection{Mobilities in 'situ'}
@@ -63,6 +63,7 @@ The Dybbølsbro/Ingerslevgade intersection in Copenhagen, also central to our ex
 Most notably, in the desire line analysis it was found that the north-south connection made up $40\%$ of the cyclists flow, with east-west making up
 $27\%$. The remaining $33\%$ of cyclists traffic thus consisted of left or right turns.
 Critical points were also mapped out, mostly involving interactions between cyclists and pedestrians, when congestion was high.
+\ \\
 
 
 
@@ -72,12 +73,10 @@ OpenDataCam (ODC) is an existing open-source tool for processing video footage f
 traffic. The novelty of OpenDataCam comes from the simple on-site, real-time processing of video. 
 \ \\
 
-The backbone of the application is based on Darknet with YOLOv4 as the model used for detecting objects in video.
-YOLO\footnote{\href{https://pjreddie.com/darknet/yolo/}{YOLO object detection}}, \textit{You Only Look Once}, is a real-time object detection algorithm. 
+The backbone of OpenDataCam is YOLO\footnote{\href{https://pjreddie.com/darknet/yolo/}{YOLO object detection}}, \textit{You Only Look Once}, a real-time object detection algorithm. 
 YOLO is trained on the COCO dataset\footnote{\href{https://cocodataset.org}{COCO dataset}}, which comprises over 330,000 thousand images
-with over 1,5 million objects in over 80 object classes, including cars, people and cyclists. 
-It is well known for its real-time speed and accuracy (\cite{redmon2016look}). 
-For OpenDataCam to run locally, it requires dedicated CUDA-enabled hardware such as an Nvidia Jetson-series device. 
+with over 1,5 million objects in over 80 object classes, including cars, people and cyclists, well known for its speed and accuracy (\cite{redmon2016look}). 
+Because of the computational needs of YOLO, for OpenDataCam to run locally, it requires dedicated CUDA-enabled hardware such as an Nvidia Jetson-series device. 
 \ \\
 
 The user interacts with the application through a web interface that displays a live preview of the footage with
