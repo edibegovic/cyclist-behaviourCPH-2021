@@ -6,7 +6,7 @@ by figure \ref{pipeline}.
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{pipeline} 
 \end{tabular}
-\captionof{figure}{Overview of data pipeline} 
+\captionof{figure}{Overview of implementation} 
 \label{pipeline}
 
 \subsection{Data collection}
@@ -159,6 +159,8 @@ passing several snapshots of a calibration object taken with the device to be ca
 We passed 20+ sample images of the calibration object in different orientations, angles, and positions in the frame. 
 OpenCV precesses the images and returns a camera matrix and the distortion coefficients.
 \ \\
+
+See appendix B for examples of before and after distortion correction.
 
 \subsubsection{Object detection}
 We found that our offline OpenDataCam setup using an Nvidia Jetson NX device worked well for detecting cars, 
