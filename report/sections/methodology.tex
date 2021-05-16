@@ -35,17 +35,17 @@ There are two considerations to take into account when recording an intersection
 \ \\
 
 \textbf{Intersection size} \\
-The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup as detailed, 
+The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup, 
 but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
 Initially, we used a single-camera setup, but found that while we had a good view of the entire intersection, 
-we lost tracking data when the cyclist's view on the opposite side of the intersection was obstructed by vehicles.
+we lost tracking data when the view of the cyclists' on the opposite side of the intersection was obstructed by vehicles.
 \ \\
 
 \textbf{Camera mounting points} \\
 We tried three different mounting locations as shown by the red and purple circles in figure \ref{intersection_overview}. 
 We faced several difficulties with camera mounting at the intersection, including camera stability, 
 obstructions of the camera view, and the height of the mounting positions. 
-With some of our camera mounts, stability was impacted by wind and thus the camera was swaying, resulting in skewed detections later on.
+With some of our camera mounts, stability was impacted by wind and cause the camera to sway, resulting in skewed detections later on.
 To cover the entire intersection with adequate coverage, we selected a two-camera setup on opposite sides of the intersection 
 (purple circles on figure \ref{intersection_overview}).
 
@@ -59,7 +59,7 @@ It introduces unnecessary complexities by having to manually assemble the hardwa
 having surety of its operation in the field.
 Alternative devices optimized for video recording such as mobile phones or action cameras are more suitable.
 These devices typically offer methods of remotely controlling and viewing their software interface from 
-another device such as a PC or smartphone, including the viewfinder. 
+another device such as a PC or smartphone. 
 This is useful when mounting the camera and adjusting its position to get a good view of the intersection. 
 While also possible with a Raspberry Pi, it is less stable in comparison to using smartphones or action cameras.
 Hence, we chose to use smartphones for recording. We used two different smartphones, an \textit{LG G6} and a \textit{Samsung Galaxy S7},
@@ -152,19 +152,17 @@ This is shown in figure \ref{joined_distortion}, where trajectories detected fro
 \label{joined_distortion}
 \
 
-To correct for the distortion we made use of OpenCVs (\cite{noauthor_opencv/opencv_2021}) camera calibration toolbox.
+To correct for the distortion we made use of OpenCVs camera calibration toolbox\footnote{\href{https://github.com/opencv/opencv}{OpenCV}}.
 
-In order to correct for distortion, the camera matrix and distortion coefficients are needed. To do this, we used the calibrate script provided with OpenCV,
-passing several snapshots of a calibration object with the device to be calibrated. The calibration object is a black-white chessboard pattern.
-We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. OpenCV processed the images and
-returned a camera matrix and the distortion coefficients, used for correcting the distortion of the frames.
+In order to correct for distortion, the camera matrix and distortion coefficients are needed. To get the camera matrix and distortion coefficients, we used the calibrate script provided with OpenCV,
+passing several snapshots of a calibration object taken with the device to be calibrated. The calibration object is a black-white chessboard pattern.
+We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. 
+OpenCV precesses the images and returns a camera matrix and the distortion coefficients.
 \ \\
 
 \subsubsection{Object detection}
-Object detection is the most important factor to consider, as it is the key component in making our method work.
-\ \\
-
-We found that our offline OpenDataCam setup using an Nvidia Jetson NX device worked well for detecting cars, but did not perform as ell on cyclists. 
+We found that our offline OpenDataCam setup using an Nvidia Jetson NX device worked well for detecting cars, 
+but did not perform as well on cyclists. 
 We, therefore, implemented our object detection setup using YOLOv5. YOLOv5, trained on the same COCO dataset\footnote{\href{https://cocodataset.org}{COCO dataset}}
 as previous YOLO models, showed a market improvement on the detection of
 cyclists.
@@ -175,10 +173,7 @@ The model was run on an NVIDIA Tesla P100 GPU (CUDA enabled) with 16GB of memory
 video at a resolution of 1280 pixels.
 \ \\
  
-YOLO does not require such powerful hardware, less powerful hardware would also work.
-\ \\
-
-With this setup, videos were processed at ~10 FPS. This results in a total processing time of ~4.5 hours for a 1.5-hour video.
+With this setup, videos were processed at 10 FPS. This results in a total processing time of circa 4.5 hours for a 1.5-hour video.
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$.
 
 \subsubsection{Projection}
@@ -261,7 +256,7 @@ the two cameras along the intersection to join them.
 \subsubsection{Tracking}
 
 In order to connect detections into trajectories of individual cyclist, we apply 
-the \href{https://github.com/abewley/sort}{SORT algorithm}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
+SORT\footnote{\href{https://github.com/abewley/sort}{SORT algorithm}}, \textit{simple online and real-time tracking}, as initially described in (\cite{Bewley2016_sort}). 
 SORT aims to address multiple object tracking (MOT), where objects across frames need to be connected. 
 \ \\ 
 
@@ -274,12 +269,12 @@ In our implementation, we define arbitrary bounding boxes around the center poin
 we used a $10 \times 10$ pixel bounding box. This is a result of the plane of the bounding boxes from the object detection being on
 a different plane to that of the road's surface.
 
-\subsection{Data Exploration}
+\subsection{Analysis}
 
 \subsubsection{Web application}
 To interact with the tools implemented, we created a simple web application using the Dash\footnote{\href{https://plotly.com/dash/}{Dash library}} for Python. 
 Its main components consist of a satellite/aerial view of the chosen intersection with the trajectories of cyclists plotted as short-lived tracks. 
-One can then explore the timeline through time by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
+One can then explore the timeline by either explicitly referencing a timestamp or frame, using a slider, or jumping in set increments.
 Below the aerial view is a set of image viewers showing the current frame from all the cameras with markers around selected cyclists.
 
 \ \\ 
