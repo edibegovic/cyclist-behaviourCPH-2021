@@ -181,12 +181,10 @@ Predicted objects are represented as bounding boxes with the output being repres
 To achieve the 'birds-eye view' of the intersection, we needed to explore methods of 
 transforming the data from the camera views.  
 \ \\
-A homography matrix is a transformation matrix between two planes (\cite{hartley_zisserman_2004}). It 
-can be used to perform a perspective transformation of a plane from a source image (Figure \ref{projection_figure}, video view) onto 
-a plane on a destination image (Figure \ref{projection_figure}, aerial view).
-The source image in our case is the plane of the road surface from the recorded videos at the intersection 
-to the road surface from an aerial view of the same intersection. 
-This will allow us to transform and plot the cyclist movements onto an aerial photograph of the intersection.
+
+A homography matrix is a transformation matrix between two planes (\cite{hartley_zisserman_2004}).
+It will allow us to transform and plot the cyclist movements onto an aerial photograph of 
+the intersection.
 \ \\ 
 
 \noindent
@@ -198,26 +196,8 @@ This will allow us to transform and plot the cyclist movements onto an aerial ph
 \
 
 To calculate the homography matrix, we need to solve the system of linear equations, $P = HQ$,
-\ \\
-$P$ being points in a polygon on the source image, $Q$ the corresponding polygon on the destination image $H$ being the homography matrix.
-\begin{align}
-\label{eq:3}
-  \begin{bmatrix}
-    x_{i} \\
-    y_{i} \\
-    z_{i} \\
-  \end{bmatrix}
-  &= \begin{bmatrix}
-      h_1 & h_2 & h_3 \\
-      h_4 & h_5 & h_6 \\
-      h_7 & h_8 & h_9 \\
-  \end{bmatrix}
-  \begin{bmatrix}
-    x_{r} \\
-    y_{r} \\
-    z_{r} \\
-  \end{bmatrix}
-\end{align}
+$P$ being points in a polygon on the source image (Figure \ref{projection_figure}, video view), $Q$ the corresponding polygon on the destination image (Figure \ref{projection_figure}, aerial view). 
+$H$ being the $3 \times 3$ homography matrix.
 \ \\
 
 Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
@@ -231,30 +211,10 @@ y = y_\mathrm{min}
 \end{array}
 \end{equation}
 \ \\
-To calculate the homography matrix we 
 
-% \begin{align}
-%   \label{eq:3}
-%     \begin{bmatrix}
-%       x_{i} \\
-%       y_{i} \\
-%       z_{i} \\
-%     \end{bmatrix}
-%     &= \begin{bmatrix}
-%         h_1 & h_2 & h_3 \\
-%         h_4 & h_5 & h_6 \\
-%         h_7 & h_8 & h_9 \\
-%     \end{bmatrix}
-%     \begin{bmatrix}
-%       x_{r} \\
-%       y_{r} \\
-%       z_{r} \\
-%     \end{bmatrix}
-%   \end{align}
-%   \ \\
-
-Using the homography matrix, we can now project the contact points $(x, y)$ of the cyclist onto the destination
-image. This is achieved by applying $z$ to each point as a constant to create $Q(x_i, y_i, 1)$ and then we multiply it by the homography matrix. 
+After solving for the homography matrix, we can perform the projection.
+This is achieved by multiplying each cyclist contact point with the homography matrix, this returns the 
+corresponding pixel coordinates of the cyclist on the destination image. 
   
 \subsubsection{Merging sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
@@ -281,12 +241,12 @@ SORT aims to address multiple object tracking (MOT), where objects across frames
 
 SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
 frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the area of overlap between the 
-bounding boxes by union of the bounding boxes. If the IOU is above a certain threshold, the two points are connected as the same object.
+bounding boxes by the union of the bounding boxes. If the IOU is above a set threshold, the two points are connected as the same object.
 \ \\ 
 
 In our implementation, we define arbitrary bounding boxes around the center point of the projected detections; 
-we used a $10 \times 10$ pixel bounding box. This is a result of the plane of the bounding boxes from the object detection being on
-a different plane to that of the road's surface.
+we used a $10 \times 10$ pixel bounding box. Using arbitrary bounding boxes is a result of the plane of 
+the bounding boxes from the object detection being on a different plane to that of the road's surface.
 
 \subsection{Analysis}
 
