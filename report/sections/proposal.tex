@@ -15,7 +15,7 @@ As an example, previous desire line studies conducted by Copenhagenize were done
 
 \subsection{Initial tests with OpenDataCam}
 As a baseline, we deployed an OpenDataCam setup using pre-recorded footage from the Dybbølsbro intersection in Copenhagen.
-Our setup ran on an Nvidia Jetson Xavier NX combined with two Raspberry Pis, used for filming/streaming video from the intersection.
+Our setup ran on an Nvidia Jetson Xavier NX combined with two Raspberry Pis for filming/streaming video from the intersection.
 
 Our goal was to extract pre-defined desire lines using the counting line functionality. We did this by drawing an initial 
 'base line' followed by two (or more) additional counting lines, which would allow us to branch cyclists into multiple segments (figure \ref{base_line}). Inspecting the
@@ -49,14 +49,14 @@ While OpenDataCam emphasizes real-time metrics on traffic, we specifically work 
 from intersections, and therefore we can apply further assumptions about the tracking behavior to improve accuracy.
 \ \\
 
-The aforementioned issue of keeping track of unique cyclists as their view is temporally obstructed is one also faced by 
-object tracking algorithms in video. In theory, a top-down overhead view, overlooking from the center of the 
+The aforementioned issue of keeping track of unique cyclists as their view is temporally obstructed is also faced by 
+object tracking algorithms in video. In theory, a top-down overhead view overlooking the center of the 
 intersection would be optimal for minimizing obstruction.
-However, the height required for such a recording setup as well as the lack of permanent fixtures makes this 
+However, the height required for such a recording setup, as well as the lack of permanent fixtures, makes this 
 approach very impractical. 
 Current state-of-the-art object detection algorithms (e.g.~YOLO) also perform worse at categorizing objects, 
 especially bicycles, using an overhead view compared to a semi-frontal view (\cite{overhead}). 
-We therefore propose deploying a multi-camera setup, overlooking an intersection from multiple sides.
+We, therefore, propose deploying a multi-camera setup overlooking an intersection from multiple sides.
 \ \\
 
 A top-level aerial view can help identify rule compliance through the intersection by comparing

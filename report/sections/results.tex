@@ -1,4 +1,4 @@
-To quantify the effectiveness of our method we compared various metrics manually annotated data, acting as ground trouth. 
+To quantify the effectiveness of our method, we compared various metrics manually annotated data, acting as ground truth. 
 Further, we also incorporate the same metrics from OpenDataCam.
 
 \subsection{Interpretation of desire paths}
@@ -14,11 +14,10 @@ We mainly focus on desire lines for south-bound traffic from Skelbækgade (figur
 \label{traject}
 
 \subsection{Desire line counts}
-We initiated two uni-directional counting lines in the middle of the intersection, 
-as a way to access the traffic volume for desire line 1 and 3 (fig. \ref{traject}).
+We initiated two uni-directional counting lines in the middle of the intersection as a way to access the traffic volume for desire lines 1 and 3 (fig. \ref{traject}).
 
 In table \ref{tab:comparison_counts} we show a comparison of manually annotated counts, OpenDataCam counting lines, 
-and our own implementation. The counts are based on 1.5 hours of footage and only counting objects detected as cyclists.
+and our implementation. The counts are based on 1.5 hours of footage and only counting objects detected as cyclists.
 
 \begin{table}[h]
 \resizebox{\columnwidth}{!}{%
@@ -34,22 +33,22 @@ and our own implementation. The counts are based on 1.5 hours of footage and onl
 \end{table}
 
 While our counting method got close to the true counts, OpenDataCam captured less than half the cyclists passing its 
-counting lines. Further, while the absolute counts of OpenDataCam didn't match that of the manual annotation, 
+counting lines. Further, while the absolute counts of OpenDataCam did not match the manual annotation, 
 nor did the proportions between the two counts.
 Although the counting line implementation varies between our tool and OpenDataCam, 
-the difference can mostly be attributed the better detection accuracy of bicycles in YOLO5.
+the difference can primarily be attributed to the better detection accuracy of bicycles in YOLO5.
 \ \\
 
 \subsection{Behavioral analysis}
-As mentioned in the section 4.3.1, we couple the top-level view with references to timestamps in the recorded footage, 
+As mentioned in section 4.3.1, we couple the top-level view with references to timestamps in the recorded footage, 
 such that the behavior of cyclists can be observed at street level.
-Whenever a unique trajectory is selected or a part of the intersection is marked off, one can inspect each individual cyclist 
+Whenever a unique trajectory is selected, or a part of the intersection is marked off, one can inspect each cyclist 
 and the context leading up to a detection.
 \\
 
 In figure \ref{Alert1} we see a detection of a cyclist passing straight over Dybbølsbro instead of turning left and 
-continuing over the bi-directional cycle path. Unknowingly thinking he is in the right, he closely passes, at full speed, another rider crossing
-the street. Shortly after he notices the traffic markings and turns around. 
+continuing over the bi-directional cycle path. Unknowingly thinking he is right, he closely passes, at full speed, another rider crossing
+the street. Shortly after, he notices the traffic markings and turns around. 
 
 \ \\ 
 \raggedbottom
@@ -60,9 +59,9 @@ the street. Shortly after he notices the traffic markings and turns around.
 \label{Alert1}
 \
 
-Other cyclists (unknowingly) performing the same manouver all had a tendency to look to their left 
+Other cyclists (unknowingly) performing the same maneuver all tended to look to their left 
 as they passed the pedestrian crossing (examples in appendix A).
-As they look, they also steer slightly in the same direction, which can lead to close contect with veichles
+As they look, they also steer slightly in the same direction, which can lead to close contact with vehicles
 in the narrow car-only lane. 
 \ \\
 

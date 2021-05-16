@@ -1,12 +1,12 @@
 % --------------------------------------------------------------------------------------
 \subsection{Inclusive infrastructure}
 As bicycle infrastructure is primarily publicly funded, it quickly becomes a politicized topic. 
-While many cities push for a \textit{'build it and they will come'}-approach, the need for a certain mass 
+While many cities push for a \textit{'build it, and they will come'}-approach, the need for a certain mass 
 of cyclists to attract the casual rider is often neglected.
 If new cyclists feel uncomfortable (stress, embarrassment, etc.), they are more likely to give up on the bike as a viable means of everyday transportation. 
 This leaves the infrastructure underutilized, with the public image of money and space being wasted, 
 thus resulting in a pushback against further cycling initiatives (\cite{backlash}).
-Therefore, it is important to carefully plan new cycling infrastructure and rapidly adapt to the observed behavior of new users.
+Therefore, it is crucial to carefully plan new cycling infrastructure and rapidly adapt to the observed behavior of new users.
 
  % -----------------------------------------------------------------------------------
 \subsection{Previous work}
@@ -14,7 +14,7 @@ Therefore, it is important to carefully plan new cycling infrastructure and rapi
 \subsubsection{Bicycle choreography}
 In the study (\cite{copenhagenize2014}) an intersection in Copenhagen is reviewed, focusing on high-level aspects
 such as routes taken by cyclists, as well as the behavior exhibited by the individual cyclists.
-This is done by using 'desire lines Analysis', a tool pioneered by the same authors as the study (\cite{copenhagenize_book}).
+This is done using 'desire lines Analysis', a tool pioneered by the same authors as the study (\cite{copenhagenize_book}).
 Desire lines encompass the trajectories of cyclists using both 'intended pathways', usually directed through infrastructure such as
  bike lanes, but also their own paths, which may deviate from the engineered structure or legal framework.
  To assess behavior, the study splits cyclists into three groups:
@@ -45,7 +45,7 @@ including the two metaphors \textit{the river} and \textit{the ballet}.
  flows, and obstacles of a location, and hence, can be interpreted as a 'flowing riverbed'. 
  From this perspective, we can observe road users' behavior in aggregate and as part of more significant 'streams'. 
  This can be used to encapsulate abstract and high-level features of cyclists, such as the desire lines
- when infrastructure is changed or temporary obstacles come along (e.g. road work).
+ when infrastructure is changed, or temporary obstacles come along (e.g. road work).
  \ \\
 
 In contrast, the \textit{ballet} is the micro-perspective, encompassing the gestures and small interactions at the individual level.
@@ -60,9 +60,9 @@ Copenhagen and Amsterdam. Quantitative data (as part of the \textit{river} persp
 \ \\
 
 The Dybbølsbro/Ingerslevgade intersection in Copenhagen, also central to our experimentation, is part of a longer route covered in the study.
-Most notably, in the desire line analysis it was found that the north-south connection made up $40\%$ of the cyclists flow, with east-west making up
+Most notably, in the desire line analysis, it was found that the north-south connection made up $40\%$ of the cyclists flow, with east-west making up
 $27\%$. The remaining $33\%$ of cyclists traffic thus consisted of left or right turns.
-Critical points were also mapped out, mostly involving interactions between cyclists and pedestrians, when congestion was high.
+Critical points were also mapped out, mostly involving interactions between cyclists and pedestrians when congestion was high.
 \ \\
 
 
@@ -75,7 +75,7 @@ traffic. The novelty of OpenDataCam comes from the simple on-site, real-time pro
 
 The backbone of OpenDataCam is YOLO\footnote{\href{https://pjreddie.com/darknet/yolo/}{YOLO object detection}}, \textit{You Only Look Once}, a real-time object detection algorithm. 
 YOLO is trained on the COCO dataset\footnote{\href{https://cocodataset.org}{COCO dataset}}, which comprises over 330,000 thousand images
-with over 1,5 million objects in over 80 object classes, including cars, people and cyclists, well known for its speed and accuracy (\cite{redmon2016look}). 
+with over 1,5 million objects in over 80 object classes, including cars, people, and cyclists, well known for its speed and accuracy (\cite{redmon2016look}). 
 Because of the computational needs of YOLO, for OpenDataCam to run locally, it requires dedicated CUDA-enabled hardware such as an Nvidia Jetson-series device. 
 \ \\
 

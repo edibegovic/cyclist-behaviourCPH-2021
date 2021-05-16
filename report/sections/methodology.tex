@@ -21,12 +21,12 @@ by figure \ref{pipeline}.
 
 Our work is centered around the Dybbølsbro / Ingerslevgade intersection south-west of Copenhagen
 city center. The intersection faces several challenges, producing \textit{'conflicts, unsafe situations, illegal 
-road user behavior and great dissatisfaction among road users at the intersection'} (\cite{CPHpost_2021}).
+road user behavior, and great dissatisfaction among road users at the intersection'} (\cite{CPHpost_2021}).
 From the south, the intersection connects to the Dybbølsbro bridge, which features a bi-directional cycle path, two
-lanes for vehicle traffic as well as pedestrians from the nearby train station. 
+lanes for vehicle traffic, and pedestrians from the nearby train station. 
 This is an unusual setup in Copenhagen, as most streets feature unidirectional cycle paths 
 following vehicle traffic. Therefore, south-bound cyclists coming from the north (Skelbækgade) have to perform a two-phase 
-turn to continue over the bridge; firstly by heading straight over the intersection but then having to stop and perform a left turn to 
+turn to continue over the bridge. Firstly by heading straight over the intersection but then stopping and performing a left turn to 
 continue. This leads to high congestion at the south-west corner of the intersection with many cyclists looking for a shortcut across. 
 Due to its issues and size as well as previous analysis conducted on the intersection, we found it to be a good baseline for experimentation.
 
@@ -36,13 +36,13 @@ There are two considerations to take into account when recording an intersection
 
 \textbf{Intersection size} \\
 The size of the intersection will determine the camera setup needed. Larger intersections require a two-camera setup, 
-but this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
-Initially, we used a single-camera setup, but found that while we had a good view of the entire intersection, 
+however, this might not be optimal for intersections much larger than the Dybbølsbro intersection. 
+Initially, we used a single-camera setup but found that while we had a good view of the entire intersection, 
 we lost tracking data when the view of the cyclists' on the opposite side of the intersection was obstructed by vehicles.
 \ \\
 
 \textbf{Camera mounting points} \\
-We tried three different mounting locations as shown by the red and purple circles in figure \ref{intersection_overview}. 
+We tried three different mounting locations shown by the red and purple circles in figure \ref{intersection_overview}. 
 We faced several difficulties with camera mounting at the intersection, including camera stability, 
 obstructions of the camera view, and the height of the mounting positions. 
 With some of our camera mounts, stability was impacted by wind and cause the camera to sway, resulting in skewed detections later on.
@@ -50,20 +50,19 @@ To cover the entire intersection with adequate coverage, we selected a two-camer
 (purple circles on figure \ref{intersection_overview}).
 
 \subsubsection{Camera setup}
-Any camera device with an adequate field-of-view (FOV) to capture the intersection, that records in HD (1280×720 resolution) at a constant 
+Any camera device with an adequate field-of-view (FOV) to capture the intersection that records in HD (1280×720 resolution) at a constant 
 frame rate (at least 10FPS), and that allows remote viewing of its viewfinder will suffice. 
 However, having tested a Raspberry Pi recording setup (including a camera module, external battery, and an LCD touch screen), 
 we would not recommend a self-built recording setup. Although the Raspberry Pi setup meets the above-mentioned technical requirements, 
 the challenges lie in the usability of such a setup. 
-It introduces unnecessary complexities by having to manually assemble the hardware and install necessary software, as well as 
+It introduces unnecessary complexities by having to manually assemble the hardware and install the necessary software, as well as 
 having surety of its operation in the field.
-Alternative devices optimized for video recording such as mobile phones or action cameras are more suitable.
+Alternative devices optimized for video recording, such as mobile phones or action cameras, are more suitable.
 These devices typically offer methods of remotely controlling and viewing their software interface from 
 another device such as a PC or smartphone. 
 This is useful when mounting the camera and adjusting its position to get a good view of the intersection. 
-While also possible with a Raspberry Pi, it is less stable in comparison to using smartphones or action cameras.
-Hence, we chose to use smartphones for recording. We used two different smartphones, an \textit{LG G6} and a \textit{Samsung Galaxy S7},
-however, we recommend using the same recording devices. Using the same device brings consistency when applying this method.
+While also possible with a Raspberry Pi, it is less stable compared to using smartphones or action cameras.
+Hence, we chose to use smartphones for recording. We used two different smartphones, an \textit{LG G6} and a \textit{Samsung Galaxy S7}; however, we recommend using the same recording devices. Using the same device brings consistency when applying this method.
 
 % Along with meeting the basic requirements they also have Ingress Protection ratings, 
 % commonly referred to as waterproofing. This should be considered if rain is a possibility.
@@ -101,7 +100,7 @@ however, we recommend using the same recording devices. Using the same device br
 \label{camera_mounts}
 \
 
-We used two different methods of mounting cameras at the intersection (figure \ref{camera_mounts}). One includes a flexible arm that can be clammed onto infrastructure such as light poles.
+We used two different camera mounts at the intersection (figure \ref{camera_mounts}). One includes a flexible arm that can be clammed onto infrastructure such as light poles.
 The second mounting solution was a self-built holder made out of cardboard and a hook, allowing us to easily mount it at high spots using a long extension rod.
 Selecting an appropriate mounting height is a trade-off between maximizing the captured area of the intersection and having a frontal view of traffic.
 We aimed to have cameras mounted at least 3-4 meters above the ground.
@@ -121,7 +120,7 @@ The implementation can be found in the following \href{https://github.com/edibeg
 \color{black}
 
 \subsubsection{Video synchronization}
-An important preprocessing step is to cut the different video sources to the same time stamp.
+An important preprocessing step is to cut the different video sources to the same timestamp.
 Should the video have different frame rates or resolutions, then these should be processed to match.
 
 \subsubsection{Camera calibration}
@@ -157,7 +156,7 @@ To correct for the distortion we made use of OpenCVs camera calibration toolbox\
 
 In order to correct for distortion, the camera matrix and distortion coefficients are needed. To get the camera matrix and distortion coefficients, we used the calibrate script provided with OpenCV,
 passing several snapshots of a calibration object taken with the device to be calibrated. The calibration object is a black-white chessboard pattern.
-We passed 20+ sample images of the calibration object in different orientations, angles and positions in the frame. 
+We passed 20+ sample images of the calibration object in different orientations, angles, and positions in the frame. 
 OpenCV precesses the images and returns a camera matrix and the distortion coefficients.
 \ \\
 
@@ -165,12 +164,12 @@ OpenCV precesses the images and returns a camera matrix and the distortion coeff
 We found that our offline OpenDataCam setup using an Nvidia Jetson NX device worked well for detecting cars, 
 but did not perform as well on cyclists. 
 We, therefore, implemented our object detection setup using YOLOv5. YOLOv5, trained on the same COCO dataset\footnote{\href{https://cocodataset.org}{COCO dataset}}
-as previous YOLO models, showed a market improvement on the detection of
+as previous YOLO models, showed a marked improvement on the detection of
 cyclists.
 \ \\ 
 
 We ran  YOLOv5 using the largest model available, yolov5x6.
-The model was run on an NVIDIA Tesla P100 GPU (CUDA enabled) with 16GB of memory. The model was set to only detect cyclists and to process
+The model was run on an NVIDIA Tesla P100 GPU (CUDA enabled) with 16GB of memory. The model was set only to detect cyclists and to process
 video at a resolution of 1280 pixels.
 \ \\
  
@@ -201,7 +200,7 @@ $H$ being the $3 \times 3$ homography matrix.
 \ \\
 
 Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
-Given eq. \ref{eqn:eq1}, we can calculate the contact points using the objects bounding box coordinates.
+Given equation \ref{eqn:eq1}, we can calculate the contact points using the objects bounding box coordinates.
 
 \begin{equation}
 \label{eqn:eq1}
@@ -213,14 +212,14 @@ y = y_\mathrm{min}
 \ \\
 
 After solving for the homography matrix, we can perform the projection.
-This is achieved by multiplying each cyclist contact point with the homography matrix, this returns the 
+This is achieved by multiplying each cyclist's contact point with the homography matrix. This returns the 
 corresponding pixel coordinates of the cyclist on the destination image. 
   
 \subsubsection{Merging sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
 That is, the trajectory of the same cyclist will be captured by multiple cameras for specific areas. 
 To merge the trajectories from the video sources, we take a naive approach. As the cameras are set up on
-opposite sides of the intersection, we simply cut the video sources in half along the mid-point between
+opposite sides of the intersection, we cut the video sources in half along the mid-point between
 the two cameras along the intersection to join them.
 
 \ \\ 
@@ -240,12 +239,12 @@ SORT aims to address multiple object tracking (MOT), where objects across frames
 \ \\ 
 
 SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
-frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the area of overlap between the 
+frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the overlap between the 
 bounding boxes by the union of the bounding boxes. If the IOU is above a set threshold, the two points are connected as the same object.
 \ \\ 
 
 In our implementation, we define arbitrary bounding boxes around the center point of the projected detections; 
-we used a $10 \times 10$ pixel bounding box. Using arbitrary bounding boxes is a result of the plane of 
+we used a $10 \times 10$ pixel bounding box. Using arbitrary bounding boxes results from the plane of 
 the bounding boxes from the object detection being on a different plane to that of the road's surface.
 
 \subsection{Analysis}
@@ -273,9 +272,9 @@ cylists passing certain parts of the intersection in either direction.
 \ \\
 
 \textbf{Future work} \\
-Currently, the data pre-processing is not part of the application, thereby functioning more as a \textit{proof of concept}.
+Currently, the data preprocessing is not part of the application, thereby functioning more as a \textit{proof of concept}.
 It would be relatively easy to connect the data processing pipeline to the web interface, thus simply making the user 
-select video sources, map the \textit{ground control points} (for aerial projection) and potentially tweaking other hyper-parameters. 
+select video sources, map the \textit{ground control points} (for aerial projection), and potentially tweaking other hyper-parameters. 
 
 \subsubsection{Rainbow tracks}
 
