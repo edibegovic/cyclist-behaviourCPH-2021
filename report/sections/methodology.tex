@@ -213,10 +213,10 @@ y = y_\mathrm{min}
 \end{equation}
 \ \\
 
-After solving for the homography matrix, we can perform the projection.
-This is achieved by multiplying each cyclist's contact point with the homography matrix. This returns the 
-corresponding pixel coordinates of the cyclist on the destination image. 
-  
+After solving the homography matrix, we can perform the projection.
+This is achieved by applying the cyclist's contact coordinates, $P$, and the homography matrix to the equation $P = HQ$. 
+This returns the corresponding pixel coordinates of the cyclist on the destination image.
+
 \subsubsection{Merging sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
 That is, the trajectory of the same cyclist will be captured by multiple cameras for specific areas. 
