@@ -174,7 +174,7 @@ The model was run on an NVIDIA Tesla P100 GPU (CUDA enabled) with 16GB of memory
 video at a resolution of 1280 pixels.
 \ \\
  
-With this setup, videos were processed at 10 FPS. This results in a total processing time of circa 4.5 hours for a 1.5-hour video.
+With this setup, videos were processed at ~10 FPS. This results in a total processing time of circa ~4.5 hours for a ~1.5-hour video.
 Predicted objects are represented as bounding boxes with the output being represented as $[[frame id][xmin][ymin][xmax][ymax][confidence]]$.
 
 \subsubsection{Projection}
@@ -188,9 +188,6 @@ The source image in our case is the plane of the road surface from the recorded 
 to the road surface from an aerial view of the same intersection. 
 This will allow us to transform and plot the cyclist movements onto an aerial photograph of the intersection.
 \ \\ 
-
-We made a function that allows for the selection of a polygon on the source and destination image, the points
-of the polygon
 
 \noindent
 \begin{tabular}{@{}cc}
@@ -224,7 +221,7 @@ $P$ being points in a polygon on the source image, $Q$ the corresponding polygon
 \ \\
 
 Before we can project the cyclist onto an aerial view, we first need to calculate the 2D coordinates of their contact points with the road surface.
-Given eq. \ref{eqn:eq1}, we can calculate the contact points.
+Given eq. \ref{eqn:eq1}, we can calculate the contact points using the objects bounding box coordinates.
 
 \begin{equation}
 \label{eqn:eq1}
@@ -233,11 +230,32 @@ x = x_\mathrm{min} + \frac{(x_\mathrm{max} - x_\mathrm{min})}{2} \\
 y = y_\mathrm{min}
 \end{array}
 \end{equation}
-\
+\ \\
+To calculate the homography matrix we 
+
+% \begin{align}
+%   \label{eq:3}
+%     \begin{bmatrix}
+%       x_{i} \\
+%       y_{i} \\
+%       z_{i} \\
+%     \end{bmatrix}
+%     &= \begin{bmatrix}
+%         h_1 & h_2 & h_3 \\
+%         h_4 & h_5 & h_6 \\
+%         h_7 & h_8 & h_9 \\
+%     \end{bmatrix}
+%     \begin{bmatrix}
+%       x_{r} \\
+%       y_{r} \\
+%       z_{r} \\
+%     \end{bmatrix}
+%   \end{align}
+%   \ \\
 
 Using the homography matrix, we can now project the contact points $(x, y)$ of the cyclist onto the destination
 image. This is achieved by applying $z$ to each point as a constant to create $Q(x_i, y_i, 1)$ and then we multiply it by the homography matrix. 
-
+  
 \subsubsection{Merging sources}
 As we are using multiple video sources, there will be an overlap of the detected cyclists. 
 That is, the trajectory of the same cyclist will be captured by multiple cameras for specific areas. 
