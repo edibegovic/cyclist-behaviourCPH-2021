@@ -1,13 +1,9 @@
-To quantify the effectiveness of our method we compared it to the existing OpenDataCam tool.
-We compared the counts, produced by OpenDataCam and manual annotation, of cyclists at strategic parts of the 
-intersection with the counts produced by our system. The manually annotated counts are the ground truth.
-This is followed by an analysis of the desire paths and an analysis of body language when cyclist trigger a defined
-alert zone.
-\ \\ 
+To quantify the effectiveness of our method we compared various metrics manually annotated data, acting as ground trouth. 
+Further, we also incorporate the same metrics from OpenDataCam.
 
-\subsection{Interpretation of desire paths desire paths}
-From the trajectory analysis in Figure~\ref{Rainbow} we can determine eight commonly taken desire paths,  
-whereas with manual annotation we can determine x amount.
+\subsection{Interpretation of desire paths}
+From the trajectory analysis in figure~\ref{Rainbow} we derived eight commonly used desire paths.
+We mainly focus on desire lines for south-bound traffic from Skelbækgade (figure \ref{traject}) as referenced in section 4.1.
 \ \\
 
 \raggedbottom
@@ -18,17 +14,17 @@ whereas with manual annotation we can determine x amount.
 \label{traject}
 
 \subsection{Desire line counts}
-Table \ref{tab:comparison_counts} shows a comparison between OpenDataCam, manual annotation, and our method.
-The comparison is based on how well each method captured cyclists driving on along three different 
-south-bound desire lines.
-Our method captured x \% of the manual annotation, manual annotation being the baseline.
-\ \\
+We initiated two uni-directional counting lines in the middle of the intersection, 
+as a way to access the traffic volume for desire line 1 and 3 (fig. \ref{traject}).
 
-\begin{table}[]
+In table \ref{tab:comparison_counts} we show a comparison of manually annotated counts, OpenDataCam counting lines, 
+and our own implementation. The counts are based on 1.5 hours of footage and only counting objects detected as cyclists.
+
+\begin{table}[h]
 \resizebox{\columnwidth}{!}{%
 \renewcommand{\arraystretch}{2}\begin{tabular}{|c|c|c|c|}
 \hline
-& \textbf{Manual annotation} & \textbf{Our method}               & \textbf{OpenDataCam}              \\ \hline
+& \textbf{Manual annotation} & \textbf{Our method}               & \textbf{OpenDataCam}              \\ \hline'
 \textbf{1 (A+B)} & 192                        & {\color[HTML]{FE0000} 184 (-4\%)} & {\color[HTML]{FE0000} 63 (-67\%)} \\ \hline
 \textbf{3 (A+B)} & 99                         & {\color[HTML]{32CB00} 102 (+3\%)} & {\color[HTML]{FE0000} 50 (-49\%)} \\ \hline
 \end{tabular}
@@ -37,7 +33,11 @@ Our method captured x \% of the manual annotation, manual annotation being the b
 \label{tab:comparison_counts}
 \end{table}
 
-Some text :D 
+While our counting method got close to the true counts, OpenDataCam captured less than half the cyclists passing its 
+counting lines. Further, while the absolute counts of OpenDataCam didn't match that of the manual annotation, 
+nor did the proportions between the two counts.
+Although the counting line implementation varies between our tool and OpenDataCam, 
+the difference can mostly be attributed the better detection accuracy of bicycles in YOLO5.
 \ \\
 
 \subsection{Behavioral analysis}
@@ -58,6 +58,12 @@ the street. Shortly after he notices the traffic markings and turns around.
 \end{tabular}
 \captionof{figure}{Detection zone triggered}
 \label{Alert1}
+\
+
+Other cyclists (unknowingly) performing the same manouver all had a tendency to look to their left 
+as they passed the pedestrian crossing (examples in appendix A).
+As they look, they also steer slightly in the same direction, which can lead to close contect with veichles
+in the narrow car-only lane. 
 \ \\
 
 Another commonly observed behavior was cyclists trying to shorten the trajectories of their turns (fig. \ref{Alert2})
@@ -67,9 +73,9 @@ at the 'waiting corner' at Ingerslevgade (see desire line \textbf{1B}).
 \begin{tabular}{@{}cc}
 \includegraphics[width=1.0\columnwidth]{shorten_traj} 
 \end{tabular}
-\captionof{figure}{Shortend turn}
+\captionof{figure}{Shortend left-turn}
 \label{Alert2}
-\ \\
+\
 
 When volumes of other traffic were low or over the short window of all traffic having red lights, cyclists would use the opportunity 
 to swiftly cross the intersection while still 'following the correct path' (that is, not crossing in a fully diagonal path). 
