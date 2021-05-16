@@ -240,9 +240,12 @@ SORT\footnote{\href{https://github.com/abewley/sort}{SORT algorithm}}, \textit{s
 SORT aims to address multiple object tracking (MOT), where objects across frames need to be connected. 
 \ \\ 
 
-SORT uses a Kalman Filter to predict bounding boxes. A predicted bounding box \textit{A} and a Bounding box \textit{B} from 
-frame t+1 are compared using their Intersection over Union (IOU). IOU is calculated by dividing the overlap between the 
-bounding boxes by the union of the bounding boxes. If the IOU is above a set threshold, the two points are connected as the same object.
+SORT uses Intersection over Union (IOU) as a matching criterion for detections between frames. The IOU is 
+calculated by dividing the overlap between the bounding boxes by the union of the bounding boxes. 
+To identify objects between frames the IOU of a detection \textit{B} in frame $t + 1$ is compared with 
+predicted position, using Kalman Filters, in frame $t + 1$ of detection \textit{A} from frame $t$, this 
+is done for all detections between frames. The Hungarian algorithm is then applied to perform the optimal 
+matching of detection. 
 \ \\ 
 
 In our implementation, we define arbitrary bounding boxes around the center point of the projected detections; 
