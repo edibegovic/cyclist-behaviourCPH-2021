@@ -10,7 +10,6 @@ relating to individuals by individuals, companies, and organizations.
 Article 6 of the EU GDPR deals with the 'Lawfulness of processing'. Specifically, Article 6(1)(f)
 makes provision for legitimate interests, which could cover the scope of this research.
 However, this is not the only consideration. Local authorities shall be consulted before commencing any research.
-\ \\
 
 \subsection{Limitations}
 \subsubsection{Hardware}
@@ -18,12 +17,10 @@ The Galaxy S7 used does not live up to our criteria regarding its
 ability to record the entire intersection from its mounting location. While it captured an adequate 
 FOV, we could produce better results with a camera that is up to standard. The choice to use this device 
 was due to only receiving a different device too late in the process.
-\ \\
 
 \subsubsection{Multiple object tracking with joined data}
 We currently have no method, other than visual inspection, of quantifying how well the multiple object 
 detection works along the joining line of the two videos.
-\ \\
 
 \subsubsection{Low congestion}
 Filming took place at 12 PM on a Wednesday, this is a period of relatively low congestion at the Dybbølsbro intersection. 
@@ -35,18 +32,18 @@ of cyclists, it is unclear as to how object detection would perform in higher co
 \ \\
 
 \subsection{Future work}
+\subsubsection{Trajectory clustering}
 Trajectory clustering such as in \cite{gariel_trajectory_2011} would be a future addition to the tool.
 Clustering would enable a more fine-grained examination of desire lines,
 along with greater metadata such as traffic volume per desire path.
-\ \\
 
+\subsubsection{Improved multiple object detection}
 The SORT method of multiple object detection could be replaced with its extended version \href{https://github.com/nwojke/deep_sort}{Deep SORT}.
 Deep SORT extends on SORT by, in addition to IOU as a linking criterion, incorporating
 deep features of the objects for linking. Deep SORT could greatly improve the multiple object tracking
 and paving the way for an implementation that uses more than two cameras.
-\ \\
 
-\textbf{More detectors} \\
+\subsubsection{Traffic light state detection}
 Rule compliance and unintended behavior are tightly coupled with the state of the traffic signal at intersections. 
 Having functionality to mark traffic lights and can filter results based on their state would be a useful addition. 
 \textit{Road User Behaviour Analysis} (RUBA)\footnote{\href{https://vbn.aau.dk/en/publications/the-ruba-watchdog-video-analysis-tool}{Road User Behaviour Analysis - RUBA}} 
@@ -54,3 +51,5 @@ is a video analysis tool for traffic developed at Aalborg University. While its 
 as in our method or OpenDatacam, it features a variety of other specialized detectors, including traffic light state. 
 Another detector in RUBA is the 'stationary detector' which activation when road users are detected but non-moving in a marked area. 
 For cyclists, this kind of detection would help identify spots with high congestion.
+
+\subsubsection{Improved joining}
