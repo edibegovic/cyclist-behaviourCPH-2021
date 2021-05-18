@@ -17,7 +17,7 @@ import json
 import easygui
 
 # file = easygui.fileopenbox(msg="Choose tracks file.")
-file = "CSV/joined_df_corrected_90_1_0.15_bbox5_delete.csv"
+file = "CSV/joined_resized_corrected_unique_id_90_0.1.csv"
 df = pd.read_csv(file) 
 
 # video_1 = easygui.fileopenbox(msg="Select video 1.")
