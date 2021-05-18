@@ -42,4 +42,4 @@ if __name__ == "__main__":
     plot = joined.plot_object(joined.tracker_df, joined.map_path)
     joined.show_data("Warped img", plot)
 
-    joined.tracker_df.to_csv(f"CSV/{joined.file_name}_{joined.max_age}_{joined.iou_threshold}.csv")
+    joined.tracker_df.to_csv(f"CSV/{joined.file_name}_unique_id_{joined.max_age}_{joined.iou_threshold}.csv")
