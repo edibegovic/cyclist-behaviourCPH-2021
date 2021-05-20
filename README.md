@@ -5,7 +5,7 @@ Bachelor project @ ITU 2021
 
 ## Getting started: interactive demo
 
-**1** - Place video files into `/code/video` folder.
+**1** - Place video files into `/code/videos` folder.
 
 **2** - Navigate to the `/code` folder and start a light-weight HTTP server with command (requires node)
 
