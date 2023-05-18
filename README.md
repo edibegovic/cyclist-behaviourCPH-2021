@@ -1,23 +1,21 @@
-# Automated Cylist Analysis
+# Bicycle Trajectory Analysis
 Bachelor project @ ITU 2021
 
-&nbsp;
+## Getting started: Interactive demo
 
-## Getting started: interactive demo
+1. Place video files into `/code/videos`
 
-**1** - Place video files into `/code/videos` folder.
-
-**2** - Navigate to the `/code` folder and start a light-weight HTTP server (requires node)
+2. Navigate to `/code` and start a light-weight HTTP server (requires node)
 
 ```
 http-server -p 8000
 ```
 
-**3** - Start the app
+3. Start the app
 
 ```
 pip3 install -r requirements.txt
 python3 interactive.py
 ```
 
-**4** - Navigate to http://localhost:8050/
+4. Navigate to [localhost:8050](http://localhost:8050/) in your browser
