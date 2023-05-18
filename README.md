@@ -1,7 +1,7 @@
 # Bicycle Trajectory Analysis
 Bachelor project @ ITU 2021
 
-## Getting started: Interactive demo
+## Interactive demo
 
 1. Place video files into `/code/videos`
 
